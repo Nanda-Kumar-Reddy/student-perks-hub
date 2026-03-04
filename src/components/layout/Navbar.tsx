@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Zap } from "lucide-react";
+import { Menu, X, Zap, Sun, Moon } from "lucide-react";
+import { useTheme } from "@/hooks/useTheme";
 
 const navLinks = [
+  { label: "Home", href: "/" },
   { label: "How It Works", href: "/how-it-works" },
   { label: "Vendors", href: "/vendors" },
-  { label: "For Students", href: "/students" },
-  { label: "For Businesses", href: "/for-vendors" },
+  { label: "About Us", href: "/about" },
 ];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
@@ -41,6 +43,13 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
+          <button
+            onClick={toggleTheme}
+            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
           <Button variant="ghost" size="sm" asChild>
             <Link to="/login">Log in</Link>
           </Button>
@@ -49,13 +58,21 @@ export default function Navbar() {
           </Button>
         </div>
 
-        <button
-          className="md:hidden"
-          onClick={() => setOpen(!open)}
-          aria-label="Toggle menu"
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <button
+            onClick={toggleTheme}
+            className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary"
+            aria-label="Toggle theme"
+          >
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </button>
+          <button
+            onClick={() => setOpen(!open)}
+            aria-label="Toggle menu"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       {open && (
@@ -66,7 +83,9 @@ export default function Navbar() {
                 key={link.href}
                 to={link.href}
                 onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-2 text-sm font-medium hover:bg-secondary"
+                className={`rounded-lg px-3 py-2 text-sm font-medium hover:bg-secondary ${
+                  location.pathname === link.href ? "text-primary" : ""
+                }`}
               >
                 {link.label}
               </Link>
