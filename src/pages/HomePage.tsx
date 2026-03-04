@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, QrCode, Gift, Store, Star, Users, TrendingUp, Shield } from "lucide-react";
 import heroImg from "@/assets/hero-illustration.png";
+import PartnerModal from "@/components/PartnerModal";
 
 const categories = [
   { icon: "🍕", label: "Restaurants", count: 45 },
@@ -39,8 +41,11 @@ const fadeUp = {
 };
 
 export default function HomePage() {
+  const [partnerOpen, setPartnerOpen] = useState(false);
+
   return (
     <>
+      <PartnerModal open={partnerOpen} onOpenChange={setPartnerOpen} />
       {/* Hero */}
       <section className="relative overflow-hidden bg-secondary/30">
         <div className="container grid items-center gap-12 py-20 lg:grid-cols-2 lg:py-28">
@@ -65,8 +70,8 @@ export default function HomePage() {
                   Join as Student <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
-              <Button variant="outline" size="lg" asChild>
-                <Link to="/vendor-signup">Partner with Us</Link>
+              <Button variant="outline" size="lg" onClick={() => setPartnerOpen(true)}>
+                Partner with Us
               </Button>
             </div>
           </motion.div>
