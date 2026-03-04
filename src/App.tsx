@@ -8,6 +8,7 @@ import DashboardLayout from "./components/layout/DashboardLayout";
 import HomePage from "./pages/HomePage";
 import VendorsPage from "./pages/VendorsPage";
 import HowItWorksPage from "./pages/HowItWorksPage";
+import AboutPage from "./pages/AboutPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import StudentDashboard from "./pages/dashboard/StudentDashboard";
@@ -58,6 +59,7 @@ const App = () => (
             <Route path="/" element={<HomePage />} />
             <Route path="/vendors" element={<VendorsPage />} />
             <Route path="/how-it-works" element={<HowItWorksPage />} />
+            <Route path="/about" element={<AboutPage />} />
           </Route>
 
           {/* Auth */}
