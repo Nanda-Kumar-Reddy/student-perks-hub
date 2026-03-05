@@ -129,6 +129,32 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
             <h1 className="font-display text-lg font-bold">{title}</h1>
           </div>
           <div className="flex items-center gap-2">
+            {showDiscounts && (
+              <div className="relative">
+                <button
+                  onClick={() => setDiscountDropdown(!discountDropdown)}
+                  className="flex items-center gap-1 rounded-lg px-2.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                >
+                  <Tag className="h-4 w-4" />
+                  <span className="hidden sm:inline">Discounts</span>
+                  <ChevronDown className={`h-3 w-3 transition-transform ${discountDropdown ? "rotate-180" : ""}`} />
+                </button>
+                {discountDropdown && (
+                  <div className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-border bg-card p-1.5 shadow-card-hover z-50 animate-scale-in">
+                    {discountCategories.map((cat) => (
+                      <button
+                        key={cat}
+                        onClick={() => openDiscountModal(cat)}
+                        className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-secondary"
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             <NotificationDropdown notifications={notifications} />
 
             {showDiscounts && (
