@@ -1,49 +1,53 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CarFront, MapPin, Calendar } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { CarFront, MapPin, Search, Clock, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
+import PhoneField from "@/components/shared/PhoneField";
+import RequestsListTab from "@/components/shared/RequestsListTab";
 
 const partners = [
-  { id: 1, name: "DriveRight School", location: "Melbourne", services: ["Manual Lessons", "Auto Lessons", "Test Preparation"], desc: "Certified driving school with multilingual instructors. Specializing in international student driving education.", packages: [{ name: "5 Lessons Pack", price: "$350" }, { name: "10 Lessons Pack", price: "$650" }, { name: "Test Package", price: "$200" }] },
-  { id: 2, name: "SafeWheels Academy", location: "Sydney", services: ["Auto Lessons", "Hazard Training", "Night Driving"], desc: "Patient instructors with high pass rates. Flexible scheduling for students.", packages: [{ name: "Starter Pack", price: "$300" }, { name: "Premium Pack", price: "$550" }, { name: "Mock Test", price: "$120" }] },
-  { id: 3, name: "QuickPass Driving", location: "Brisbane", services: ["Manual & Auto", "International Licence Conversion", "Refresher Courses"], desc: "Fast-track your licence. Specializing in converting international licences.", packages: [{ name: "Conversion Package", price: "$250" }, { name: "Full Course", price: "$700" }, { name: "Single Lesson", price: "$75" }] },
+  { id: 1, name: "DriveRight School", location: "Melbourne", openHours: "8:00 AM", closeHours: "6:00 PM", images: ["🚗", "🏫", "🛣️"], packages: [{ name: "5 Lessons Pack", price: "$350", desc: "5 x 1hr manual lessons" }, { name: "10 Lessons Pack", price: "$650", desc: "10 x 1hr lessons + test prep" }, { name: "Test Package", price: "$200", desc: "Mock test + 1hr lesson" }] },
+  { id: 2, name: "SafeWheels Academy", location: "Sydney", openHours: "7:00 AM", closeHours: "5:00 PM", images: ["🚙", "📋"], packages: [{ name: "Starter Pack", price: "$300", desc: "4 x 1hr auto lessons" }, { name: "Premium Pack", price: "$550", desc: "8 lessons + hazard training" }, { name: "Mock Test", price: "$120", desc: "Full mock driving test" }] },
+  { id: 3, name: "QuickPass Driving", location: "Brisbane", openHours: "9:00 AM", closeHours: "7:00 PM", images: ["🚘", "🎓", "✅"], packages: [{ name: "Conversion Package", price: "$250", desc: "International licence conversion" }, { name: "Full Course", price: "$700", desc: "Complete learner to P-plate" }, { name: "Single Lesson", price: "$75", desc: "1hr driving lesson" }] },
+];
+
+const cities = ["All", "Melbourne", "Sydney", "Brisbane"];
+
+const myBookings = [
+  { id: 1, title: "10 Lessons Pack — DriveRight School", subtitle: "Melbourne", date: "March 8, 2026", status: "Confirmed" },
+  { id: 2, title: "Conversion Package — QuickPass Driving", subtitle: "Brisbane", date: "March 1, 2026", status: "In Progress" },
 ];
 
 export default function DrivingLicencePage() {
-  const [selected, setSelected] = useState<number | null>(null);
+  const [search, setSearch] = useState("");
+  const [city, setCity] = useState("All");
+  const [imgIdxMap, setImgIdxMap] = useState<Record<number, number>>({});
+  const [bookOpen, setBookOpen] = useState(false);
+  const [bookPkg, setBookPkg] = useState<{ partner: string; name: string; price: string } | null>(null);
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [bookSuccess, setBookSuccess] = useState(false);
 
-  if (selected !== null) {
-    const p = partners.find((x) => x.id === selected)!;
-    return (
-      <div className="space-y-6">
-        <Button variant="ghost" onClick={() => setSelected(null)}>← Back</Button>
-        <div className="rounded-xl border border-border bg-card p-6 shadow-card space-y-4 max-w-2xl">
-          <div>
-            <h1 className="font-display text-xl font-bold">{p.name}</h1>
-            <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1"><MapPin className="h-4 w-4" /> {p.location}</p>
-          </div>
-          <p className="text-sm text-muted-foreground">{p.desc}</p>
-          <div>
-            <h3 className="font-display font-bold">Services</h3>
-            <div className="mt-2 flex flex-wrap gap-2">{p.services.map((s) => <span key={s} className="rounded-full bg-secondary px-2.5 py-1 text-xs font-medium">{s}</span>)}</div>
-          </div>
-          <div>
-            <h3 className="font-display font-bold">Packages</h3>
-            <div className="mt-2 space-y-2">
-              {p.packages.map((pkg) => (
-                <div key={pkg.name} className="flex items-center justify-between rounded-lg bg-secondary/50 p-3">
-                  <span className="text-sm font-medium">{pkg.name}</span>
-                  <div className="flex items-center gap-3">
-                    <span className="font-display text-sm font-bold text-primary">{pkg.price}</span>
-                    <Button size="sm"><Calendar className="h-3 w-3 mr-1" /> Book</Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const filtered = partners.filter((p) => {
+    const ms = p.name.toLowerCase().includes(search.toLowerCase());
+    const mc = city === "All" || p.location === city;
+    return ms && mc;
+  });
+
+  const getImgIdx = (id: number) => imgIdxMap[id] || 0;
+  const setImgIdx = (id: number, idx: number) => setImgIdxMap((p) => ({ ...p, [id]: idx }));
+
+  const handleBook = (partner: string, pkg: { name: string; price: string }) => {
+    setBookPkg({ partner, ...pkg });
+    setBookOpen(true);
+    setBookSuccess(false);
+    setPhone("");
+    setAddress("");
+  };
 
   return (
     <div className="space-y-6">
@@ -51,21 +55,89 @@ export default function DrivingLicencePage() {
         <h1 className="font-display text-2xl font-bold flex items-center gap-2"><CarFront className="h-6 w-6 text-primary" /> Driving Licence</h1>
         <p className="text-sm text-muted-foreground mt-1">Find certified driving partners</p>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {partners.map((p) => (
-          <div key={p.id} className="rounded-xl border border-border bg-card p-5 shadow-card transition-all hover:shadow-card-hover">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary"><CarFront className="h-5 w-5" /></div>
-              <div>
-                <h3 className="font-display text-sm font-bold">{p.name}</h3>
-                <p className="text-xs text-muted-foreground flex items-center gap-1"><MapPin className="h-3 w-3" /> {p.location}</p>
-              </div>
+      <Tabs defaultValue="book" className="w-full">
+        <TabsList>
+          <TabsTrigger value="book">Book Package</TabsTrigger>
+          <TabsTrigger value="bookings">My Bookings</TabsTrigger>
+        </TabsList>
+        <TabsContent value="book" className="mt-4 space-y-4">
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input placeholder="Search partners..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
             </div>
-            <div className="mt-3 flex flex-wrap gap-1">{p.services.map((s) => <span key={s} className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium">{s}</span>)}</div>
-            <div className="mt-3"><Button size="sm" className="w-full" onClick={() => setSelected(p.id)}>View Packages</Button></div>
+            <Select value={city} onValueChange={setCity}>
+              <SelectTrigger className="w-full sm:w-36"><SelectValue /></SelectTrigger>
+              <SelectContent>{cities.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+            </Select>
           </div>
-        ))}
-      </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {filtered.map((p) => (
+              <div key={p.id} className="rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all hover:shadow-card-hover">
+                <div className="relative flex h-28 items-center justify-center bg-secondary text-5xl">
+                  {p.images[getImgIdx(p.id)]}
+                  {p.images.length > 1 && (
+                    <>
+                      <button onClick={() => setImgIdx(p.id, (getImgIdx(p.id) - 1 + p.images.length) % p.images.length)} className="absolute left-1 rounded-full bg-background/80 p-1 hover:bg-background"><ChevronLeft className="h-3 w-3" /></button>
+                      <button onClick={() => setImgIdx(p.id, (getImgIdx(p.id) + 1) % p.images.length)} className="absolute right-1 rounded-full bg-background/80 p-1 hover:bg-background"><ChevronRight className="h-3 w-3" /></button>
+                    </>
+                  )}
+                </div>
+                <div className="p-4 space-y-2">
+                  <h3 className="font-display text-sm font-bold">{p.name}</h3>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {p.location}</span>
+                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {p.openHours} — {p.closeHours}</span>
+                  </div>
+                  <div className="space-y-1.5 pt-1">
+                    {p.packages.map((pkg) => (
+                      <div key={pkg.name} className="flex items-center justify-between rounded-lg bg-secondary/50 p-2">
+                        <div>
+                          <span className="text-xs font-medium">{pkg.name}</span>
+                          <p className="text-[10px] text-muted-foreground">{pkg.desc}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-primary">{pkg.price}</span>
+                          <Button size="sm" variant="outline" className="text-xs h-7 px-2" onClick={() => handleBook(p.name, pkg)}>Book</Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </TabsContent>
+        <TabsContent value="bookings" className="mt-4">
+          <RequestsListTab requests={myBookings} emptyMessage="No driving bookings yet." />
+        </TabsContent>
+      </Tabs>
+
+      <Dialog open={bookOpen} onOpenChange={(o) => { setBookOpen(o); if (!o) setBookSuccess(false); }}>
+        <DialogContent className="max-w-sm">
+          {bookSuccess ? (
+            <div className="flex flex-col items-center py-6 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10"><CheckCircle2 className="h-8 w-8 text-primary" /></div>
+              <h2 className="mt-4 font-display text-xl font-bold">Booking Confirmed!</h2>
+              <p className="mt-2 text-sm text-muted-foreground">{bookPkg?.name} at {bookPkg?.partner}</p>
+              <Button className="mt-6" onClick={() => setBookOpen(false)}>Close</Button>
+            </div>
+          ) : (
+            <>
+              <DialogHeader><DialogTitle>Book Package</DialogTitle></DialogHeader>
+              <div className="space-y-4 pt-2">
+                <div className="rounded-lg bg-secondary p-3">
+                  <p className="text-sm font-medium">{bookPkg?.name}</p>
+                  <p className="text-xs text-muted-foreground">{bookPkg?.partner} — {bookPkg?.price}</p>
+                </div>
+                <PhoneField value={phone} onChange={setPhone} />
+                <div><Label>Current Address</Label><Input className="mt-1.5" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Your current address" /></div>
+                <Button className="w-full" disabled={!phone.trim()} onClick={() => setBookSuccess(true)}>Proceed to Payment</Button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

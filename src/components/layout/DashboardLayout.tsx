@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Zap, LogOut, Menu, X, Sun, Moon } from "lucide-react";
+import { Zap, LogOut, Menu, Sun, Moon, Tag, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useTheme } from "@/hooks/useTheme";
 import NotificationDropdown, { type Notification } from "@/components/NotificationDropdown";
+import DiscountsModal from "@/components/DiscountsModal";
 
 interface NavItem {
   label: string;
@@ -16,12 +17,29 @@ interface DashboardLayoutProps {
   title: string;
   navItems: NavItem[];
   notifications?: Notification[];
+  showDiscounts?: boolean;
 }
 
-export default function DashboardLayout({ title, navItems, notifications = [] }: DashboardLayoutProps) {
+const discountCategories = [
+  "Lifeline Liquor",
+  "Lifeline Airport",
+  "Lifeline Car",
+  "Lifeline Accounting",
+];
+
+export default function DashboardLayout({ title, navItems, notifications = [], showDiscounts = false }: DashboardLayoutProps) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const [discountDropdown, setDiscountDropdown] = useState(false);
+  const [discountsModalOpen, setDiscountsModalOpen] = useState(false);
+  const [selectedDiscountCategory, setSelectedDiscountCategory] = useState("Lifeline Liquor");
+
+  const openDiscountModal = (category: string) => {
+    setSelectedDiscountCategory(category);
+    setDiscountDropdown(false);
+    setDiscountsModalOpen(true);
+  };
 
   const NavLinks = () => (
     <>
@@ -45,6 +63,12 @@ export default function DashboardLayout({ title, navItems, notifications = [] }:
 
   return (
     <div className="flex min-h-screen">
+      <DiscountsModal
+        open={discountsModalOpen}
+        onOpenChange={setDiscountsModalOpen}
+        initialCategory={selectedDiscountCategory}
+      />
+
       {/* Desktop Sidebar */}
       <aside className="hidden w-64 flex-shrink-0 border-r border-border bg-card lg:block">
         <div className="flex h-full flex-col">
@@ -106,6 +130,33 @@ export default function DashboardLayout({ title, navItems, notifications = [] }:
           </div>
           <div className="flex items-center gap-2">
             <NotificationDropdown notifications={notifications} />
+
+            {showDiscounts && (
+              <div className="relative">
+                <button
+                  onClick={() => setDiscountDropdown(!discountDropdown)}
+                  className="flex items-center gap-1 rounded-lg px-2.5 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                >
+                  <Tag className="h-4 w-4" />
+                  <span className="hidden sm:inline">Discounts</span>
+                  <ChevronDown className={`h-3 w-3 transition-transform ${discountDropdown ? "rotate-180" : ""}`} />
+                </button>
+                {discountDropdown && (
+                  <div className="absolute right-0 top-full mt-1 w-52 rounded-xl border border-border bg-card p-1.5 shadow-card-hover z-50 animate-scale-in">
+                    {discountCategories.map((cat) => (
+                      <button
+                        key={cat}
+                        onClick={() => openDiscountModal(cat)}
+                        className="w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-secondary"
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             <button
               onClick={toggleTheme}
               className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
