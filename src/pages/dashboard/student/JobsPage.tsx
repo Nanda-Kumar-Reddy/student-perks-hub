@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +28,7 @@ const myApplications = [
 const sortOptions = ["Newest", "Salary", "Most relevant"];
 
 function JobsTab({ jobType }: { jobType: string }) {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [locationFilter, setLocationFilter] = useState("All");
   const [sort, setSort] = useState("Newest");
@@ -73,7 +75,7 @@ function JobsTab({ jobType }: { jobType: string }) {
       </div>
       <div className="space-y-3">
         {filtered.map((j) => (
-          <div key={j.id} className="rounded-xl border border-border bg-card p-4 shadow-card transition-all hover:shadow-card-hover flex items-center justify-between">
+          <div key={j.id} onClick={() => navigate(`/student/jobs/${j.id}`)} className="cursor-pointer rounded-xl border border-border bg-card p-4 shadow-card transition-all hover:shadow-card-hover flex items-center justify-between">
             <div>
               <h3 className="font-display text-sm font-bold">{j.title}</h3>
               <p className="text-xs text-muted-foreground mt-0.5">{j.company}</p>
@@ -83,7 +85,7 @@ function JobsTab({ jobType }: { jobType: string }) {
                 <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {j.posted}</span>
               </div>
             </div>
-            <Button size="sm" onClick={() => handleApply(j)}>Apply Now</Button>
+            <Button size="sm" onClick={(e) => { e.stopPropagation(); handleApply(j); }}>Apply Now</Button>
           </div>
         ))}
       </div>
