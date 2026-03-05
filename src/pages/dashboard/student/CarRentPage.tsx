@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -24,6 +25,7 @@ const myRequests = [
 ];
 
 function VehicleGrid({ items, type }: { items: typeof vehicles; type: string }) {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [city, setCity] = useState("All");
   const [enquiryOpen, setEnquiryOpen] = useState(false);
@@ -49,7 +51,7 @@ function VehicleGrid({ items, type }: { items: typeof vehicles; type: string }) 
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         {filtered.map((v) => (
-          <div key={v.id} className="rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all hover:shadow-card-hover hover:-translate-y-0.5">
+          <div key={v.id} onClick={() => navigate(`/student/cars/${v.id}`)} className="cursor-pointer rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all hover:shadow-card-hover hover:-translate-y-0.5">
             <div className="relative flex h-32 items-center justify-center bg-secondary text-5xl">
               🚗
               <span className={`absolute top-2 left-2 rounded-full px-2 py-0.5 text-[10px] font-bold text-white ${v.badge === "Rent" ? "bg-primary" : "bg-accent"}`}>{v.badge}</span>
@@ -67,7 +69,7 @@ function VehicleGrid({ items, type }: { items: typeof vehicles; type: string }) 
                   <span className="font-display text-sm font-bold text-primary">{v.weeklyPrice}</span>
                   {v.monthlyPrice && <span className="text-xs text-muted-foreground ml-1">/ {v.monthlyPrice}</span>}
                 </div>
-                <Button size="sm" onClick={() => { setEnquiryTitle(v.name); setEnquiryOpen(true); }}>Enquire</Button>
+                <Button size="sm" onClick={(e) => { e.stopPropagation(); setEnquiryTitle(v.name); setEnquiryOpen(true); }}>Enquire</Button>
               </div>
             </div>
           </div>
