@@ -129,8 +129,6 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
             <h1 className="font-display text-lg font-bold">{title}</h1>
           </div>
           <div className="flex items-center gap-2">
-            <NotificationDropdown notifications={notifications} />
-
             {showDiscounts && (
               <div className="relative">
                 <button
@@ -156,6 +154,9 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
                 )}
               </div>
             )}
+
+            <NotificationDropdown notifications={notifications} />
+
 
             <button
               onClick={toggleTheme}
