@@ -115,7 +115,7 @@ const App = () => (
           <Route path="/signup" element={<SignupPage />} />
 
           {/* Student Dashboard */}
-          <Route element={<DashboardLayout title="Student Portal" navItems={studentNav} notifications={studentNotifications} />}>
+          <Route element={<DashboardLayout title="Student Portal" navItems={studentNav} notifications={studentNotifications} showDiscounts />}>
             <Route path="/student" element={<StudentDashboard />} />
             <Route path="/student/airport-pickup" element={<Suspense fallback={<Loading />}><AirportPickupPage /></Suspense>} />
             <Route path="/student/accommodations" element={<Suspense fallback={<Loading />}><AccommodationsPage /></Suspense>} />
