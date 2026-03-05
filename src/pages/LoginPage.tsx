@@ -17,12 +17,11 @@ export default function LoginPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <Zap className="h-4 w-4 text-primary-foreground" />
             </div>
-            CampusPerks
+            LifelineAustralia
           </Link>
           <h1 className="mt-6 font-display text-2xl font-bold">Welcome back</h1>
           <p className="mt-1 text-sm text-muted-foreground">Sign in to your account</p>
         </div>
-
         <div className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-card">
           <div className="space-y-4">
             <div>

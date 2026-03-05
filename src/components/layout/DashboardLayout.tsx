@@ -4,6 +4,7 @@ import { Zap, LogOut, Menu, X, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useTheme } from "@/hooks/useTheme";
+import NotificationDropdown, { type Notification } from "@/components/NotificationDropdown";
 
 interface NavItem {
   label: string;
@@ -14,10 +15,10 @@ interface NavItem {
 interface DashboardLayoutProps {
   title: string;
   navItems: NavItem[];
-  accentColor?: string;
+  notifications?: Notification[];
 }
 
-export default function DashboardLayout({ title, navItems }: DashboardLayoutProps) {
+export default function DashboardLayout({ title, navItems, notifications = [] }: DashboardLayoutProps) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
@@ -53,7 +54,7 @@ export default function DashboardLayout({ title, navItems }: DashboardLayoutProp
             </div>
             <span className="font-display text-sm font-bold">{title}</span>
           </div>
-          <nav className="flex-1 space-y-1 p-3">
+          <nav className="flex-1 space-y-1 overflow-y-auto p-3">
             <NavLinks />
           </nav>
           <div className="border-t border-border p-3">
@@ -76,7 +77,7 @@ export default function DashboardLayout({ title, navItems }: DashboardLayoutProp
             </div>
             <SheetTitle className="font-display text-sm font-bold">{title}</SheetTitle>
           </SheetHeader>
-          <nav className="flex-1 space-y-1 p-3">
+          <nav className="flex-1 space-y-1 overflow-y-auto p-3">
             <NavLinks />
           </nav>
           <div className="border-t border-border p-3">
@@ -103,7 +104,8 @@ export default function DashboardLayout({ title, navItems }: DashboardLayoutProp
             </button>
             <h1 className="font-display text-lg font-bold">{title}</h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <NotificationDropdown notifications={notifications} />
             <button
               onClick={toggleTheme}
               className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
