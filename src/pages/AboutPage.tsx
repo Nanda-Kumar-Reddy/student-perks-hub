@@ -7,78 +7,50 @@ const fadeUp = {
 };
 
 const testimonials = [
-  {
-    name: "Priya Sharma",
-    role: "Engineering Student",
-    text: "CampusPerks has saved me so much money! I love discovering new cafés and earning rewards at the same time.",
-    rating: 5,
-    avatar: "PS",
-  },
-  {
-    name: "Rahul Verma",
-    role: "Business Student",
-    text: "As a student on a budget, the discounts and reward points make a real difference every month.",
-    rating: 5,
-    avatar: "RV",
-  },
-  {
-    name: "Anita Desai",
-    role: "Owner, Bean Counter Café",
-    text: "We've seen a 30% increase in student footfall since joining CampusPerks. It's a win-win!",
-    rating: 4,
-    avatar: "AD",
-  },
-  {
-    name: "Karan Mehta",
-    role: "Fitness Enthusiast",
-    text: "Got my first month free at FitZone through CampusPerks. Now I'm a regular member!",
-    rating: 5,
-    avatar: "KM",
-  },
+  { name: "Sarah Mitchell", role: "International Student", text: "LifelineAustralia made my move to Melbourne so much easier. Airport pickup, accommodation — all sorted!", rating: 5, avatar: "SM" },
+  { name: "James Chen", role: "Business Student", text: "The discounts and services saved me hundreds of dollars in my first semester alone.", rating: 5, avatar: "JC" },
+  { name: "Anita Desai", role: "Partner, Bean Counter Café", text: "We've seen a 30% increase in student footfall since joining. It's a win-win!", rating: 4, avatar: "AD" },
+  { name: "Michael Park", role: "Engineering Student", text: "Got my driving licence sorted through the platform. Super convenient and affordable!", rating: 5, avatar: "MP" },
 ];
 
 export default function AboutPage() {
   return (
     <>
-      {/* Introduction */}
       <section className="py-20 bg-secondary/30">
         <div className="container text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-              <Heart className="h-3 w-3" /> About CampusPerks
+              <Heart className="h-3 w-3" /> About LifelineAustralia
             </span>
             <h1 className="mt-4 font-display text-4xl font-bold leading-tight sm:text-5xl">
-              Connecting Students with{" "}
-              <span className="text-gradient">Local Businesses</span>
+              Your Complete{" "}
+              <span className="text-gradient">Student Support</span>
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-              CampusPerks is a student rewards platform that bridges the gap between campus life and local businesses. We help students discover amazing deals while driving real customers to partner vendors.
+              LifelineAustralia is a comprehensive student services platform that connects international and local students with essential services — from airport pickups to jobs, accommodation, and exclusive discounts.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Vision */}
       <section className="py-20">
         <div className="container">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                <Target className="h-6 w-6" />
-              </div>
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary"><Target className="h-6 w-6" /></div>
               <h2 className="font-display text-3xl font-bold">Our Vision</h2>
               <p className="mt-4 text-muted-foreground leading-relaxed">
-                We envision a world where every student has access to exclusive deals and rewards from local businesses around their campus. Our long-term goal is to build the largest student-vendor ecosystem, empowering students financially while helping local businesses thrive.
+                We envision a world where every student arriving in Australia has seamless access to essential services. Our long-term goal is to be the single platform students trust for everything — from landing at the airport to settling into their new life.
               </p>
               <p className="mt-4 text-muted-foreground leading-relaxed">
-                By 2027, we aim to be present across 500+ campuses, connecting millions of students with tens of thousands of verified vendors — creating a self-sustaining community of mutual growth.
+                By 2028, we aim to be present across every major Australian city, connecting hundreds of thousands of students with verified service providers and exclusive deals.
               </p>
             </motion.div>
             <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} className="grid grid-cols-2 gap-4">
               {[
-                { icon: <Lightbulb className="h-5 w-5" />, title: "Innovation", desc: "Cutting-edge barcode verification" },
-                { icon: <Users className="h-5 w-5" />, title: "Community", desc: "Building campus ecosystems" },
-                { icon: <TrendingUp className="h-5 w-5" />, title: "Growth", desc: "Scaling across universities" },
+                { icon: <Lightbulb className="h-5 w-5" />, title: "Innovation", desc: "Smart service matching" },
+                { icon: <Users className="h-5 w-5" />, title: "Community", desc: "Building student networks" },
+                { icon: <TrendingUp className="h-5 w-5" />, title: "Growth", desc: "Scaling across Australia" },
                 { icon: <Heart className="h-5 w-5" />, title: "Impact", desc: "Real savings for students" },
               ].map((item, i) => (
                 <motion.div key={item.title} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="rounded-2xl border border-border bg-card p-5 shadow-card">
@@ -92,18 +64,15 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Impact */}
       <section className="bg-hero-gradient py-20">
         <div className="container text-center">
           <h2 className="font-display text-3xl font-bold text-primary-foreground">Our Impact</h2>
-          <p className="mx-auto mt-3 max-w-xl text-primary-foreground/80">
-            CampusPerks creates a win-win ecosystem for everyone involved
-          </p>
+          <p className="mx-auto mt-3 max-w-xl text-primary-foreground/80">LifelineAustralia creates a support ecosystem for everyone</p>
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {[
-              { title: "For Students", desc: "Save money with exclusive discounts, earn reward points on every purchase, and discover the best local spots around campus.", icon: "🎓" },
-              { title: "For Vendors", desc: "Increase foot traffic, build loyalty with the student demographic, and gain powerful analytics to grow your business.", icon: "🏪" },
-              { title: "For Campuses", desc: "Enhance campus life, support local businesses, and create a thriving community ecosystem around the university.", icon: "🏫" },
+              { title: "For Students", desc: "Access essential services, save money with exclusive discounts, find jobs, and settle into Australian life with confidence.", icon: "🎓" },
+              { title: "For Vendors", desc: "Reach the student market, increase bookings, build loyalty, and gain powerful analytics to grow your business.", icon: "🏪" },
+              { title: "For Communities", desc: "Strengthen local economies, support international students, and create thriving multicultural communities.", icon: "🏫" },
             ].map((item, i) => (
               <motion.div key={item.title} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="rounded-2xl bg-primary-foreground/10 backdrop-blur-sm p-8 text-primary-foreground text-left">
                 <div className="text-4xl mb-4">{item.icon}</div>
@@ -115,7 +84,6 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Testimonials */}
       <section className="py-20">
         <div className="container">
           <div className="text-center">
@@ -126,9 +94,7 @@ export default function AboutPage() {
             {testimonials.map((t, i) => (
               <motion.div key={t.name} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="rounded-2xl border border-border bg-card p-6 shadow-card transition-shadow hover:shadow-card-hover">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                    {t.avatar}
-                  </div>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{t.avatar}</div>
                   <div>
                     <div className="font-display text-sm font-bold">{t.name}</div>
                     <div className="text-xs text-muted-foreground">{t.role}</div>

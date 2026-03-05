@@ -31,7 +31,7 @@ export default function Footer() {
               <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
                 <Zap className="h-3.5 w-3.5 text-primary-foreground" />
               </div>
-              CampusPerks
+              LifelineAustralia
             </Link>
             <p className="mt-3 text-sm text-muted-foreground">
               Connecting students with local businesses. Earn rewards on every purchase.
@@ -56,7 +56,7 @@ export default function Footer() {
           ))}
         </div>
         <div className="mt-10 border-t border-border pt-6 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} CampusPerks. All rights reserved.
+          © {new Date().getFullYear()} LifelineAustralia. All rights reserved.
         </div>
       </div>
     </footer>
