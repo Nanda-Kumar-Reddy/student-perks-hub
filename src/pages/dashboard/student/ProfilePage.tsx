@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User, CheckCircle2 } from "lucide-react";
+import FormSection from "@/components/shared/FormSection";
+import PhoneField from "@/components/shared/PhoneField";
 
 export default function ProfilePage() {
   const [saved, setSaved] = useState(false);
@@ -20,19 +22,21 @@ export default function ProfilePage() {
         <div className="flex items-center gap-2 rounded-lg bg-success/10 p-3 text-sm text-success"><CheckCircle2 className="h-4 w-4" /> Profile updated successfully!</div>
       )}
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-border bg-card p-6 shadow-card space-y-4">
-          <h2 className="font-display font-bold">Personal Details</h2>
-          <div><Label>Full Name</Label><Input className="mt-1.5" value={form.name} onChange={(e) => update("name", e.target.value)} /></div>
-          <div><Label>Email</Label><Input className="mt-1.5" type="email" value={form.email} onChange={(e) => update("email", e.target.value)} /></div>
-          <div><Label>Phone</Label><Input className="mt-1.5" value={form.phone} onChange={(e) => update("phone", e.target.value)} /></div>
-          <div><Label>Address</Label><Input className="mt-1.5" value={form.address} onChange={(e) => update("address", e.target.value)} /></div>
+        <div className="rounded-xl border border-border bg-card p-6 shadow-card space-y-6">
+          <FormSection title="Personal Details">
+            <div><Label>Full Name</Label><Input className="mt-1.5" value={form.name} onChange={(e) => update("name", e.target.value)} /></div>
+            <div><Label>Email</Label><Input className="mt-1.5" type="email" value={form.email} onChange={(e) => update("email", e.target.value)} /></div>
+            <PhoneField value={form.phone} onChange={(v) => update("phone", v)} />
+            <div><Label>Address</Label><Input className="mt-1.5" value={form.address} onChange={(e) => update("address", e.target.value)} /></div>
+          </FormSection>
           <Button onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 3000); }}>Save Changes</Button>
         </div>
-        <div className="rounded-xl border border-border bg-card p-6 shadow-card space-y-4">
-          <h2 className="font-display font-bold">Change Password</h2>
-          <div><Label>Current Password</Label><Input className="mt-1.5" type="password" value={password.current} onChange={(e) => setPassword((p) => ({ ...p, current: e.target.value }))} /></div>
-          <div><Label>New Password</Label><Input className="mt-1.5" type="password" value={password.new} onChange={(e) => setPassword((p) => ({ ...p, new: e.target.value }))} /></div>
-          <div><Label>Confirm New Password</Label><Input className="mt-1.5" type="password" value={password.confirm} onChange={(e) => setPassword((p) => ({ ...p, confirm: e.target.value }))} /></div>
+        <div className="rounded-xl border border-border bg-card p-6 shadow-card space-y-6">
+          <FormSection title="Change Password">
+            <div><Label>Current Password</Label><Input className="mt-1.5" type="password" value={password.current} onChange={(e) => setPassword((p) => ({ ...p, current: e.target.value }))} /></div>
+            <div><Label>New Password</Label><Input className="mt-1.5" type="password" value={password.new} onChange={(e) => setPassword((p) => ({ ...p, new: e.target.value }))} /></div>
+            <div><Label>Confirm New Password</Label><Input className="mt-1.5" type="password" value={password.confirm} onChange={(e) => setPassword((p) => ({ ...p, confirm: e.target.value }))} /></div>
+          </FormSection>
           <Button variant="outline">Update Password</Button>
         </div>
       </div>
