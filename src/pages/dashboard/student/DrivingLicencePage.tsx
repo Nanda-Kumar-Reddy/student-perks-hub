@@ -1,12 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { CarFront, MapPin, Search, Clock, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
-import PhoneField from "@/components/shared/PhoneField";
+import { CarFront, MapPin, Search, Clock, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import RequestsListTab from "@/components/shared/RequestsListTab";
 
 const partners = [
@@ -23,14 +21,10 @@ const myBookings = [
 ];
 
 export default function DrivingLicencePage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [city, setCity] = useState("All");
   const [imgIdxMap, setImgIdxMap] = useState<Record<number, number>>({});
-  const [bookOpen, setBookOpen] = useState(false);
-  const [bookPkg, setBookPkg] = useState<{ partner: string; name: string; price: string } | null>(null);
-  const [phone, setPhone] = useState("");
-  const [address, setAddress] = useState("");
-  const [bookSuccess, setBookSuccess] = useState(false);
 
   const filtered = partners.filter((p) => {
     const ms = p.name.toLowerCase().includes(search.toLowerCase());
@@ -40,14 +34,6 @@ export default function DrivingLicencePage() {
 
   const getImgIdx = (id: number) => imgIdxMap[id] || 0;
   const setImgIdx = (id: number, idx: number) => setImgIdxMap((p) => ({ ...p, [id]: idx }));
-
-  const handleBook = (partner: string, pkg: { name: string; price: string }) => {
-    setBookPkg({ partner, ...pkg });
-    setBookOpen(true);
-    setBookSuccess(false);
-    setPhone("");
-    setAddress("");
-  };
 
   return (
     <div className="space-y-6">
@@ -73,13 +59,13 @@ export default function DrivingLicencePage() {
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((p) => (
-              <div key={p.id} className="rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all hover:shadow-card-hover">
+              <div key={p.id} onClick={() => navigate(`/student/driving-licence/${p.id}`)} className="cursor-pointer rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all hover:shadow-card-hover hover:border-primary/30 group">
                 <div className="relative flex h-28 items-center justify-center bg-secondary text-5xl">
                   {p.images[getImgIdx(p.id)]}
                   {p.images.length > 1 && (
                     <>
-                      <button onClick={() => setImgIdx(p.id, (getImgIdx(p.id) - 1 + p.images.length) % p.images.length)} className="absolute left-1 rounded-full bg-background/80 p-1 hover:bg-background"><ChevronLeft className="h-3 w-3" /></button>
-                      <button onClick={() => setImgIdx(p.id, (getImgIdx(p.id) + 1) % p.images.length)} className="absolute right-1 rounded-full bg-background/80 p-1 hover:bg-background"><ChevronRight className="h-3 w-3" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); setImgIdx(p.id, (getImgIdx(p.id) - 1 + p.images.length) % p.images.length); }} className="absolute left-1 rounded-full bg-background/80 p-1 hover:bg-background"><ChevronLeft className="h-3 w-3" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); setImgIdx(p.id, (getImgIdx(p.id) + 1) % p.images.length); }} className="absolute right-1 rounded-full bg-background/80 p-1 hover:bg-background"><ChevronRight className="h-3 w-3" /></button>
                     </>
                   )}
                 </div>
@@ -89,19 +75,11 @@ export default function DrivingLicencePage() {
                     <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {p.location}</span>
                     <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {p.openHours} — {p.closeHours}</span>
                   </div>
-                  <div className="space-y-1.5 pt-1">
-                    {p.packages.map((pkg) => (
-                      <div key={pkg.name} className="flex items-center justify-between rounded-lg bg-secondary/50 p-2">
-                        <div>
-                          <span className="text-xs font-medium">{pkg.name}</span>
-                          <p className="text-[10px] text-muted-foreground">{pkg.desc}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-primary">{pkg.price}</span>
-                          <Button size="sm" variant="outline" className="text-xs h-7 px-2" onClick={() => handleBook(p.name, pkg)}>Book</Button>
-                        </div>
-                      </div>
-                    ))}
+                  <div className="flex items-center justify-between pt-2">
+                    <span className="text-xs text-muted-foreground">{p.packages.length} packages available</span>
+                    <Button size="sm" variant="outline" className="gap-1 text-xs group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                      View Details <ArrowRight className="h-3 w-3" />
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -112,32 +90,6 @@ export default function DrivingLicencePage() {
           <RequestsListTab requests={myBookings} emptyMessage="No driving bookings yet." />
         </TabsContent>
       </Tabs>
-
-      <Dialog open={bookOpen} onOpenChange={(o) => { setBookOpen(o); if (!o) setBookSuccess(false); }}>
-        <DialogContent className="max-w-sm">
-          {bookSuccess ? (
-            <div className="flex flex-col items-center py-6 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10"><CheckCircle2 className="h-8 w-8 text-primary" /></div>
-              <h2 className="mt-4 font-display text-xl font-bold">Booking Confirmed!</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{bookPkg?.name} at {bookPkg?.partner}</p>
-              <Button className="mt-6" onClick={() => setBookOpen(false)}>Close</Button>
-            </div>
-          ) : (
-            <>
-              <DialogHeader><DialogTitle>Book Package</DialogTitle></DialogHeader>
-              <div className="space-y-4 pt-2">
-                <div className="rounded-lg bg-secondary p-3">
-                  <p className="text-sm font-medium">{bookPkg?.name}</p>
-                  <p className="text-xs text-muted-foreground">{bookPkg?.partner} — {bookPkg?.price}</p>
-                </div>
-                <PhoneField value={phone} onChange={setPhone} />
-                <div><Label>Current Address</Label><Input className="mt-1.5" value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Your current address" /></div>
-                <Button className="w-full" disabled={!phone.trim()} onClick={() => setBookSuccess(true)}>Proceed to Payment</Button>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
