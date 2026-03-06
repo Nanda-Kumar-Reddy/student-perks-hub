@@ -1,5 +1,6 @@
-import { Gift, TrendingUp, Clock, Star, QrCode, Bell } from "lucide-react";
-import { motion } from "framer-motion";
+import { Gift, TrendingUp, Clock, Star } from "lucide-react";
+import CouponCarousel from "@/components/CouponCarousel";
+import FloatingButtons from "@/components/FloatingButtons";
 
 const recentTx = [
   { vendor: "Bean Counter Café", amount: "₹180", points: "+18", time: "2h ago", emoji: "☕" },
@@ -15,6 +16,8 @@ const recommended = [
 export default function StudentDashboard() {
   return (
     <div className="space-y-6">
+      <CouponCarousel />
+
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
@@ -32,7 +35,6 @@ export default function StudentDashboard() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Recent Transactions */}
         <div className="lg:col-span-2 rounded-xl border border-border bg-card p-5 shadow-card">
           <h2 className="font-display font-bold">Recent Transactions</h2>
           <div className="mt-4 space-y-3">
@@ -54,7 +56,6 @@ export default function StudentDashboard() {
           </div>
         </div>
 
-        {/* Recommended */}
         <div className="rounded-xl border border-border bg-card p-5 shadow-card">
           <h2 className="font-display font-bold">Recommended</h2>
           <div className="mt-4 space-y-3">
@@ -70,6 +71,8 @@ export default function StudentDashboard() {
           </div>
         </div>
       </div>
+
+      <FloatingButtons />
     </div>
   );
 }

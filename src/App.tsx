@@ -19,8 +19,7 @@ import NotFound from "./pages/NotFound";
 import {
   LayoutDashboard, Plane, Home, Car, Briefcase, FileText, DollarSign,
   Users, Calculator, CarFront, CalendarDays, CalendarCheck, User,
-  ClipboardList, QrCode, BarChart3, Gift, Settings, Store,
-  ShieldCheck, Activity
+  Award, QrCode, BarChart3, Gift, Settings, Store, Activity
 } from "lucide-react";
 
 // Lazy load student feature pages
@@ -43,7 +42,20 @@ const EventsPage = lazy(() => import("./pages/dashboard/student/EventsPage"));
 const EventDetailPage = lazy(() => import("./pages/dashboard/student/EventDetailPage"));
 const MyBookingsPage = lazy(() => import("./pages/dashboard/student/MyBookingsPage"));
 const ProfilePage = lazy(() => import("./pages/dashboard/student/ProfilePage"));
-const MyRequestsPage = lazy(() => import("./pages/dashboard/student/MyRequestsPage"));
+const CertificationsPage = lazy(() => import("./pages/dashboard/student/CertificationsPage"));
+const CertificationDetailPage = lazy(() => import("./pages/dashboard/student/CertificationDetailPage"));
+
+// Lazy load vendor pages
+const VerifyTransactionPage = lazy(() => import("./pages/dashboard/vendor/VerifyTransactionPage"));
+const ManageOffersPage = lazy(() => import("./pages/dashboard/vendor/ManageOffersPage"));
+const VendorAnalyticsPage = lazy(() => import("./pages/dashboard/vendor/AnalyticsPage"));
+const VendorSettingsPage = lazy(() => import("./pages/dashboard/vendor/SettingsPage"));
+
+// Lazy load admin pages
+const AdminUsersPage = lazy(() => import("./pages/dashboard/admin/UsersPage"));
+const AdminVendorsPage = lazy(() => import("./pages/dashboard/admin/VendorsPage"));
+const AdminTransactionsPage = lazy(() => import("./pages/dashboard/admin/TransactionsPage"));
+const AdminAnalysisPage = lazy(() => import("./pages/dashboard/admin/AnalysisPage"));
 
 const queryClient = new QueryClient();
 
@@ -60,7 +72,7 @@ const studentNav = [
   { label: "Driving Licence", href: "/student/driving-licence", icon: <CarFront className="h-4 w-4" /> },
   { label: "Events", href: "/student/events", icon: <CalendarDays className="h-4 w-4" /> },
   { label: "My Bookings", href: "/student/bookings", icon: <CalendarCheck className="h-4 w-4" /> },
-  { label: "My Requests", href: "/student/requests", icon: <ClipboardList className="h-4 w-4" /> },
+  { label: "Certifications", href: "/student/certifications", icon: <Award className="h-4 w-4" /> },
   { label: "Profile", href: "/student/profile", icon: <User className="h-4 w-4" /> },
 ];
 
@@ -74,11 +86,10 @@ const vendorNav = [
 
 const adminNav = [
   { label: "Dashboard", href: "/admin", icon: <LayoutDashboard className="h-4 w-4" /> },
-  { label: "Vendor Approvals", href: "/admin/approvals", icon: <ShieldCheck className="h-4 w-4" /> },
   { label: "Users", href: "/admin/users", icon: <Users className="h-4 w-4" /> },
   { label: "Vendors", href: "/admin/vendors", icon: <Store className="h-4 w-4" /> },
   { label: "Transactions", href: "/admin/transactions", icon: <Activity className="h-4 w-4" /> },
-  { label: "Reports", href: "/admin/reports", icon: <FileText className="h-4 w-4" /> },
+  { label: "Analysis", href: "/admin/analysis", icon: <BarChart3 className="h-4 w-4" /> },
 ];
 
 const studentNotifications = [
@@ -142,18 +153,27 @@ const App = () => (
             <Route path="/student/events" element={<Suspense fallback={<Loading />}><EventsPage /></Suspense>} />
             <Route path="/student/events/:id" element={<Suspense fallback={<Loading />}><EventDetailPage /></Suspense>} />
             <Route path="/student/bookings" element={<Suspense fallback={<Loading />}><MyBookingsPage /></Suspense>} />
-            <Route path="/student/requests" element={<Suspense fallback={<Loading />}><MyRequestsPage /></Suspense>} />
+            <Route path="/student/certifications" element={<Suspense fallback={<Loading />}><CertificationsPage /></Suspense>} />
+            <Route path="/student/certifications/:id" element={<Suspense fallback={<Loading />}><CertificationDetailPage /></Suspense>} />
             <Route path="/student/profile" element={<Suspense fallback={<Loading />}><ProfilePage /></Suspense>} />
           </Route>
 
           {/* Vendor Dashboard */}
           <Route element={<DashboardLayout title="Vendor Portal" navItems={vendorNav} notifications={vendorNotifications} />}>
             <Route path="/vendor" element={<VendorDashboard />} />
+            <Route path="/vendor/verify" element={<Suspense fallback={<Loading />}><VerifyTransactionPage /></Suspense>} />
+            <Route path="/vendor/offers" element={<Suspense fallback={<Loading />}><ManageOffersPage /></Suspense>} />
+            <Route path="/vendor/analytics" element={<Suspense fallback={<Loading />}><VendorAnalyticsPage /></Suspense>} />
+            <Route path="/vendor/settings" element={<Suspense fallback={<Loading />}><VendorSettingsPage /></Suspense>} />
           </Route>
 
           {/* Admin Dashboard */}
           <Route element={<DashboardLayout title="Admin Panel" navItems={adminNav} notifications={adminNotifications} />}>
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/users" element={<Suspense fallback={<Loading />}><AdminUsersPage /></Suspense>} />
+            <Route path="/admin/vendors" element={<Suspense fallback={<Loading />}><AdminVendorsPage /></Suspense>} />
+            <Route path="/admin/transactions" element={<Suspense fallback={<Loading />}><AdminTransactionsPage /></Suspense>} />
+            <Route path="/admin/analysis" element={<Suspense fallback={<Loading />}><AdminAnalysisPage /></Suspense>} />
           </Route>
 
           <Route path="*" element={<NotFound />} />
