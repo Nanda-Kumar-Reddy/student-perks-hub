@@ -1,12 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { CalendarDays, MapPin, Search, Clock, Monitor, Building, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
-import PhoneField from "@/components/shared/PhoneField";
+import { CalendarDays, MapPin, Search, Clock, Monitor, Building, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import RequestsListTab from "@/components/shared/RequestsListTab";
 
 const events = [
@@ -21,14 +19,10 @@ const myRegistrations = [
 ];
 
 export default function EventsPage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [locationFilter, setLocationFilter] = useState("All");
   const [imgIdxMap, setImgIdxMap] = useState<Record<number, number>>({});
-  const [registerOpen, setRegisterOpen] = useState(false);
-  const [registerEvent, setRegisterEvent] = useState<typeof events[0] | null>(null);
-  const [regName, setRegName] = useState("");
-  const [regPhone, setRegPhone] = useState("");
-  const [regSuccess, setRegSuccess] = useState(false);
 
   const filtered = events.filter((e) => {
     const ms = e.title.toLowerCase().includes(search.toLowerCase());
@@ -38,14 +32,6 @@ export default function EventsPage() {
 
   const getImgIdx = (id: number) => imgIdxMap[id] || 0;
   const setImgIdx = (id: number, idx: number) => setImgIdxMap((p) => ({ ...p, [id]: idx }));
-
-  const handleRegister = (e: typeof events[0]) => {
-    setRegisterEvent(e);
-    setRegisterOpen(true);
-    setRegSuccess(false);
-    setRegName("");
-    setRegPhone("");
-  };
 
   return (
     <div className="space-y-6">
@@ -76,13 +62,13 @@ export default function EventsPage() {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {filtered.map((e) => (
-              <div key={e.id} className="rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all hover:shadow-card-hover">
+              <div key={e.id} onClick={() => navigate(`/student/events/${e.id}`)} className="cursor-pointer rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all hover:shadow-card-hover hover:border-primary/30 group">
                 <div className="relative flex h-28 items-center justify-center bg-secondary text-5xl">
                   {e.images[getImgIdx(e.id)]}
                   {e.images.length > 1 && (
                     <>
-                      <button onClick={() => setImgIdx(e.id, (getImgIdx(e.id) - 1 + e.images.length) % e.images.length)} className="absolute left-1 rounded-full bg-background/80 p-1 hover:bg-background"><ChevronLeft className="h-3 w-3" /></button>
-                      <button onClick={() => setImgIdx(e.id, (getImgIdx(e.id) + 1) % e.images.length)} className="absolute right-1 rounded-full bg-background/80 p-1 hover:bg-background"><ChevronRight className="h-3 w-3" /></button>
+                      <button onClick={(ev) => { ev.stopPropagation(); setImgIdx(e.id, (getImgIdx(e.id) - 1 + e.images.length) % e.images.length); }} className="absolute left-1 rounded-full bg-background/80 p-1 hover:bg-background"><ChevronLeft className="h-3 w-3" /></button>
+                      <button onClick={(ev) => { ev.stopPropagation(); setImgIdx(e.id, (getImgIdx(e.id) + 1) % e.images.length); }} className="absolute right-1 rounded-full bg-background/80 p-1 hover:bg-background"><ChevronRight className="h-3 w-3" /></button>
                     </>
                   )}
                 </div>
@@ -98,7 +84,9 @@ export default function EventsPage() {
                   <p className="text-sm text-muted-foreground">{e.desc}</p>
                   <div className="flex items-center justify-between pt-1">
                     <span className="flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="h-3 w-3" /> {e.location}</span>
-                    <Button size="sm" onClick={() => handleRegister(e)}>Register</Button>
+                    <Button size="sm" variant="outline" className="gap-1 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                      View Details <ArrowRight className="h-3 w-3" />
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -109,28 +97,6 @@ export default function EventsPage() {
           <RequestsListTab requests={myRegistrations} emptyMessage="No event registrations yet." />
         </TabsContent>
       </Tabs>
-
-      <Dialog open={registerOpen} onOpenChange={(o) => { setRegisterOpen(o); if (!o) setRegSuccess(false); }}>
-        <DialogContent className="max-w-sm">
-          {regSuccess ? (
-            <div className="flex flex-col items-center py-6 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10"><CheckCircle2 className="h-8 w-8 text-primary" /></div>
-              <h2 className="mt-4 font-display text-xl font-bold">Registered!</h2>
-              <p className="mt-2 text-sm text-muted-foreground">You're registered for {registerEvent?.title}.</p>
-              <Button className="mt-6" onClick={() => setRegisterOpen(false)}>Close</Button>
-            </div>
-          ) : (
-            <>
-              <DialogHeader><DialogTitle>Register — {registerEvent?.title}</DialogTitle></DialogHeader>
-              <div className="space-y-4 pt-2">
-                <div><Label>Full Name</Label><Input className="mt-1.5" value={regName} onChange={(e) => setRegName(e.target.value)} /></div>
-                <PhoneField value={regPhone} onChange={setRegPhone} />
-                <Button className="w-full" disabled={!regName.trim() || !regPhone.trim()} onClick={() => setRegSuccess(true)}>Submit Registration</Button>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
