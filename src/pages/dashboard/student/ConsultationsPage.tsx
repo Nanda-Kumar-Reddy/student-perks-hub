@@ -1,12 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Users, Globe, Search, Clock, CheckCircle2, Calendar } from "lucide-react";
+import { Users, Globe, Search, Clock } from "lucide-react";
 import RequestsListTab from "@/components/shared/RequestsListTab";
 
 const consultants = [
