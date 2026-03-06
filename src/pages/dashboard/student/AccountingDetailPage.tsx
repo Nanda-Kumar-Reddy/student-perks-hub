@@ -70,7 +70,7 @@ export default function AccountingDetailPage() {
                 <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {provider.officeHours}</span>
                   <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {provider.location}</span>
-                  <span className="flex items-center gap-1"><Star className="h-3 w-3 text-yellow-500 fill-yellow-500" /> {provider.rating} ({provider.reviews} reviews)</span>
+                  <span className="flex items-center gap-1"><Star className="h-3 w-3 text-primary fill-primary" /> {provider.rating} ({provider.reviews} reviews)</span>
                 </div>
               </div>
             </div>
@@ -135,7 +135,7 @@ export default function AccountingDetailPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Rating</span>
-                <span className="flex items-center gap-1 font-medium"><Star className="h-3 w-3 text-yellow-500 fill-yellow-500" /> {provider.rating}</span>
+                <span className="flex items-center gap-1 font-medium"><Star className="h-3 w-3 text-primary fill-primary" /> {provider.rating}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Reviews</span>
