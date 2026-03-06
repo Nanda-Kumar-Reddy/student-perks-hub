@@ -26,6 +26,7 @@ import {
 // Lazy load student feature pages
 const AirportPickupPage = lazy(() => import("./pages/dashboard/student/AirportPickupPage"));
 const AccommodationsPage = lazy(() => import("./pages/dashboard/student/AccommodationsPage"));
+const AccommodationDetailPage = lazy(() => import("./pages/dashboard/student/AccommodationDetailPage"));
 const CarRentPage = lazy(() => import("./pages/dashboard/student/CarRentPage"));
 const CarDetailPage = lazy(() => import("./pages/dashboard/student/CarDetailPage"));
 const JobsPage = lazy(() => import("./pages/dashboard/student/JobsPage"));
@@ -125,6 +126,7 @@ const App = () => (
             <Route path="/student" element={<StudentDashboard />} />
             <Route path="/student/airport-pickup" element={<Suspense fallback={<Loading />}><AirportPickupPage /></Suspense>} />
             <Route path="/student/accommodations" element={<Suspense fallback={<Loading />}><AccommodationsPage /></Suspense>} />
+            <Route path="/student/accommodations/:id" element={<Suspense fallback={<Loading />}><AccommodationDetailPage /></Suspense>} />
             <Route path="/student/cars" element={<Suspense fallback={<Loading />}><CarRentPage /></Suspense>} />
             <Route path="/student/cars/:id" element={<Suspense fallback={<Loading />}><CarDetailPage /></Suspense>} />
             <Route path="/student/jobs" element={<Suspense fallback={<Loading />}><JobsPage /></Suspense>} />
