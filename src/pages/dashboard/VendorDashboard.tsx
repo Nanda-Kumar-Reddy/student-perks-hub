@@ -1,4 +1,4 @@
-import { Users, QrCode, TrendingUp, DollarSign } from "lucide-react";
+import { Users, TrendingUp, DollarSign, Gift } from "lucide-react";
 
 const todayTx = [
   { student: "Rahul S.", amount: "₹250", time: "10 min ago", verified: true },
@@ -12,7 +12,7 @@ export default function VendorDashboard() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           { icon: <Users className="h-5 w-5" />, label: "Today's Customers", value: "12", color: "text-primary" },
-          { icon: <QrCode className="h-5 w-5" />, label: "Scans Today", value: "15", color: "text-accent" },
+          { icon: <Gift className="h-5 w-5" />, label: "Coupons Used", value: "15", color: "text-accent" },
           { icon: <DollarSign className="h-5 w-5" />, label: "Today's Revenue", value: "₹4,850", color: "text-success" },
           { icon: <TrendingUp className="h-5 w-5" />, label: "This Month", value: "₹1.2L", color: "text-warning" },
         ].map((s) => (
@@ -47,8 +47,8 @@ export default function VendorDashboard() {
           <h2 className="font-display font-bold">Quick Actions</h2>
           <div className="mt-4 grid grid-cols-2 gap-3">
             <button className="flex flex-col items-center gap-2 rounded-xl border border-border bg-secondary/50 p-6 text-center transition-colors hover:bg-secondary">
-              <QrCode className="h-8 w-8 text-primary" />
-              <span className="text-sm font-medium">Generate Barcode</span>
+              <Gift className="h-8 w-8 text-primary" />
+              <span className="text-sm font-medium">Create Coupon</span>
             </button>
             <button className="flex flex-col items-center gap-2 rounded-xl border border-border bg-secondary/50 p-6 text-center transition-colors hover:bg-secondary">
               <TrendingUp className="h-8 w-8 text-accent" />
