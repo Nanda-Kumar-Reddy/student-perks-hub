@@ -33,6 +33,7 @@ const JobDetailPage = lazy(() => import("./pages/dashboard/student/JobDetailPage
 const ResumeBuilderPage = lazy(() => import("./pages/dashboard/student/ResumeBuilderPage"));
 const LoansPage = lazy(() => import("./pages/dashboard/student/LoansPage"));
 const ConsultationsPage = lazy(() => import("./pages/dashboard/student/ConsultationsPage"));
+const ConsultantDetailPage = lazy(() => import("./pages/dashboard/student/ConsultantDetailPage"));
 const AccountingPage = lazy(() => import("./pages/dashboard/student/AccountingPage"));
 const DrivingLicencePage = lazy(() => import("./pages/dashboard/student/DrivingLicencePage"));
 const EventsPage = lazy(() => import("./pages/dashboard/student/EventsPage"));
