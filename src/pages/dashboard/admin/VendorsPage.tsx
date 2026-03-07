@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Store, CheckCircle2, XCircle, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,8 +21,14 @@ const pendingVendors = [
 ];
 
 export default function AdminVendorsPage() {
+  const [searchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [approvalStatus, setApprovalStatus] = useState<Record<number, "approved" | "rejected">>({});
+  const [activeTab, setActiveTab] = useState("vendors");
+
+  useEffect(() => {
+    if (searchParams.get("tab") === "approvals") setActiveTab("approvals");
+  }, [searchParams]);
 
   const filteredVendors = vendors.filter(v => v.name.toLowerCase().includes(search.toLowerCase()));
 
@@ -32,7 +39,7 @@ export default function AdminVendorsPage() {
         <p className="text-sm text-muted-foreground mt-1">Manage vendors and approvals</p>
       </div>
 
-      <Tabs defaultValue="vendors" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList><TabsTrigger value="vendors">Vendors</TabsTrigger><TabsTrigger value="approvals">Vendor Approvals</TabsTrigger></TabsList>
 
         <TabsContent value="vendors" className="mt-4 space-y-4">
@@ -40,19 +47,32 @@ export default function AdminVendorsPage() {
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input className="pl-9" placeholder="Search vendors..." value={search} onChange={e => setSearch(e.target.value)} />
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          
+          {/* List view */}
+          <div className="rounded-xl border border-border bg-card shadow-card overflow-hidden">
+            <div className="hidden sm:grid grid-cols-5 gap-4 p-4 border-b border-border text-xs font-medium text-muted-foreground">
+              <span>Vendor</span>
+              <span className="text-center">Duration</span>
+              <span className="text-center">Customers</span>
+              <span className="text-center">Transactions</span>
+              <span className="text-right">Revenue</span>
+            </div>
             {filteredVendors.map((v, i) => (
-              <motion.div key={v.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                className="rounded-xl border border-border bg-card p-5 shadow-card">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-sm font-bold text-accent">{v.avatar}</div>
-                  <div><div className="text-sm font-medium">{v.name}</div><div className="text-[10px] text-muted-foreground">{v.joined} days since registration</div></div>
+              <motion.div
+                key={v.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="grid grid-cols-1 sm:grid-cols-5 gap-2 sm:gap-4 p-4 border-b border-border last:border-0 hover:bg-secondary/30 transition-colors items-center"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">{v.avatar}</div>
+                  <span className="text-sm font-medium">{v.name}</span>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="rounded-lg bg-secondary/50 p-2"><div className="text-xs text-muted-foreground">Customers</div><div className="text-sm font-bold">{v.customers}</div></div>
-                  <div className="rounded-lg bg-secondary/50 p-2"><div className="text-xs text-muted-foreground">Transactions</div><div className="text-sm font-bold">{v.transactions}</div></div>
-                  <div className="rounded-lg bg-secondary/50 p-2 col-span-2"><div className="text-xs text-muted-foreground">Revenue</div><div className="text-sm font-bold">{v.revenue}</div></div>
-                </div>
+                <div className="text-xs text-muted-foreground text-center">{v.joined} days</div>
+                <div className="text-sm font-medium text-center">{v.customers}</div>
+                <div className="text-sm font-medium text-center">{v.transactions}</div>
+                <div className="text-sm font-medium text-right">{v.revenue}</div>
               </motion.div>
             ))}
           </div>

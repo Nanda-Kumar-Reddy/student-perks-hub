@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Users, Store, Activity, ShieldCheck, Clock } from "lucide-react";
 
 const pendingVendors = [
@@ -6,6 +7,8 @@ const pendingVendors = [
 ];
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -24,7 +27,10 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-border bg-card p-5 shadow-card">
+        <div
+          onClick={() => navigate("/admin/vendors?tab=approvals")}
+          className="cursor-pointer rounded-xl border border-border bg-card p-5 shadow-card transition-all hover:shadow-card-hover hover:border-primary/30"
+        >
           <h2 className="font-display font-bold">Vendor Approval Queue</h2>
           <div className="mt-4 space-y-3">
             {pendingVendors.map((v) => (
@@ -34,8 +40,7 @@ export default function AdminDashboard() {
                   <div className="text-xs text-muted-foreground">{v.cat} · Applied {v.applied}</div>
                 </div>
                 <div className="flex gap-2">
-                  <button className="rounded-lg bg-success px-3 py-1.5 text-xs font-medium text-success-foreground">Approve</button>
-                  <button className="rounded-lg bg-destructive px-3 py-1.5 text-xs font-medium text-destructive-foreground">Reject</button>
+                  <span className="rounded-lg bg-warning/10 px-3 py-1.5 text-xs font-medium text-warning">Pending</span>
                 </div>
               </div>
             ))}

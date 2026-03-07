@@ -1,19 +1,33 @@
+import { useState } from "react";
 import { FileText, TrendingUp, Users, Store } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { Button } from "@/components/ui/button";
 
-const revenueData = [
+const revenueMonthly = [
   { month: "Oct", revenue: 120000 }, { month: "Nov", revenue: 145000 }, { month: "Dec", revenue: 132000 },
   { month: "Jan", revenue: 168000 }, { month: "Feb", revenue: 185000 }, { month: "Mar", revenue: 175000 },
 ];
-
-const vendorPerf = [
-  { name: "Bean Counter", score: 92 }, { name: "Green Bowl", score: 88 }, { name: "FitZone", score: 95 },
-  { name: "Quick Print", score: 78 }, { name: "Campus Bites", score: 85 },
+const revenueYearly = [
+  { year: "2022", revenue: 980000 }, { year: "2023", revenue: 1200000 }, { year: "2024", revenue: 1500000 },
+  { year: "2025", revenue: 1800000 }, { year: "2026", revenue: 750000 },
 ];
 
-const engagement = [
-  { week: "W1", active: 420 }, { week: "W2", active: 480 }, { week: "W3", active: 510 },
-  { week: "W4", active: 550 }, { week: "W5", active: 490 }, { week: "W6", active: 580 },
+const usersMonthly = [
+  { month: "Oct", users: 420 }, { month: "Nov", users: 480 }, { month: "Dec", users: 510 },
+  { month: "Jan", users: 550 }, { month: "Feb", users: 490 }, { month: "Mar", users: 580 },
+];
+const usersYearly = [
+  { year: "2022", users: 800 }, { year: "2023", users: 1200 }, { year: "2024", users: 1800 },
+  { year: "2025", users: 2200 }, { year: "2026", users: 2543 },
+];
+
+const vendorsMonthly = [
+  { month: "Oct", vendors: 120 }, { month: "Nov", vendors: 135 }, { month: "Dec", vendors: 150 },
+  { month: "Jan", vendors: 160 }, { month: "Feb", vendors: 172 }, { month: "Mar", vendors: 182 },
+];
+const vendorsYearly = [
+  { year: "2022", vendors: 40 }, { year: "2023", vendors: 75 }, { year: "2024", vendors: 110 },
+  { year: "2025", vendors: 155 }, { year: "2026", vendors: 182 },
 ];
 
 const categoryDist = [
@@ -23,7 +37,22 @@ const categoryDist = [
 
 const COLORS = ["hsl(160,84%,39%)", "hsl(12,90%,62%)", "hsl(38,92%,50%)", "hsl(220,14%,50%)"];
 
+type Period = "monthly" | "yearly";
+
+function PeriodToggle({ period, setPeriod }: { period: Period; setPeriod: (p: Period) => void }) {
+  return (
+    <div className="flex gap-1">
+      <Button variant={period === "monthly" ? "default" : "outline"} size="sm" onClick={() => setPeriod("monthly")} className="text-xs h-7">Monthly</Button>
+      <Button variant={period === "yearly" ? "default" : "outline"} size="sm" onClick={() => setPeriod("yearly")} className="text-xs h-7">Yearly</Button>
+    </div>
+  );
+}
+
 export default function AnalysisPage() {
+  const [revPeriod, setRevPeriod] = useState<Period>("monthly");
+  const [userPeriod, setUserPeriod] = useState<Period>("monthly");
+  const [vendorPeriod, setVendorPeriod] = useState<Period>("monthly");
+
   return (
     <div className="space-y-6">
       <div>
@@ -48,23 +77,47 @@ export default function AnalysisPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-5 shadow-card">
-          <h2 className="font-display font-bold mb-4">Platform Revenue</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display font-bold">Platform Revenue</h2>
+            <PeriodToggle period={revPeriod} setPeriod={setRevPeriod} />
+          </div>
           <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={revenueData}><CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" /><XAxis dataKey="month" tick={{ fontSize: 12 }} /><YAxis tick={{ fontSize: 12 }} /><Tooltip /><Bar dataKey="revenue" fill="hsl(160,84%,39%)" radius={[4, 4, 0, 0]} /></BarChart>
+            <BarChart data={revPeriod === "monthly" ? revenueMonthly : revenueYearly}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+              <XAxis dataKey={revPeriod === "monthly" ? "month" : "year"} tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} /><Tooltip />
+              <Bar dataKey="revenue" fill="hsl(160,84%,39%)" radius={[4, 4, 0, 0]} />
+            </BarChart>
           </ResponsiveContainer>
         </div>
 
         <div className="rounded-xl border border-border bg-card p-5 shadow-card">
-          <h2 className="font-display font-bold mb-4">Student Engagement</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display font-bold">Number of Users</h2>
+            <PeriodToggle period={userPeriod} setPeriod={setUserPeriod} />
+          </div>
           <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={engagement}><CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" /><XAxis dataKey="week" tick={{ fontSize: 12 }} /><YAxis tick={{ fontSize: 12 }} /><Tooltip /><Line type="monotone" dataKey="active" stroke="hsl(12,90%,62%)" strokeWidth={2} dot={{ fill: "hsl(12,90%,62%)" }} /></LineChart>
+            <LineChart data={userPeriod === "monthly" ? usersMonthly : usersYearly}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+              <XAxis dataKey={userPeriod === "monthly" ? "month" : "year"} tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} /><Tooltip />
+              <Line type="monotone" dataKey="users" stroke="hsl(12,90%,62%)" strokeWidth={2} dot={{ fill: "hsl(12,90%,62%)" }} />
+            </LineChart>
           </ResponsiveContainer>
         </div>
 
         <div className="rounded-xl border border-border bg-card p-5 shadow-card">
-          <h2 className="font-display font-bold mb-4">Vendor Performance</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display font-bold">Number of Vendors</h2>
+            <PeriodToggle period={vendorPeriod} setPeriod={setVendorPeriod} />
+          </div>
           <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={vendorPerf} layout="vertical"><CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" /><XAxis type="number" domain={[0, 100]} tick={{ fontSize: 12 }} /><YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={90} /><Tooltip /><Bar dataKey="score" fill="hsl(38,92%,50%)" radius={[0, 4, 4, 0]} /></BarChart>
+            <LineChart data={vendorPeriod === "monthly" ? vendorsMonthly : vendorsYearly}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+              <XAxis dataKey={vendorPeriod === "monthly" ? "month" : "year"} tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} /><Tooltip />
+              <Line type="monotone" dataKey="vendors" stroke="hsl(38,92%,50%)" strokeWidth={2} dot={{ fill: "hsl(38,92%,50%)" }} />
+            </LineChart>
           </ResponsiveContainer>
         </div>
 

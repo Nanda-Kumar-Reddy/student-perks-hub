@@ -1,19 +1,33 @@
+import { useState } from "react";
 import { BarChart3, TrendingUp, Users, Star, Tag } from "lucide-react";
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { Button } from "@/components/ui/button";
 
-const revenueData = [
+const revenueMonthly = [
   { month: "Oct", revenue: 32000 }, { month: "Nov", revenue: 41000 }, { month: "Dec", revenue: 38000 },
   { month: "Jan", revenue: 45000 }, { month: "Feb", revenue: 52000 }, { month: "Mar", revenue: 48000 },
 ];
+const revenueYearly = [
+  { year: "2022", revenue: 320000 }, { year: "2023", revenue: 410000 }, { year: "2024", revenue: 480000 },
+  { year: "2025", revenue: 520000 }, { year: "2026", revenue: 175000 },
+];
 
-const customerData = [
+const customerMonthly = [
   { month: "Oct", customers: 120 }, { month: "Nov", customers: 145 }, { month: "Dec", customers: 130 },
   { month: "Jan", customers: 160 }, { month: "Feb", customers: 185 }, { month: "Mar", customers: 170 },
 ];
+const customerYearly = [
+  { year: "2022", customers: 980 }, { year: "2023", customers: 1200 }, { year: "2024", customers: 1500 },
+  { year: "2025", customers: 1800 }, { year: "2026", customers: 680 },
+];
 
-const ratingData = [
+const ratingMonthly = [
   { month: "Oct", rating: 4.2 }, { month: "Nov", rating: 4.4 }, { month: "Dec", rating: 4.3 },
   { month: "Jan", rating: 4.5 }, { month: "Feb", rating: 4.7 }, { month: "Mar", rating: 4.6 },
+];
+const ratingYearly = [
+  { year: "2022", rating: 4.0 }, { year: "2023", rating: 4.2 }, { year: "2024", rating: 4.4 },
+  { year: "2025", rating: 4.5 }, { year: "2026", rating: 4.6 },
 ];
 
 const couponUsage = [
@@ -23,7 +37,22 @@ const couponUsage = [
 
 const COLORS = ["hsl(160,84%,39%)", "hsl(12,90%,62%)", "hsl(38,92%,50%)", "hsl(220,14%,50%)"];
 
+type Period = "monthly" | "yearly";
+
+function PeriodToggle({ period, setPeriod }: { period: Period; setPeriod: (p: Period) => void }) {
+  return (
+    <div className="flex gap-1">
+      <Button variant={period === "monthly" ? "default" : "outline"} size="sm" onClick={() => setPeriod("monthly")} className="text-xs h-7">Monthly</Button>
+      <Button variant={period === "yearly" ? "default" : "outline"} size="sm" onClick={() => setPeriod("yearly")} className="text-xs h-7">Yearly</Button>
+    </div>
+  );
+}
+
 export default function AnalyticsPage() {
+  const [revPeriod, setRevPeriod] = useState<Period>("monthly");
+  const [custPeriod, setCustPeriod] = useState<Period>("monthly");
+  const [ratePeriod, setRatePeriod] = useState<Period>("monthly");
+
   return (
     <div className="space-y-6">
       <div>
@@ -48,23 +77,47 @@ export default function AnalyticsPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-5 shadow-card">
-          <h2 className="font-display font-bold mb-4">Revenue Trend</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display font-bold">Revenue</h2>
+            <PeriodToggle period={revPeriod} setPeriod={setRevPeriod} />
+          </div>
           <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={revenueData}><CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" /><XAxis dataKey="month" tick={{ fontSize: 12 }} /><YAxis tick={{ fontSize: 12 }} /><Tooltip /><Bar dataKey="revenue" fill="hsl(160,84%,39%)" radius={[4, 4, 0, 0]} /></BarChart>
+            <BarChart data={revPeriod === "monthly" ? revenueMonthly : revenueYearly}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+              <XAxis dataKey={revPeriod === "monthly" ? "month" : "year"} tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} /><Tooltip />
+              <Bar dataKey="revenue" fill="hsl(160,84%,39%)" radius={[4, 4, 0, 0]} />
+            </BarChart>
           </ResponsiveContainer>
         </div>
 
         <div className="rounded-xl border border-border bg-card p-5 shadow-card">
-          <h2 className="font-display font-bold mb-4">Customer Visits</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display font-bold">Customer Visits</h2>
+            <PeriodToggle period={custPeriod} setPeriod={setCustPeriod} />
+          </div>
           <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={customerData}><CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" /><XAxis dataKey="month" tick={{ fontSize: 12 }} /><YAxis tick={{ fontSize: 12 }} /><Tooltip /><Line type="monotone" dataKey="customers" stroke="hsl(12,90%,62%)" strokeWidth={2} dot={{ fill: "hsl(12,90%,62%)" }} /></LineChart>
+            <LineChart data={custPeriod === "monthly" ? customerMonthly : customerYearly}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+              <XAxis dataKey={custPeriod === "monthly" ? "month" : "year"} tick={{ fontSize: 12 }} />
+              <YAxis tick={{ fontSize: 12 }} /><Tooltip />
+              <Line type="monotone" dataKey="customers" stroke="hsl(12,90%,62%)" strokeWidth={2} dot={{ fill: "hsl(12,90%,62%)" }} />
+            </LineChart>
           </ResponsiveContainer>
         </div>
 
         <div className="rounded-xl border border-border bg-card p-5 shadow-card">
-          <h2 className="font-display font-bold mb-4">Rating Trend</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display font-bold">Rating Trend</h2>
+            <PeriodToggle period={ratePeriod} setPeriod={setRatePeriod} />
+          </div>
           <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={ratingData}><CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" /><XAxis dataKey="month" tick={{ fontSize: 12 }} /><YAxis domain={[3.5, 5]} tick={{ fontSize: 12 }} /><Tooltip /><Line type="monotone" dataKey="rating" stroke="hsl(38,92%,50%)" strokeWidth={2} dot={{ fill: "hsl(38,92%,50%)" }} /></LineChart>
+            <LineChart data={ratePeriod === "monthly" ? ratingMonthly : ratingYearly}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+              <XAxis dataKey={ratePeriod === "monthly" ? "month" : "year"} tick={{ fontSize: 12 }} />
+              <YAxis domain={[3.5, 5]} tick={{ fontSize: 12 }} /><Tooltip />
+              <Line type="monotone" dataKey="rating" stroke="hsl(38,92%,50%)" strokeWidth={2} dot={{ fill: "hsl(38,92%,50%)" }} />
+            </LineChart>
           </ResponsiveContainer>
         </div>
 

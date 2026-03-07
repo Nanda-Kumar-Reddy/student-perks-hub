@@ -3,16 +3,20 @@ import { QrCode, Search, Calendar, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { format } from "date-fns";
+import { Calendar as CalendarComp } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 const transactions = [
-  { id: 1, student: "Rahul S.", amount: "₹250", time: "10:30 AM", date: "Mar 6, 2026", verified: true },
-  { id: 2, student: "Priya K.", amount: "₹180", time: "9:15 AM", date: "Mar 6, 2026", verified: true },
-  { id: 3, student: "Amit D.", amount: "₹420", time: "2:45 PM", date: "Mar 5, 2026", verified: true },
-  { id: 4, student: "Sara M.", amount: "₹350", time: "11:00 AM", date: "Mar 5, 2026", verified: true },
-  { id: 5, student: "John L.", amount: "₹150", time: "4:20 PM", date: "Mar 4, 2026", verified: true },
-  { id: 6, student: "Nina R.", amount: "₹280", time: "1:30 PM", date: "Mar 3, 2026", verified: true },
-  { id: 7, student: "Dev P.", amount: "₹520", time: "10:00 AM", date: "Feb 28, 2026", verified: true },
-  { id: 8, student: "Lisa T.", amount: "₹190", time: "3:15 PM", date: "Feb 27, 2026", verified: true },
+  { id: 1, student: "Rahul S.", amount: "₹250", time: "10:30 AM", date: "Mar 6, 2026", rawDate: new Date(2026, 2, 6), verified: true },
+  { id: 2, student: "Priya K.", amount: "₹180", time: "9:15 AM", date: "Mar 6, 2026", rawDate: new Date(2026, 2, 6), verified: true },
+  { id: 3, student: "Amit D.", amount: "₹420", time: "2:45 PM", date: "Mar 5, 2026", rawDate: new Date(2026, 2, 5), verified: true },
+  { id: 4, student: "Sara M.", amount: "₹350", time: "11:00 AM", date: "Mar 5, 2026", rawDate: new Date(2026, 2, 5), verified: true },
+  { id: 5, student: "John L.", amount: "₹150", time: "4:20 PM", date: "Mar 4, 2026", rawDate: new Date(2026, 2, 4), verified: true },
+  { id: 6, student: "Nina R.", amount: "₹280", time: "1:30 PM", date: "Mar 3, 2026", rawDate: new Date(2026, 2, 3), verified: true },
+  { id: 7, student: "Dev P.", amount: "₹520", time: "10:00 AM", date: "Feb 28, 2026", rawDate: new Date(2026, 1, 28), verified: true },
+  { id: 8, student: "Lisa T.", amount: "₹190", time: "3:15 PM", date: "Feb 27, 2026", rawDate: new Date(2026, 1, 27), verified: true },
 ];
 
 const filters = ["All", "Yesterday", "This Week", "This Month", "Custom"];
@@ -20,8 +24,16 @@ const filters = ["All", "Yesterday", "This Week", "This Month", "Custom"];
 export default function VerifyTransactionPage() {
   const [search, setSearch] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
 
-  const filtered = transactions.filter(t => t.student.toLowerCase().includes(search.toLowerCase()));
+  const filtered = transactions.filter(t => {
+    if (!t.student.toLowerCase().includes(search.toLowerCase())) return false;
+    if (activeFilter === "Custom" && startDate && endDate) {
+      return t.rawDate >= startDate && t.rawDate <= endDate;
+    }
+    return true;
+  });
 
   return (
     <div className="space-y-6">
@@ -41,6 +53,33 @@ export default function VerifyTransactionPage() {
           ))}
         </div>
       </div>
+
+      {activeFilter === "Custom" && (
+        <div className="flex gap-3 flex-wrap">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className={cn("gap-1", !startDate && "text-muted-foreground")}>
+                <Calendar className="h-3.5 w-3.5" />
+                {startDate ? format(startDate, "PPP") : "Start date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <CalendarComp mode="single" selected={startDate} onSelect={setStartDate} className={cn("p-3 pointer-events-auto")} />
+            </PopoverContent>
+          </Popover>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className={cn("gap-1", !endDate && "text-muted-foreground")}>
+                <Calendar className="h-3.5 w-3.5" />
+                {endDate ? format(endDate, "PPP") : "End date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <CalendarComp mode="single" selected={endDate} onSelect={setEndDate} className={cn("p-3 pointer-events-auto")} />
+            </PopoverContent>
+          </Popover>
+        </div>
+      )}
 
       <div className="space-y-2">
         {filtered.map((t, i) => (

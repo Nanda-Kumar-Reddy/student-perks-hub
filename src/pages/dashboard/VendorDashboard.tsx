@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Users, TrendingUp, DollarSign, Gift } from "lucide-react";
 
 const todayTx = [
@@ -7,6 +8,8 @@ const todayTx = [
 ];
 
 export default function VendorDashboard() {
+  const navigate = useNavigate();
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -46,11 +49,17 @@ export default function VendorDashboard() {
         <div className="rounded-xl border border-border bg-card p-5 shadow-card">
           <h2 className="font-display font-bold">Quick Actions</h2>
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <button className="flex flex-col items-center gap-2 rounded-xl border border-border bg-secondary/50 p-6 text-center transition-colors hover:bg-secondary">
+            <button
+              onClick={() => navigate("/vendor/offers?tab=create")}
+              className="flex flex-col items-center gap-2 rounded-xl border border-border bg-secondary/50 p-6 text-center transition-colors hover:bg-secondary"
+            >
               <Gift className="h-8 w-8 text-primary" />
               <span className="text-sm font-medium">Create Coupon</span>
             </button>
-            <button className="flex flex-col items-center gap-2 rounded-xl border border-border bg-secondary/50 p-6 text-center transition-colors hover:bg-secondary">
+            <button
+              onClick={() => navigate("/vendor/analytics")}
+              className="flex flex-col items-center gap-2 rounded-xl border border-border bg-secondary/50 p-6 text-center transition-colors hover:bg-secondary"
+            >
               <TrendingUp className="h-8 w-8 text-accent" />
               <span className="text-sm font-medium">View Analytics</span>
             </button>
