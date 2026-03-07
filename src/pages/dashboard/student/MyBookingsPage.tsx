@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CalendarCheck, Clock, Search } from "lucide-react";
+import { motion } from "framer-motion";
 import StatusBadge from "@/components/shared/StatusBadge";
 
 const bookings = [
@@ -42,7 +43,13 @@ export default function MyBookingsPage() {
       </div>
       <div className="space-y-3">
         {filtered.map((b, i) => (
-          <div key={i} className="rounded-xl border border-border bg-card p-4 shadow-card flex items-center justify-between transition-all hover:shadow-card-hover">
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.06, duration: 0.3 }}
+            className="rounded-xl border border-border bg-card p-4 shadow-card flex items-center justify-between transition-all hover:shadow-card-hover"
+          >
             <div className="flex items-center gap-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary"><CalendarCheck className="h-5 w-5" /></div>
               <div>
@@ -52,7 +59,7 @@ export default function MyBookingsPage() {
               </div>
             </div>
             <StatusBadge status={b.status} />
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>

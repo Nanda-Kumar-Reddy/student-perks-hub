@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { ChevronLeft, ChevronRight, Tag } from "lucide-react";
 
 const coupons = [
@@ -21,7 +21,7 @@ export default function CouponCarousel() {
   };
 
   return (
-    <div className="relative group">
+    <div className="relative overflow-hidden">
       <div className="flex items-center justify-between mb-3">
         <h2 className="font-display text-sm font-bold flex items-center gap-1.5"><Tag className="h-4 w-4 text-primary" /> Exclusive Discounts</h2>
         <div className="flex gap-1">
@@ -29,7 +29,12 @@ export default function CouponCarousel() {
           <button onClick={() => scroll("right")} className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary transition-colors"><ChevronRight className="h-4 w-4" /></button>
         </div>
       </div>
-      <div ref={scrollRef} className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+      <div
+        ref={scrollRef}
+        className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch" }}
+      >
+        <style>{`.coupon-scroll::-webkit-scrollbar { display: none; }`}</style>
         {coupons.map(c => (
           <div key={c.id} className="flex-shrink-0 w-[200px] sm:w-[220px] snap-start rounded-xl border border-border bg-card p-4 shadow-card transition-all hover:shadow-card-hover hover:-translate-y-0.5 cursor-pointer">
             <div className="flex items-center gap-2 mb-2">

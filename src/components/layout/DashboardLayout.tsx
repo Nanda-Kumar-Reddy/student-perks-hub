@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Zap, LogOut, Menu, Sun, Moon, Tag, ChevronDown } from "lucide-react";
+import { Zap, LogOut, Menu, Sun, Moon, Tag, ChevronDown, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useTheme } from "@/hooks/useTheme";
 import NotificationDropdown, { type Notification } from "@/components/NotificationDropdown";
 import DiscountsModal from "@/components/DiscountsModal";
+import FloatingButtons from "@/components/FloatingButtons";
 
 interface NavItem {
   label: string;
@@ -18,6 +19,7 @@ interface DashboardLayoutProps {
   navItems: NavItem[];
   notifications?: Notification[];
   showDiscounts?: boolean;
+  showFloatingButtons?: boolean;
 }
 
 const discountCategories = [
@@ -27,13 +29,14 @@ const discountCategories = [
   "Lifeline Accounting",
 ];
 
-export default function DashboardLayout({ title, navItems, notifications = [], showDiscounts = false }: DashboardLayoutProps) {
+export default function DashboardLayout({ title, navItems, notifications = [], showDiscounts = false, showFloatingButtons = false }: DashboardLayoutProps) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const [discountDropdown, setDiscountDropdown] = useState(false);
   const [discountsModalOpen, setDiscountsModalOpen] = useState(false);
   const [selectedDiscountCategory, setSelectedDiscountCategory] = useState("Lifeline Liquor");
+  const [profileDropdown, setProfileDropdown] = useState(false);
 
   const openDiscountModal = (category: string) => {
     setSelectedDiscountCategory(category);
@@ -85,7 +88,7 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
             <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground" asChild>
               <Link to="/">
                 <LogOut className="h-4 w-4" />
-                Back to Home
+                Sign Out
               </Link>
             </Button>
           </div>
@@ -108,7 +111,7 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
             <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground" asChild>
               <Link to="/" onClick={() => setSidebarOpen(false)}>
                 <LogOut className="h-4 w-4" />
-                Back to Home
+                Sign Out
               </Link>
             </Button>
           </div>
@@ -116,7 +119,7 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
       </Sheet>
 
       {/* Main content */}
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col overflow-x-hidden">
         <header className="flex h-16 items-center justify-between border-b border-border bg-card px-6">
           <div className="flex items-center gap-3">
             <button
@@ -157,7 +160,6 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
 
             <NotificationDropdown notifications={notifications} />
 
-
             <button
               onClick={toggleTheme}
               className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
@@ -165,15 +167,39 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
             >
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
-            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-              U
+
+            {/* Profile dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setProfileDropdown(!profileDropdown)}
+                className="flex items-center gap-2 rounded-lg px-2 py-1 transition-colors hover:bg-secondary"
+              >
+                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
+                  <User className="h-4 w-4" />
+                </div>
+                <span className="hidden sm:inline text-sm font-medium">Student</span>
+              </button>
+              {profileDropdown && (
+                <div className="absolute right-0 top-full mt-1 w-40 rounded-xl border border-border bg-card p-1.5 shadow-card-hover z-50 animate-scale-in">
+                  <Link
+                    to="/"
+                    onClick={() => setProfileDropdown(false)}
+                    className="flex items-center gap-2 w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto bg-secondary/30 p-6">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-secondary/30 p-6">
           <Outlet />
         </main>
       </div>
+
+      {showFloatingButtons && <FloatingButtons />}
     </div>
   );
 }

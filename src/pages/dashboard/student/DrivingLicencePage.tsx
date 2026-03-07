@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CarFront, MapPin, Search, Clock, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import RequestsListTab from "@/components/shared/RequestsListTab";
 
 const partners = [
@@ -58,8 +59,15 @@ export default function DrivingLicencePage() {
             </Select>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((p) => (
-              <div key={p.id} onClick={() => navigate(`/student/driving-licence/${p.id}`)} className="cursor-pointer rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all hover:shadow-card-hover hover:border-primary/30 group">
+            {filtered.map((p, i) => (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.08, duration: 0.3 }}
+                onClick={() => navigate(`/student/driving-licence/${p.id}`)}
+                className="cursor-pointer rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all hover:shadow-card-hover hover:border-primary/30 group"
+              >
                 <div className="relative flex h-28 items-center justify-center bg-secondary text-5xl">
                   {p.images[getImgIdx(p.id)]}
                   {p.images.length > 1 && (
@@ -82,7 +90,7 @@ export default function DrivingLicencePage() {
                     </Button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </TabsContent>
