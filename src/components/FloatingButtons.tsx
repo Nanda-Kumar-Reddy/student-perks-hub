@@ -23,7 +23,6 @@ export default function FloatingButtons() {
     setAmount("");
     setRating(0);
     setFeedback("");
-    // Simulate scan after 3 seconds
     setTimeout(() => {
       setScanning(false);
       setScanned(true);
@@ -41,10 +40,20 @@ export default function FloatingButtons() {
           className="flex h-12 w-12 items-center justify-center rounded-full bg-[hsl(142,70%,45%)] text-white shadow-lg transition-transform hover:scale-110 active:scale-95">
           <MessageCircle className="h-5 w-5" />
         </a>
-        <button onClick={handleOpenScanner}
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-110 active:scale-95 animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite] glow-primary">
-          <QrCode className="h-5 w-5" />
-        </button>
+        <div className="relative flex items-center justify-center">
+          {/* Rotating arrow ring */}
+          <div className="absolute inset-[-6px] animate-[spin_3s_linear_infinite]">
+            <svg width="60" height="60" viewBox="0 0 60 60" className="w-full h-full">
+              <circle cx="30" cy="30" r="26" fill="none" stroke="hsl(var(--primary))" strokeWidth="2" strokeDasharray="12 150" strokeLinecap="round" opacity="0.5" />
+              {/* Arrow head */}
+              <polygon points="48,18 54,24 42,24" fill="hsl(var(--primary))" opacity="0.6" />
+            </svg>
+          </div>
+          <button onClick={handleOpenScanner}
+            className="relative flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-110 active:scale-95 glow-primary">
+            <QrCode className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       <Dialog open={scannerOpen} onOpenChange={setScannerOpen}>
@@ -53,7 +62,7 @@ export default function FloatingButtons() {
             <div className="flex flex-col items-center py-8 text-center animate-scale-in">
               <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 animate-[pulse_1s_ease-in-out]">
                 <svg className="h-10 w-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" className="animate-[draw_0.5s_ease-out_forwards]" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               </div>
               <h2 className="mt-4 font-display text-xl font-bold">Thank You!</h2>
@@ -66,7 +75,6 @@ export default function FloatingButtons() {
             <>
               <DialogHeader><DialogTitle>Transaction Details</DialogTitle></DialogHeader>
               <div className="space-y-4 pt-2">
-                {/* Shop Info */}
                 <div className="flex items-center gap-3 rounded-lg bg-secondary/50 p-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-2xl">☕</div>
                   <div>
@@ -74,12 +82,10 @@ export default function FloatingButtons() {
                     <div className="text-xs text-muted-foreground">Melbourne CBD</div>
                   </div>
                 </div>
-
                 <div>
                   <Label>Amount to Pay</Label>
                   <Input className="mt-1.5" placeholder="e.g. ₹250" value={amount} onChange={e => setAmount(e.target.value)} />
                 </div>
-
                 <div>
                   <Label>Rating</Label>
                   <div className="flex gap-1 mt-1.5">
@@ -90,12 +96,10 @@ export default function FloatingButtons() {
                     ))}
                   </div>
                 </div>
-
                 <div>
                   <Label>Feedback (optional)</Label>
                   <Textarea className="mt-1.5" rows={2} value={feedback} onChange={e => setFeedback(e.target.value)} placeholder="Share your experience..." />
                 </div>
-
                 <Button className="w-full" onClick={handleSubmit} disabled={!amount}>Submit Transaction</Button>
               </div>
             </>
