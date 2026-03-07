@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Car, Search, Fuel, MapPin, Gauge } from "lucide-react";
+import { motion } from "framer-motion";
 import EnquiryPopup from "@/components/shared/EnquiryPopup";
 import RequestsListTab from "@/components/shared/RequestsListTab";
 
@@ -50,11 +51,22 @@ function VehicleGrid({ items, type }: { items: typeof vehicles; type: string }) 
         </Select>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        {filtered.map((v) => (
-          <div key={v.id} onClick={() => navigate(`/student/cars/${v.id}`)} className="cursor-pointer rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all hover:shadow-card-hover hover:-translate-y-0.5">
+        {filtered.map((v, i) => (
+          <motion.div
+            key={v.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.08, duration: 0.3 }}
+            onClick={() => navigate(`/student/cars/${v.id}`)}
+            className="cursor-pointer rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all hover:shadow-card-hover hover:-translate-y-0.5"
+          >
             <div className="relative flex h-32 items-center justify-center bg-secondary text-5xl">
               🚗
-              <span className={`absolute top-2 left-2 rounded-full px-2 py-0.5 text-[10px] font-bold text-white ${v.badge === "Rent" ? "bg-primary" : "bg-accent"}`}>{v.badge}</span>
+              <span className={`absolute top-2 left-2 rounded-full px-2 py-0.5 text-[10px] font-bold backdrop-blur-sm border ${
+                v.badge === "Rent"
+                  ? "bg-primary/10 text-primary border-primary/20"
+                  : "bg-accent/10 text-accent border-accent/20"
+              }`}>{v.badge}</span>
             </div>
             <div className="p-4 space-y-2">
               <h3 className="font-display text-sm font-bold">{v.name}</h3>
@@ -72,7 +84,7 @@ function VehicleGrid({ items, type }: { items: typeof vehicles; type: string }) 
                 <Button size="sm" onClick={(e) => { e.stopPropagation(); setEnquiryTitle(v.name); setEnquiryOpen(true); }}>Enquire</Button>
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
       <EnquiryPopup open={enquiryOpen} onOpenChange={setEnquiryOpen} title={enquiryTitle} />

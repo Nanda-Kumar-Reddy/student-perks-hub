@@ -1,6 +1,5 @@
 import { Gift, TrendingUp, Clock, Star } from "lucide-react";
 import CouponCarousel from "@/components/CouponCarousel";
-import FloatingButtons from "@/components/FloatingButtons";
 
 const recentTx = [
   { vendor: "Bean Counter Café", amount: "₹180", points: "+18", time: "2h ago", emoji: "☕" },
@@ -71,8 +70,6 @@ export default function StudentDashboard() {
           </div>
         </div>
       </div>
-
-      <FloatingButtons />
     </div>
   );
 }

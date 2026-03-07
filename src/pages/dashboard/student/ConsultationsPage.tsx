@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Users, Globe, Search, Clock } from "lucide-react";
+import { Users, Globe, Search, Clock, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import RequestsListTab from "@/components/shared/RequestsListTab";
 
 const consultants = [
@@ -56,11 +57,14 @@ export default function ConsultationsPage() {
             </Select>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((c) => (
-              <div
+            {filtered.map((c, i) => (
+              <motion.div
                 key={c.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.08, duration: 0.3 }}
                 onClick={() => navigate(`/student/consultations/${c.id}`)}
-                className="cursor-pointer rounded-xl border border-border bg-card p-5 shadow-card transition-all hover:shadow-card-hover hover:border-primary/30"
+                className="cursor-pointer rounded-xl border border-border bg-card p-5 shadow-card transition-all hover:shadow-card-hover hover:border-primary/30 group"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">{c.name.split(" ").map((n) => n[0]).join("")}</div>
@@ -80,9 +84,11 @@ export default function ConsultationsPage() {
                 </div>
                 <div className="mt-3 flex items-center justify-between">
                   <span className="font-display text-sm font-bold text-primary">{c.price}</span>
-                  <Button size="sm" onClick={(e) => { e.stopPropagation(); navigate(`/student/consultations/${c.id}`); }}>Book Session</Button>
+                  <Button size="sm" variant="outline" className="gap-1 group-hover:bg-primary group-hover:text-primary-foreground transition-colors" onClick={(e) => { e.stopPropagation(); navigate(`/student/consultations/${c.id}`); }}>
+                    View Details <ArrowRight className="h-3 w-3" />
+                  </Button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </TabsContent>

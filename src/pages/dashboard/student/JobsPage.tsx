@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Briefcase, Search, MapPin, Clock, CheckCircle2, Monitor, Building } from "lucide-react";
+import { motion } from "framer-motion";
 import PhoneField from "@/components/shared/PhoneField";
 import FormSection from "@/components/shared/FormSection";
 import RequestsListTab from "@/components/shared/RequestsListTab";
@@ -74,8 +75,15 @@ function JobsTab({ jobType }: { jobType: string }) {
         </Select>
       </div>
       <div className="space-y-3">
-        {filtered.map((j) => (
-          <div key={j.id} onClick={() => navigate(`/student/jobs/${j.id}`)} className="cursor-pointer rounded-xl border border-border bg-card p-4 shadow-card transition-all hover:shadow-card-hover flex items-center justify-between">
+        {filtered.map((j, i) => (
+          <motion.div
+            key={j.id}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.06, duration: 0.3 }}
+            onClick={() => navigate(`/student/jobs/${j.id}`)}
+            className="cursor-pointer rounded-xl border border-border bg-card p-4 shadow-card transition-all hover:shadow-card-hover flex items-center justify-between"
+          >
             <div>
               <h3 className="font-display text-sm font-bold">{j.title}</h3>
               <p className="text-xs text-muted-foreground mt-0.5">{j.company}</p>
@@ -86,7 +94,7 @@ function JobsTab({ jobType }: { jobType: string }) {
               </div>
             </div>
             <Button size="sm" onClick={(e) => { e.stopPropagation(); handleApply(j); }}>Apply Now</Button>
-          </div>
+          </motion.div>
         ))}
       </div>
 

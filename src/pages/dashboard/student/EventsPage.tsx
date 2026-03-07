@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarDays, MapPin, Search, Clock, Monitor, Building, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import RequestsListTab from "@/components/shared/RequestsListTab";
 
 const events = [
@@ -61,8 +62,15 @@ export default function EventsPage() {
             </Select>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
-            {filtered.map((e) => (
-              <div key={e.id} onClick={() => navigate(`/student/events/${e.id}`)} className="cursor-pointer rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all hover:shadow-card-hover hover:border-primary/30 group">
+            {filtered.map((e, i) => (
+              <motion.div
+                key={e.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.08, duration: 0.3 }}
+                onClick={() => navigate(`/student/events/${e.id}`)}
+                className="cursor-pointer rounded-xl border border-border bg-card shadow-card overflow-hidden transition-all hover:shadow-card-hover hover:border-primary/30 group"
+              >
                 <div className="relative flex h-28 items-center justify-center bg-secondary text-5xl">
                   {e.images[getImgIdx(e.id)]}
                   {e.images.length > 1 && (
@@ -89,7 +97,7 @@ export default function EventsPage() {
                     </Button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </TabsContent>

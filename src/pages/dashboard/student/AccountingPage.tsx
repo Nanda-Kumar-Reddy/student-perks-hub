@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calculator, Calendar, Clock, Video, Building, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import StatusBadge from "@/components/shared/StatusBadge";
 
 const professionals = [
@@ -32,8 +33,15 @@ export default function AccountingPage() {
         </TabsList>
         <TabsContent value="providers" className="mt-4">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {professionals.map((p) => (
-              <div key={p.id} onClick={() => navigate(`/student/accounting/${p.id}`)} className="cursor-pointer rounded-xl border border-border bg-card p-5 shadow-card transition-all hover:shadow-card-hover hover:border-primary/30 group">
+            {professionals.map((p, i) => (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.08, duration: 0.3 }}
+                onClick={() => navigate(`/student/accounting/${p.id}`)}
+                className="cursor-pointer rounded-xl border border-border bg-card p-5 shadow-card transition-all hover:shadow-card-hover hover:border-primary/30 group"
+              >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary"><Calculator className="h-5 w-5" /></div>
                   <div>
@@ -51,14 +59,20 @@ export default function AccountingPage() {
                     View Details <ArrowRight className="h-3 w-3" />
                   </Button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </TabsContent>
         <TabsContent value="bookings" className="mt-4">
           <div className="space-y-3">
-            {myBookings.map((b) => (
-              <div key={b.id} className="rounded-xl border border-border bg-card p-4 shadow-card flex items-center justify-between transition-all hover:shadow-card-hover">
+            {myBookings.map((b, i) => (
+              <motion.div
+                key={b.id}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.06, duration: 0.3 }}
+                className="rounded-xl border border-border bg-card p-4 shadow-card flex items-center justify-between transition-all hover:shadow-card-hover"
+              >
                 <div className="flex items-center gap-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary"><Calculator className="h-5 w-5" /></div>
                   <div>
@@ -74,7 +88,7 @@ export default function AccountingPage() {
                   <StatusBadge status={b.status} />
                   {b.status === "Confirmed" && b.mode === "Online" && <Button size="sm" variant="outline">Join Session</Button>}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </TabsContent>

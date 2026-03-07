@@ -26,20 +26,34 @@ export default function UsersPage() {
         <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input className="pl-9" placeholder="Search users..." value={search} onChange={e => setSearch(e.target.value)} />
       </div>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      
+      {/* List view */}
+      <div className="rounded-xl border border-border bg-card shadow-card overflow-hidden">
+        <div className="hidden sm:grid grid-cols-6 gap-4 p-4 border-b border-border text-xs font-medium text-muted-foreground">
+          <span>Name</span>
+          <span>Joined</span>
+          <span className="text-center">Vendors</span>
+          <span className="text-center">Transactions</span>
+          <span className="text-right">Revenue</span>
+          <span className="text-right">Points</span>
+        </div>
         {filtered.map((u, i) => (
-          <motion.div key={u.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-            className="rounded-xl border border-border bg-card p-5 shadow-card">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary">{u.avatar}</div>
-              <div><div className="text-sm font-medium">{u.name}</div><div className="text-[10px] text-muted-foreground">Joined {u.joined}</div></div>
+          <motion.div
+            key={u.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+            className="grid grid-cols-1 sm:grid-cols-6 gap-2 sm:gap-4 p-4 border-b border-border last:border-0 hover:bg-secondary/30 transition-colors items-center"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{u.avatar}</div>
+              <span className="text-sm font-medium">{u.name}</span>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-lg bg-secondary/50 p-2"><div className="text-xs text-muted-foreground">Vendors</div><div className="text-sm font-bold">{u.vendors}</div></div>
-              <div className="rounded-lg bg-secondary/50 p-2"><div className="text-xs text-muted-foreground">Transactions</div><div className="text-sm font-bold">{u.transactions}</div></div>
-              <div className="rounded-lg bg-secondary/50 p-2"><div className="text-xs text-muted-foreground">Revenue</div><div className="text-sm font-bold">{u.revenue}</div></div>
-              <div className="rounded-lg bg-secondary/50 p-2"><div className="text-xs text-muted-foreground">Points</div><div className="text-sm font-bold">{u.points}</div></div>
-            </div>
+            <div className="text-xs text-muted-foreground">{u.joined}</div>
+            <div className="text-sm font-medium text-center">{u.vendors}</div>
+            <div className="text-sm font-medium text-center">{u.transactions}</div>
+            <div className="text-sm font-medium text-right">{u.revenue}</div>
+            <div className="text-sm font-medium text-right">{u.points}</div>
           </motion.div>
         ))}
       </div>
