@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Zap, LogOut, Menu, Sun, Moon, Tag, ChevronDown, User } from "lucide-react";
+import { Zap, LogOut, Menu, Sun, Moon, Tag, ChevronDown, User, Store, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useTheme } from "@/hooks/useTheme";
@@ -29,6 +29,13 @@ const discountCategories = [
   "Lifeline Accounting",
 ];
 
+// Derive role from title
+function getRoleInfo(title: string) {
+  if (title.toLowerCase().includes("vendor")) return { role: "vendor", icon: <Store className="h-4 w-4" />, name: "Joe" };
+  if (title.toLowerCase().includes("admin")) return { role: "admin", icon: <ShieldCheck className="h-4 w-4" />, name: "Admin" };
+  return { role: "student", icon: <User className="h-4 w-4" />, name: "John" };
+}
+
 export default function DashboardLayout({ title, navItems, notifications = [], showDiscounts = false, showFloatingButtons = false }: DashboardLayoutProps) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -37,6 +44,8 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
   const [discountsModalOpen, setDiscountsModalOpen] = useState(false);
   const [selectedDiscountCategory, setSelectedDiscountCategory] = useState("Lifeline Liquor");
   const [profileDropdown, setProfileDropdown] = useState(false);
+
+  const roleInfo = getRoleInfo(title);
 
   const openDiscountModal = (category: string) => {
     setSelectedDiscountCategory(category);
@@ -65,7 +74,7 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
   );
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-screen overflow-hidden">
       <DiscountsModal
         open={discountsModalOpen}
         onOpenChange={setDiscountsModalOpen}
@@ -73,24 +82,23 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
       />
 
       {/* Desktop Sidebar */}
-      <aside className="hidden w-64 flex-shrink-0 border-r border-border bg-card lg:block">
-        <div className="flex h-full flex-col">
-          <div className="flex h-16 items-center gap-2 border-b border-border px-6">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-              <Zap className="h-3.5 w-3.5 text-primary-foreground" />
-            </div>
-            <span className="font-display text-sm font-bold">{title}</span>
+      <aside className="hidden w-64 flex-shrink-0 border-r border-border bg-card lg:flex lg:flex-col h-screen">
+        <div className="flex h-16 items-center gap-2 border-b border-border px-6 flex-shrink-0">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
+            <Zap className="h-3.5 w-3.5 text-primary-foreground" />
           </div>
-          <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-            <NavLinks />
-          </nav>
-          <div className="border-t border-border p-3">
-            <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground" asChild>
-              <Link to="/">
-                <LogOut className="h-4 w-4" />
-                Sign Out
-              </Link>
-            </Button>
+          <span className="font-display text-sm font-bold">{title}</span>
+        </div>
+        <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+          <NavLinks />
+        </nav>
+        {/* Bottom user display */}
+        <div className="border-t border-border p-3 flex-shrink-0">
+          <div className="flex items-center gap-3 rounded-lg px-3 py-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+              {roleInfo.icon}
+            </div>
+            <span className="text-sm font-medium">{roleInfo.name}</span>
           </div>
         </div>
       </aside>
@@ -108,19 +116,19 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
             <NavLinks />
           </nav>
           <div className="border-t border-border p-3">
-            <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground" asChild>
-              <Link to="/" onClick={() => setSidebarOpen(false)}>
-                <LogOut className="h-4 w-4" />
-                Sign Out
-              </Link>
-            </Button>
+            <div className="flex items-center gap-3 rounded-lg px-3 py-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                {roleInfo.icon}
+              </div>
+              <span className="text-sm font-medium">{roleInfo.name}</span>
+            </div>
           </div>
         </SheetContent>
       </Sheet>
 
       {/* Main content */}
-      <div className="flex flex-1 flex-col overflow-x-hidden">
-        <header className="flex h-16 items-center justify-between border-b border-border bg-card px-6">
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <header className="flex h-16 items-center justify-between border-b border-border bg-card px-6 flex-shrink-0">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(true)}
@@ -168,16 +176,15 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
 
-            {/* Profile dropdown */}
+            {/* Profile icon only - dropdown */}
             <div className="relative">
               <button
                 onClick={() => setProfileDropdown(!profileDropdown)}
-                className="flex items-center gap-2 rounded-lg px-2 py-1 transition-colors hover:bg-secondary"
+                className="flex items-center rounded-lg p-1 transition-colors hover:bg-secondary"
               >
                 <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
                   <User className="h-4 w-4" />
                 </div>
-                <span className="hidden sm:inline text-sm font-medium">Student</span>
               </button>
               {profileDropdown && (
                 <div className="absolute right-0 top-full mt-1 w-40 rounded-xl border border-border bg-card p-1.5 shadow-card-hover z-50 animate-scale-in">
