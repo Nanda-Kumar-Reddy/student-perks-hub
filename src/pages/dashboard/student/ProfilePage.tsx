@@ -266,8 +266,8 @@ export default function ProfilePage() {
               </div>
               <div className="flex gap-2 mt-3">
                 <Button size="sm" variant="outline" className="text-xs gap-1" onClick={() => { setSelectedTask({ id: t.id, title: t.title }); setAppDialogOpen(true); }}><Eye className="h-3 w-3" /> View Application</Button>
-                <Button size="sm" variant="outline" className="text-xs gap-1"><CheckCircle2 className="h-3 w-3" /> Mark Filled</Button>
-                <Button size="sm" variant="outline" className="text-xs gap-1 text-destructive hover:text-destructive"><XCircle className="h-3 w-3" /> Cancel</Button>
+                <Button size="sm" variant="outline" className="text-xs gap-1" onClick={() => setConfirmAction({ taskId: t.id, taskTitle: t.title, type: "FILLED" })}><CheckCircle2 className="h-3 w-3" /> Mark Filled</Button>
+                <Button size="sm" variant="outline" className="text-xs gap-1 text-destructive hover:text-destructive" onClick={() => setConfirmAction({ taskId: t.id, taskTitle: t.title, type: "CANCELLED" })}><XCircle className="h-3 w-3" /> Cancel</Button>
               </div>
             </div>
           ))}
