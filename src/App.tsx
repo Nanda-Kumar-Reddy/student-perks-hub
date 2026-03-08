@@ -149,68 +149,76 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          {/* Public */}
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/vendors" element={<VendorsPage />} />
-            <Route path="/how-it-works" element={<HowItWorksPage />} />
-            <Route path="/about" element={<AboutPage />} />
-          </Route>
+        <AuthProvider>
+          <Routes>
+            {/* Public */}
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/vendors" element={<VendorsPage />} />
+              <Route path="/how-it-works" element={<HowItWorksPage />} />
+              <Route path="/about" element={<AboutPage />} />
+            </Route>
 
-          {/* Auth */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password" element={<ResetPasswordPage />} />
+            {/* Auth */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-          {/* Student Dashboard */}
-          <Route element={<DashboardLayout title="Student Portal" navItems={studentNav} notifications={studentNotifications} showDiscounts showFloatingButtons />}>
-            <Route path="/student" element={<StudentDashboard />} />
-            <Route path="/student/airport-pickup" element={<Suspense fallback={<Loading />}><AirportPickupPage /></Suspense>} />
-            <Route path="/student/accommodations" element={<Suspense fallback={<Loading />}><AccommodationsPage /></Suspense>} />
-            <Route path="/student/accommodations/:id" element={<Suspense fallback={<Loading />}><AccommodationDetailPage /></Suspense>} />
-            <Route path="/student/cars" element={<Suspense fallback={<Loading />}><CarRentPage /></Suspense>} />
-            <Route path="/student/cars/:id" element={<Suspense fallback={<Loading />}><CarDetailPage /></Suspense>} />
-            <Route path="/student/jobs" element={<Suspense fallback={<Loading />}><JobsPage /></Suspense>} />
-            <Route path="/student/jobs/:id" element={<Suspense fallback={<Loading />}><JobDetailPage /></Suspense>} />
-            <Route path="/student/resume-builder" element={<Suspense fallback={<Loading />}><ResumeBuilderPage /></Suspense>} />
-            <Route path="/student/resume-builder/expert/:id" element={<Suspense fallback={<Loading />}><ExpertDetailPage /></Suspense>} />
-            <Route path="/student/loans" element={<Suspense fallback={<Loading />}><LoansPage /></Suspense>} />
-            <Route path="/student/consultations" element={<Suspense fallback={<Loading />}><ConsultationsPage /></Suspense>} />
-            <Route path="/student/consultations/:id" element={<Suspense fallback={<Loading />}><ConsultantDetailPage /></Suspense>} />
-            <Route path="/student/accounting" element={<Suspense fallback={<Loading />}><AccountingPage /></Suspense>} />
-            <Route path="/student/accounting/:id" element={<Suspense fallback={<Loading />}><AccountingDetailPage /></Suspense>} />
-            <Route path="/student/driving-licence" element={<Suspense fallback={<Loading />}><DrivingLicencePage /></Suspense>} />
-            <Route path="/student/driving-licence/:id" element={<Suspense fallback={<Loading />}><DrivingLicenceDetailPage /></Suspense>} />
-            <Route path="/student/events" element={<Suspense fallback={<Loading />}><EventsPage /></Suspense>} />
-            <Route path="/student/events/:id" element={<Suspense fallback={<Loading />}><EventDetailPage /></Suspense>} />
-            <Route path="/student/bookings" element={<Suspense fallback={<Loading />}><MyBookingsPage /></Suspense>} />
-            <Route path="/student/certifications" element={<Suspense fallback={<Loading />}><CertificationsPage /></Suspense>} />
-            <Route path="/student/certifications/:id" element={<Suspense fallback={<Loading />}><CertificationDetailPage /></Suspense>} />
-            <Route path="/student/profile" element={<Suspense fallback={<Loading />}><ProfilePage /></Suspense>} />
-          </Route>
+            {/* Student Dashboard — Protected */}
+            <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
+              <Route element={<DashboardLayout title="Student Portal" navItems={studentNav} notifications={studentNotifications} showDiscounts showFloatingButtons />}>
+                <Route path="/student" element={<StudentDashboard />} />
+                <Route path="/student/airport-pickup" element={<Suspense fallback={<Loading />}><AirportPickupPage /></Suspense>} />
+                <Route path="/student/accommodations" element={<Suspense fallback={<Loading />}><AccommodationsPage /></Suspense>} />
+                <Route path="/student/accommodations/:id" element={<Suspense fallback={<Loading />}><AccommodationDetailPage /></Suspense>} />
+                <Route path="/student/cars" element={<Suspense fallback={<Loading />}><CarRentPage /></Suspense>} />
+                <Route path="/student/cars/:id" element={<Suspense fallback={<Loading />}><CarDetailPage /></Suspense>} />
+                <Route path="/student/jobs" element={<Suspense fallback={<Loading />}><JobsPage /></Suspense>} />
+                <Route path="/student/jobs/:id" element={<Suspense fallback={<Loading />}><JobDetailPage /></Suspense>} />
+                <Route path="/student/resume-builder" element={<Suspense fallback={<Loading />}><ResumeBuilderPage /></Suspense>} />
+                <Route path="/student/resume-builder/expert/:id" element={<Suspense fallback={<Loading />}><ExpertDetailPage /></Suspense>} />
+                <Route path="/student/loans" element={<Suspense fallback={<Loading />}><LoansPage /></Suspense>} />
+                <Route path="/student/consultations" element={<Suspense fallback={<Loading />}><ConsultationsPage /></Suspense>} />
+                <Route path="/student/consultations/:id" element={<Suspense fallback={<Loading />}><ConsultantDetailPage /></Suspense>} />
+                <Route path="/student/accounting" element={<Suspense fallback={<Loading />}><AccountingPage /></Suspense>} />
+                <Route path="/student/accounting/:id" element={<Suspense fallback={<Loading />}><AccountingDetailPage /></Suspense>} />
+                <Route path="/student/driving-licence" element={<Suspense fallback={<Loading />}><DrivingLicencePage /></Suspense>} />
+                <Route path="/student/driving-licence/:id" element={<Suspense fallback={<Loading />}><DrivingLicenceDetailPage /></Suspense>} />
+                <Route path="/student/events" element={<Suspense fallback={<Loading />}><EventsPage /></Suspense>} />
+                <Route path="/student/events/:id" element={<Suspense fallback={<Loading />}><EventDetailPage /></Suspense>} />
+                <Route path="/student/bookings" element={<Suspense fallback={<Loading />}><MyBookingsPage /></Suspense>} />
+                <Route path="/student/certifications" element={<Suspense fallback={<Loading />}><CertificationsPage /></Suspense>} />
+                <Route path="/student/certifications/:id" element={<Suspense fallback={<Loading />}><CertificationDetailPage /></Suspense>} />
+                <Route path="/student/profile" element={<Suspense fallback={<Loading />}><ProfilePage /></Suspense>} />
+              </Route>
+            </Route>
 
-          {/* Vendor Dashboard */}
-          <Route element={<DashboardLayout title="Vendor Portal" navItems={vendorNav} notifications={vendorNotifications} />}>
-            <Route path="/vendor" element={<VendorDashboard />} />
-            <Route path="/vendor/verify" element={<Suspense fallback={<Loading />}><VerifyTransactionPage /></Suspense>} />
-            <Route path="/vendor/offers" element={<Suspense fallback={<Loading />}><ManageOffersPage /></Suspense>} />
-            <Route path="/vendor/analytics" element={<Suspense fallback={<Loading />}><VendorAnalyticsPage /></Suspense>} />
-            <Route path="/vendor/settings" element={<Suspense fallback={<Loading />}><VendorSettingsPage /></Suspense>} />
-          </Route>
+            {/* Vendor Dashboard — Protected */}
+            <Route element={<ProtectedRoute allowedRoles={["vendor"]} />}>
+              <Route element={<DashboardLayout title="Vendor Portal" navItems={vendorNav} notifications={vendorNotifications} />}>
+                <Route path="/vendor" element={<VendorDashboard />} />
+                <Route path="/vendor/verify" element={<Suspense fallback={<Loading />}><VerifyTransactionPage /></Suspense>} />
+                <Route path="/vendor/offers" element={<Suspense fallback={<Loading />}><ManageOffersPage /></Suspense>} />
+                <Route path="/vendor/analytics" element={<Suspense fallback={<Loading />}><VendorAnalyticsPage /></Suspense>} />
+                <Route path="/vendor/settings" element={<Suspense fallback={<Loading />}><VendorSettingsPage /></Suspense>} />
+              </Route>
+            </Route>
 
-          {/* Admin Dashboard */}
-          <Route element={<DashboardLayout title="Admin Panel" navItems={adminNav} notifications={adminNotifications} />}>
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/users" element={<Suspense fallback={<Loading />}><AdminUsersPage /></Suspense>} />
-            <Route path="/admin/vendors" element={<Suspense fallback={<Loading />}><AdminVendorsPage /></Suspense>} />
-            <Route path="/admin/transactions" element={<Suspense fallback={<Loading />}><AdminTransactionsPage /></Suspense>} />
-            <Route path="/admin/analysis" element={<Suspense fallback={<Loading />}><AdminAnalysisPage /></Suspense>} />
-          </Route>
+            {/* Admin Dashboard — Protected */}
+            <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+              <Route element={<DashboardLayout title="Admin Panel" navItems={adminNav} notifications={adminNotifications} />}>
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/users" element={<Suspense fallback={<Loading />}><AdminUsersPage /></Suspense>} />
+                <Route path="/admin/vendors" element={<Suspense fallback={<Loading />}><AdminVendorsPage /></Suspense>} />
+                <Route path="/admin/transactions" element={<Suspense fallback={<Loading />}><AdminTransactionsPage /></Suspense>} />
+                <Route path="/admin/analysis" element={<Suspense fallback={<Loading />}><AdminAnalysisPage /></Suspense>} />
+              </Route>
+            </Route>
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
