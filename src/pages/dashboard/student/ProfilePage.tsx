@@ -12,10 +12,14 @@ import {
 import FormSection from "@/components/shared/FormSection";
 import PhoneField from "@/components/shared/PhoneField";
 import { useAuth } from "@/contexts/AuthContext";
-import { getProfile, updateProfile } from "@/services/database";
+import { getProfile, updateProfile, updateCommunityTaskStatus } from "@/services/database";
 import { updatePassword } from "@/services/auth";
 import { toast } from "@/hooks/use-toast";
 import ViewTaskDetailDialog from "@/components/profile/ViewTaskDetailDialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const verificationBadges = [
   { label: "Phone Verified", icon: <Phone className="h-3.5 w-3.5" />, verified: true },
@@ -26,7 +30,7 @@ const verificationBadges = [
 
 const skills = ["Gardening", "Childcare", "First Aid", "Driver License"];
 
-const activeTasks = [
+const initialActiveTasks = [
   { id: "1", title: "Garden Maintenance — Mowing & Weeding", applications: 5, status: "APPROVED" },
   { id: "2", title: "Babysitting — Saturday Evening", applications: 3, status: "APPROVED" },
   { id: "3", title: "Help Moving Furniture", applications: 0, status: "PENDING_APPROVAL" },
@@ -81,6 +85,9 @@ export default function ProfilePage() {
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [appDialogOpen, setAppDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<{ id: string; title: string } | null>(null);
+  const [activeTasks, setActiveTasks] = useState(initialActiveTasks);
+  const [confirmAction, setConfirmAction] = useState<{ taskId: string; taskTitle: string; type: "FILLED" | "CANCELLED" } | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -149,6 +156,26 @@ export default function ProfilePage() {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
       setSavingPw(false);
+    }
+  };
+
+  const handleTaskAction = async () => {
+    if (!confirmAction) return;
+    setActionLoading(true);
+    try {
+      await updateCommunityTaskStatus(confirmAction.taskId, confirmAction.type);
+      setActiveTasks((prev) => prev.filter((t) => t.id !== confirmAction.taskId));
+      toast({
+        title: confirmAction.type === "FILLED" ? "Task marked as filled" : "Task cancelled",
+        description: confirmAction.type === "FILLED"
+          ? `"${confirmAction.taskTitle}" has been marked as filled and removed from active tasks.`
+          : `"${confirmAction.taskTitle}" has been cancelled and removed.`,
+      });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setActionLoading(false);
+      setConfirmAction(null);
     }
   };
 
@@ -239,11 +266,17 @@ export default function ProfilePage() {
               </div>
               <div className="flex gap-2 mt-3">
                 <Button size="sm" variant="outline" className="text-xs gap-1" onClick={() => { setSelectedTask({ id: t.id, title: t.title }); setAppDialogOpen(true); }}><Eye className="h-3 w-3" /> View Application</Button>
-                <Button size="sm" variant="outline" className="text-xs gap-1"><CheckCircle2 className="h-3 w-3" /> Mark Filled</Button>
-                <Button size="sm" variant="outline" className="text-xs gap-1 text-destructive hover:text-destructive"><XCircle className="h-3 w-3" /> Cancel</Button>
+                <Button size="sm" variant="outline" className="text-xs gap-1" onClick={() => setConfirmAction({ taskId: t.id, taskTitle: t.title, type: "FILLED" })}><CheckCircle2 className="h-3 w-3" /> Mark Filled</Button>
+                <Button size="sm" variant="outline" className="text-xs gap-1 text-destructive hover:text-destructive" onClick={() => setConfirmAction({ taskId: t.id, taskTitle: t.title, type: "CANCELLED" })}><XCircle className="h-3 w-3" /> Cancel</Button>
               </div>
             </div>
           ))}
+          {activeTasks.length === 0 && (
+            <div className="rounded-xl border border-border bg-card p-8 text-center">
+              <CheckCircle2 className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">No active tasks</p>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="pending" className="space-y-3 mt-4">
@@ -314,6 +347,33 @@ export default function ProfilePage() {
           task={taskDetails[selectedTask.id] || null}
         />
       )}
+
+      {/* Confirm Mark Filled / Cancel Dialog */}
+      <AlertDialog open={!!confirmAction} onOpenChange={(open) => !open && setConfirmAction(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmAction?.type === "FILLED" ? "Mark Task as Filled?" : "Cancel Task?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmAction?.type === "FILLED"
+                ? `Are you sure you want to mark "${confirmAction?.taskTitle}" as filled? This will close the task and stop accepting new applications.`
+                : `Are you sure you want to cancel "${confirmAction?.taskTitle}"? This action cannot be undone and the task will be removed permanently.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionLoading}>Go Back</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleTaskAction}
+              disabled={actionLoading}
+              className={confirmAction?.type === "CANCELLED" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
+            >
+              {actionLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              {confirmAction?.type === "FILLED" ? "Mark as Filled" : "Cancel Task"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
