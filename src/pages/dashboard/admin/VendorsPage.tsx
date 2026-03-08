@@ -48,9 +48,9 @@ export default function AdminVendorsPage() {
             <Input className="pl-9" placeholder="Search vendors..." value={search} onChange={e => setSearch(e.target.value)} />
           </div>
           
-          {/* List view */}
-          <div className="rounded-xl border border-border bg-card shadow-card overflow-hidden">
-            <div className="hidden sm:grid grid-cols-5 gap-4 p-4 border-b border-border text-xs font-medium text-muted-foreground">
+          {/* Desktop list view */}
+          <div className="hidden sm:block rounded-xl border border-border bg-card shadow-card overflow-hidden">
+            <div className="grid grid-cols-5 gap-4 p-4 border-b border-border text-xs font-medium text-muted-foreground">
               <span>Vendor</span>
               <span className="text-center">Duration</span>
               <span className="text-center">Customers</span>
@@ -63,7 +63,7 @@ export default function AdminVendorsPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="grid grid-cols-1 sm:grid-cols-5 gap-2 sm:gap-4 p-4 border-b border-border last:border-0 hover:bg-secondary/30 transition-colors items-center"
+                className="grid grid-cols-5 gap-4 p-4 border-b border-border last:border-0 hover:bg-secondary/30 transition-colors items-center"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">{v.avatar}</div>
@@ -73,6 +73,32 @@ export default function AdminVendorsPage() {
                 <div className="text-sm font-medium text-center">{v.customers}</div>
                 <div className="text-sm font-medium text-center">{v.transactions}</div>
                 <div className="text-sm font-medium text-right">{v.revenue}</div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Mobile card view */}
+          <div className="sm:hidden grid gap-3">
+            {filteredVendors.map((v, i) => (
+              <motion.div
+                key={v.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="rounded-xl border border-border bg-card p-4 shadow-card space-y-3"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">{v.avatar}</div>
+                  <div>
+                    <div className="text-sm font-medium">{v.name}</div>
+                    <div className="text-xs text-muted-foreground">{v.joined} days</div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  <div className="rounded-lg bg-secondary/50 p-2"><span className="text-muted-foreground">Customers</span><div className="font-medium">{v.customers}</div></div>
+                  <div className="rounded-lg bg-secondary/50 p-2"><span className="text-muted-foreground">Txns</span><div className="font-medium">{v.transactions}</div></div>
+                  <div className="rounded-lg bg-secondary/50 p-2"><span className="text-muted-foreground">Revenue</span><div className="font-medium">{v.revenue}</div></div>
+                </div>
               </motion.div>
             ))}
           </div>

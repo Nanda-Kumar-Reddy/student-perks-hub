@@ -31,6 +31,10 @@ export default function NotificationDropdown({ notifications }: NotificationDrop
     setItems((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
   };
 
+  const markAllRead = () => {
+    setItems((prev) => prev.map((n) => ({ ...n, read: true })));
+  };
+
   return (
     <div className="relative" ref={ref}>
       <button
@@ -46,9 +50,14 @@ export default function NotificationDropdown({ notifications }: NotificationDrop
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 rounded-xl border border-border bg-card shadow-card-hover z-50">
-          <div className="border-b border-border px-4 py-3">
+        <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm rounded-xl border border-border bg-card shadow-card-hover z-50">
+          <div className="border-b border-border px-4 py-3 flex items-center justify-between">
             <h3 className="font-display text-sm font-bold">Notifications</h3>
+            {unreadCount > 0 && (
+              <button onClick={markAllRead} className="text-xs font-medium text-primary hover:underline">
+                Mark All as Read
+              </button>
+            )}
           </div>
           <div className="max-h-72 overflow-y-auto">
             {items.length === 0 ? (

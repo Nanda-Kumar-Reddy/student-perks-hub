@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { BarChart3, TrendingUp, Users, Star, Tag } from "lucide-react";
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import { Button } from "@/components/ui/button";
 
 const revenueMonthly = [
@@ -35,7 +35,7 @@ const couponUsage = [
   { name: "Student Special", value: 180 }, { name: "Weekend Deal", value: 120 },
 ];
 
-const COLORS = ["hsl(160,84%,39%)", "hsl(12,90%,62%)", "hsl(38,92%,50%)", "hsl(220,14%,50%)"];
+const COLORS = ["hsl(189,100%,23%)", "hsl(20,94%,55%)", "hsl(40,95%,53%)", "hsl(142,71%,45%)"];
 
 type Period = "monthly" | "yearly";
 
@@ -83,10 +83,10 @@ export default function AnalyticsPage() {
           </div>
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={revPeriod === "monthly" ? revenueMonthly : revenueYearly}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(24,20%,88%)" />
               <XAxis dataKey={revPeriod === "monthly" ? "month" : "year"} tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} /><Tooltip />
-              <Bar dataKey="revenue" fill="hsl(160,84%,39%)" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="revenue" fill="hsl(189,100%,23%)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -98,10 +98,10 @@ export default function AnalyticsPage() {
           </div>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={custPeriod === "monthly" ? customerMonthly : customerYearly}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(24,20%,88%)" />
               <XAxis dataKey={custPeriod === "monthly" ? "month" : "year"} tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} /><Tooltip />
-              <Line type="monotone" dataKey="customers" stroke="hsl(12,90%,62%)" strokeWidth={2} dot={{ fill: "hsl(12,90%,62%)" }} />
+              <Line type="monotone" dataKey="customers" stroke="hsl(20,94%,55%)" strokeWidth={2} dot={{ fill: "hsl(20,94%,55%)" }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -113,10 +113,10 @@ export default function AnalyticsPage() {
           </div>
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={ratePeriod === "monthly" ? ratingMonthly : ratingYearly}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220,13%,91%)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(24,20%,88%)" />
               <XAxis dataKey={ratePeriod === "monthly" ? "month" : "year"} tick={{ fontSize: 12 }} />
               <YAxis domain={[3.5, 5]} tick={{ fontSize: 12 }} /><Tooltip />
-              <Line type="monotone" dataKey="rating" stroke="hsl(38,92%,50%)" strokeWidth={2} dot={{ fill: "hsl(38,92%,50%)" }} />
+              <Line type="monotone" dataKey="rating" stroke="hsl(40,95%,53%)" strokeWidth={2} dot={{ fill: "hsl(40,95%,53%)" }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -124,9 +124,13 @@ export default function AnalyticsPage() {
         <div className="rounded-xl border border-border bg-card p-5 shadow-card">
           <h2 className="font-display font-bold mb-4">Coupon Usage</h2>
           <ResponsiveContainer width="100%" height={250}>
-            <PieChart><Pie data={couponUsage} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
-              {couponUsage.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-            </Pie><Tooltip /></PieChart>
+            <PieChart>
+              <Pie data={couponUsage} cx="50%" cy="50%" outerRadius={70} dataKey="value" labelLine={false}>
+                {couponUsage.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+              </Pie>
+              <Tooltip />
+              <Legend wrapperStyle={{ fontSize: 12 }} />
+            </PieChart>
           </ResponsiveContainer>
         </div>
       </div>

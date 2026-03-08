@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, QrCode, Gift, Store, Star, Users, TrendingUp, Shield } from "lucide-react";
@@ -7,12 +7,12 @@ import heroImg from "@/assets/hero-illustration.png";
 import PartnerModal from "@/components/PartnerModal";
 
 const categories = [
-  { icon: "🍕", label: "Restaurants", count: 45 },
-  { icon: "☕", label: "Cafés", count: 32 },
-  { icon: "🏋️", label: "Gyms", count: 18 },
-  { icon: "🏨", label: "Hostels", count: 12 },
-  { icon: "💇", label: "Services", count: 27 },
-  { icon: "📚", label: "Bookstores", count: 9 },
+  { icon: "🏠", label: "Accommodations", count: 45 },
+  { icon: "👥", label: "1:1 Consultations", count: 32 },
+  { icon: "✈️", label: "Airport Pickup", count: 18 },
+  { icon: "📊", label: "Accounting Services", count: 12 },
+  { icon: "🚗", label: "Driving Licence", count: 27 },
+  { icon: "🎉", label: "Events", count: 9 },
 ];
 
 const steps = [
@@ -42,6 +42,7 @@ const fadeUp = {
 
 export default function HomePage() {
   const [partnerOpen, setPartnerOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -109,17 +110,26 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Categories */}
+      {/* Categories / Services */}
       <section className="bg-secondary/30 py-20">
         <div className="container">
-          <h2 className="font-display text-3xl font-bold">Browse Categories</h2>
-          <p className="mt-2 text-muted-foreground">Find your favorite spots near campus</p>
+          <h2 className="font-display text-3xl font-bold">Browse Services</h2>
+          <p className="mt-2 text-muted-foreground">Explore platform services available for students</p>
           <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
             {categories.map((cat, i) => (
-              <motion.div key={cat.label} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="cursor-pointer rounded-xl border border-border bg-card p-5 text-center shadow-card transition-all hover:shadow-card-hover hover:-translate-y-1">
+              <motion.div
+                key={cat.label}
+                custom={i}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                variants={fadeUp}
+                onClick={() => navigate("/signup")}
+                className="cursor-pointer rounded-xl border border-border bg-card p-5 text-center shadow-card transition-all hover:shadow-card-hover hover:-translate-y-1"
+              >
                 <div className="text-3xl">{cat.icon}</div>
                 <div className="mt-2 text-sm font-semibold">{cat.label}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{cat.count} vendors</div>
+                <div className="mt-1 text-xs text-muted-foreground">{cat.count} providers</div>
               </motion.div>
             ))}
           </div>

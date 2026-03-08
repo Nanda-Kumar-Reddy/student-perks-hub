@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FileText, Plus, Trash2, Download, Star, X, Search, ArrowRight } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FileText, Plus, Trash2, Download, Star, X, Search, ArrowRight, Loader2 } from "lucide-react";
 import EnquiryPopup from "@/components/shared/EnquiryPopup";
 import RequestsListTab from "@/components/shared/RequestsListTab";
 import { motion } from "framer-motion";
@@ -27,6 +28,13 @@ const myRequests = [
 ];
 
 const contentSections = ["Personal", "Experience", "Education", "Skills", "Projects", "Certifications", "Languages"] as const;
+
+type PageSize = "a4" | "letter" | "a5";
+const pageSizes: Record<PageSize, { w: number; h: number; label: string }> = {
+  a4: { w: 794, h: 1123, label: "A4" },
+  letter: { w: 816, h: 1056, label: "Letter" },
+  a5: { w: 559, h: 794, label: "A5" },
+};
 
 function TagInput({ tags, setTags, suggestions, placeholder }: { tags: string[]; setTags: (t: string[]) => void; suggestions: string[]; placeholder: string }) {
   const [query, setQuery] = useState("");
@@ -83,37 +91,46 @@ export default function ResumeBuilderPage() {
   const [activeSection, setActiveSection] = useState<string>("Personal");
   const [expertEnquiry, setExpertEnquiry] = useState(false);
   const [expertName, setExpertName] = useState("");
+  const [downloading, setDownloading] = useState(false);
+  const [pageSize, setPageSize] = useState<PageSize>("letter");
   const previewRef = useRef<HTMLDivElement>(null);
 
   const resumeData: ResumeData = { name, jobTitle, email, phone, address, linkedin, portfolio, summary, experience, education, skills, projects, certifications, languages };
 
+  const ps = pageSizes[pageSize];
+
   const handleDownload = useCallback(async () => {
-    if (!previewRef.current) return;
-    const html2pdf = (await import("html2pdf.js")).default;
-    html2pdf().set({
-      margin: 0,
-      filename: `${name || "resume"}.pdf`,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: "px", format: [816, 1056], hotfixes: ["px_scaling"] },
-    }).from(previewRef.current).save();
-  }, [name]);
+    if (!previewRef.current || downloading) return;
+    setDownloading(true);
+    try {
+      const html2pdf = (await import("html2pdf.js")).default;
+      await html2pdf().set({
+        margin: 0,
+        filename: `${name || "resume"}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "px", format: [ps.w, ps.h], hotfixes: ["px_scaling"] },
+      }).from(previewRef.current).save();
+    } finally {
+      setDownloading(false);
+    }
+  }, [name, downloading, ps]);
 
   const renderSectionEditor = () => {
     switch (activeSection) {
       case "Personal":
         return (
           <div className="grid gap-3 sm:grid-cols-2">
-            <div><Label>Full Name</Label><Input className="mt-1" value={name} onChange={e => setName(e.target.value)} /></div>
-            <div><Label>Job Title</Label><Input className="mt-1" value={jobTitle} onChange={e => setJobTitle(e.target.value)} /></div>
-            <div><Label>Email</Label><Input className="mt-1" type="email" value={email} onChange={e => setEmail(e.target.value)} /></div>
-            <div><Label>Phone</Label><Input className="mt-1" value={phone} onChange={e => setPhone(e.target.value)} /></div>
-            <div><Label>Address</Label><Input className="mt-1" value={address} onChange={e => setAddress(e.target.value)} /></div>
-            <div><Label>LinkedIn URL</Label><Input className="mt-1" value={linkedin} onChange={e => setLinkedin(e.target.value)} /></div>
-            <div className="sm:col-span-2"><Label>Portfolio Website</Label><Input className="mt-1" value={portfolio} onChange={e => setPortfolio(e.target.value)} /></div>
+            <div><Label>Full Name</Label><Input className="mt-1" value={name} onChange={e => setName(e.target.value)} placeholder="Enter your full name" /><p className="mt-0.5 text-[10px] text-muted-foreground">💡 Use your legal name as it appears on official documents.</p></div>
+            <div><Label>Job Title</Label><Input className="mt-1" value={jobTitle} onChange={e => setJobTitle(e.target.value)} placeholder="e.g. Full Stack Developer" /><p className="mt-0.5 text-[10px] text-muted-foreground">💡 Match this to the role you're applying for.</p></div>
+            <div><Label>Email</Label><Input className="mt-1" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" /></div>
+            <div><Label>Phone</Label><Input className="mt-1" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+61 4XX XXX XXX" /><p className="mt-0.5 text-[10px] text-muted-foreground">Format: +61 4XX XXX XXX or 04XX XXX XXX</p></div>
+            <div><Label>Address</Label><Input className="mt-1" value={address} onChange={e => setAddress(e.target.value)} placeholder="City, State, Country" /></div>
+            <div><Label>LinkedIn URL</Label><Input className="mt-1" value={linkedin} onChange={e => setLinkedin(e.target.value)} placeholder="linkedin.com/in/yourname" /></div>
+            <div className="sm:col-span-2"><Label>Portfolio Website</Label><Input className="mt-1" value={portfolio} onChange={e => setPortfolio(e.target.value)} placeholder="yourportfolio.com" /></div>
             <div className="sm:col-span-2">
               <Label>Profile Summary</Label>
-              <Textarea className="mt-1" value={summary} onChange={e => setSummary(e.target.value)} rows={3} />
+              <Textarea className="mt-1" value={summary} onChange={e => setSummary(e.target.value)} rows={3} placeholder="A brief summary of your professional background..." />
               <p className="mt-0.5 text-[10px] text-muted-foreground">💡 Keep the summary concise and highlight your strongest professional achievements.</p>
             </div>
           </div>
@@ -126,12 +143,12 @@ export default function ResumeBuilderPage() {
               <div key={i} className="rounded-lg bg-secondary/30 p-3 space-y-2">
                 <div className="flex justify-between items-start"><span className="text-xs font-medium text-muted-foreground">Entry {i + 1}</span><Button variant="ghost" size="sm" onClick={() => setExperience(p => p.filter((_, j) => j !== i))}><Trash2 className="h-3.5 w-3.5" /></Button></div>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  <Input placeholder="Company Name" value={e.company} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], company: ev.target.value }; setExperience(n); }} />
-                  <Input placeholder="Job Title" value={e.jobTitle} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], jobTitle: ev.target.value }; setExperience(n); }} />
-                  <Input placeholder="Start Date" value={e.startDate} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], startDate: ev.target.value }; setExperience(n); }} />
-                  <Input placeholder="End Date" value={e.endDate} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], endDate: ev.target.value }; setExperience(n); }} />
+                  <div><Label className="text-xs">Company Name</Label><Input className="mt-1" placeholder="Company Name" value={e.company} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], company: ev.target.value }; setExperience(n); }} /></div>
+                  <div><Label className="text-xs">Job Title</Label><Input className="mt-1" placeholder="Job Title" value={e.jobTitle} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], jobTitle: ev.target.value }; setExperience(n); }} /></div>
+                  <div><Label className="text-xs">Start Date</Label><Input className="mt-1" placeholder="e.g. Jan 2023" value={e.startDate} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], startDate: ev.target.value }; setExperience(n); }} /></div>
+                  <div><Label className="text-xs">End Date</Label><Input className="mt-1" placeholder="e.g. Present" value={e.endDate} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], endDate: ev.target.value }; setExperience(n); }} /></div>
                 </div>
-                <Textarea placeholder="Description..." value={e.description} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], description: ev.target.value }; setExperience(n); }} rows={2} />
+                <div><Label className="text-xs">Description</Label><Textarea className="mt-1" placeholder="Key responsibilities and achievements..." value={e.description} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], description: ev.target.value }; setExperience(n); }} rows={2} /></div>
               </div>
             ))}
           </div>
@@ -144,17 +161,17 @@ export default function ResumeBuilderPage() {
               <div key={i} className="rounded-lg bg-secondary/30 p-3 space-y-2">
                 <div className="flex justify-between items-start"><span className="text-xs font-medium text-muted-foreground">Entry {i + 1}</span><Button variant="ghost" size="sm" onClick={() => setEducation(p => p.filter((_, j) => j !== i))}><Trash2 className="h-3.5 w-3.5" /></Button></div>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  <Input placeholder="Institution / University" value={e.institution} onChange={ev => { const n = [...education]; n[i] = { ...n[i], institution: ev.target.value }; setEducation(n); }} />
-                  <Input placeholder="Degree / Course" value={e.degree} onChange={ev => { const n = [...education]; n[i] = { ...n[i], degree: ev.target.value }; setEducation(n); }} />
-                  <Input placeholder="Start Date" value={e.startDate} onChange={ev => { const n = [...education]; n[i] = { ...n[i], startDate: ev.target.value }; setEducation(n); }} />
-                  <Input placeholder="End Date" value={e.endDate} onChange={ev => { const n = [...education]; n[i] = { ...n[i], endDate: ev.target.value }; setEducation(n); }} />
+                  <div><Label className="text-xs">Institution</Label><Input className="mt-1" placeholder="University / Institution" value={e.institution} onChange={ev => { const n = [...education]; n[i] = { ...n[i], institution: ev.target.value }; setEducation(n); }} /></div>
+                  <div><Label className="text-xs">Degree / Course</Label><Input className="mt-1" placeholder="Degree / Course" value={e.degree} onChange={ev => { const n = [...education]; n[i] = { ...n[i], degree: ev.target.value }; setEducation(n); }} /></div>
+                  <div><Label className="text-xs">Start Date</Label><Input className="mt-1" placeholder="e.g. 2017" value={e.startDate} onChange={ev => { const n = [...education]; n[i] = { ...n[i], startDate: ev.target.value }; setEducation(n); }} /></div>
+                  <div><Label className="text-xs">End Date</Label><Input className="mt-1" placeholder="e.g. 2020" value={e.endDate} onChange={ev => { const n = [...education]; n[i] = { ...n[i], endDate: ev.target.value }; setEducation(n); }} /></div>
                 </div>
               </div>
             ))}
           </div>
         );
       case "Skills":
-        return <div><Label className="mb-2 block">Skills</Label><TagInput tags={skills} setTags={setSkills} suggestions={skillSuggestions} placeholder="Search or type a skill..." /></div>;
+        return <div><Label className="mb-2 block">Skills</Label><p className="text-[10px] text-muted-foreground mb-2">💡 Add skills relevant to your target role. Include both technical and soft skills.</p><TagInput tags={skills} setTags={setSkills} suggestions={skillSuggestions} placeholder="Search or type a skill..." /></div>;
       case "Projects":
         return (
           <div className="space-y-3">
@@ -162,9 +179,9 @@ export default function ResumeBuilderPage() {
             {projects.map((p, i) => (
               <div key={i} className="rounded-lg bg-secondary/30 p-3 space-y-2">
                 <div className="flex justify-between items-start"><span className="text-xs font-medium text-muted-foreground">Project {i + 1}</span><Button variant="ghost" size="sm" onClick={() => setProjects(pr => pr.filter((_, j) => j !== i))}><Trash2 className="h-3.5 w-3.5" /></Button></div>
-                <Input placeholder="Project Name" value={p.name} onChange={ev => { const n = [...projects]; n[i] = { ...n[i], name: ev.target.value }; setProjects(n); }} />
-                <Input placeholder="Project Link (optional)" value={p.link} onChange={ev => { const n = [...projects]; n[i] = { ...n[i], link: ev.target.value }; setProjects(n); }} />
-                <Textarea placeholder="Description..." value={p.description} onChange={ev => { const n = [...projects]; n[i] = { ...n[i], description: ev.target.value }; setProjects(n); }} rows={2} />
+                <div><Label className="text-xs">Project Name</Label><Input className="mt-1" placeholder="Project Name" value={p.name} onChange={ev => { const n = [...projects]; n[i] = { ...n[i], name: ev.target.value }; setProjects(n); }} /></div>
+                <div><Label className="text-xs">Project Link (optional)</Label><Input className="mt-1" placeholder="github.com/..." value={p.link} onChange={ev => { const n = [...projects]; n[i] = { ...n[i], link: ev.target.value }; setProjects(n); }} /></div>
+                <div><Label className="text-xs">Description</Label><Textarea className="mt-1" placeholder="Brief description..." value={p.description} onChange={ev => { const n = [...projects]; n[i] = { ...n[i], description: ev.target.value }; setProjects(n); }} rows={2} /></div>
               </div>
             ))}
           </div>
@@ -176,19 +193,21 @@ export default function ResumeBuilderPage() {
             {certifications.map((c, i) => (
               <div key={i} className="rounded-lg bg-secondary/30 p-3 space-y-2">
                 <div className="flex justify-between items-start"><span className="text-xs font-medium text-muted-foreground">Cert {i + 1}</span><Button variant="ghost" size="sm" onClick={() => setCertifications(p => p.filter((_, j) => j !== i))}><Trash2 className="h-3.5 w-3.5" /></Button></div>
-                <Input placeholder="Certification Name" value={c.name} onChange={ev => { const n = [...certifications]; n[i] = { ...n[i], name: ev.target.value }; setCertifications(n); }} />
-                <Input placeholder="Issuer" value={c.issuer} onChange={ev => { const n = [...certifications]; n[i] = { ...n[i], issuer: ev.target.value }; setCertifications(n); }} />
-                <Input placeholder="Date" value={c.date} onChange={ev => { const n = [...certifications]; n[i] = { ...n[i], date: ev.target.value }; setCertifications(n); }} />
+                <div><Label className="text-xs">Certification Name</Label><Input className="mt-1" placeholder="Certification Name" value={c.name} onChange={ev => { const n = [...certifications]; n[i] = { ...n[i], name: ev.target.value }; setCertifications(n); }} /></div>
+                <div><Label className="text-xs">Issuer</Label><Input className="mt-1" placeholder="Issuing Organization" value={c.issuer} onChange={ev => { const n = [...certifications]; n[i] = { ...n[i], issuer: ev.target.value }; setCertifications(n); }} /></div>
+                <div><Label className="text-xs">Date</Label><Input className="mt-1" placeholder="e.g. 2023" value={c.date} onChange={ev => { const n = [...certifications]; n[i] = { ...n[i], date: ev.target.value }; setCertifications(n); }} /></div>
               </div>
             ))}
           </div>
         );
       case "Languages":
-        return <div><Label className="mb-2 block">Languages</Label><TagInput tags={languages} setTags={setLanguages} suggestions={langSuggestions} placeholder="Search or type a language..." /></div>;
+        return <div><Label className="mb-2 block">Languages</Label><p className="text-[10px] text-muted-foreground mb-2">💡 Include languages you can communicate in professionally.</p><TagInput tags={languages} setTags={setLanguages} suggestions={langSuggestions} placeholder="Search or type a language..." /></div>;
       default:
         return null;
     }
   };
+
+  const previewScale = pageSize === "a5" ? 0.55 : 0.5;
 
   return (
     <div className="space-y-6">
@@ -213,7 +232,7 @@ export default function ResumeBuilderPage() {
               {contentTab === "templates" ? (
                 <div className="grid gap-3 grid-cols-2 sm:grid-cols-3">
                   {templateMeta.map(t => (
-                    <motion.div key={t.id} whileHover={{ scale: 1.02 }} onClick={() => { setActiveTemplate(t.id); setContentTab("content"); }}
+                    <motion.div key={t.id} whileHover={{ scale: 1.02 }} onClick={() => setActiveTemplate(t.id)}
                       className={`cursor-pointer rounded-xl border overflow-hidden transition-all ${activeTemplate === t.id ? "border-primary ring-2 ring-primary/30 shadow-card" : "border-border bg-card hover:shadow-card"}`}>
                       <div className="bg-secondary/30 flex items-center justify-center p-1">
                         <ResumeThumb templateId={t.id} data={resumeData} />
@@ -239,12 +258,22 @@ export default function ResumeBuilderPage() {
             </div>
 
             <div className="print:shadow-none">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <h3 className="font-display text-sm font-bold">Live Preview — {templateMeta.find(t => t.id === activeTemplate)?.name}</h3>
-                <Button size="sm" onClick={handleDownload}><Download className="h-4 w-4 mr-1" /> Download PDF</Button>
+                <div className="flex items-center gap-2">
+                  <Select value={pageSize} onValueChange={(v) => setPageSize(v as PageSize)}>
+                    <SelectTrigger className="h-8 w-24 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(pageSizes).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Button size="sm" onClick={handleDownload} disabled={downloading} className={downloading ? "opacity-60" : ""}>
+                    {downloading ? <><Loader2 className="h-4 w-4 mr-1 animate-spin" /> Downloading...</> : <><Download className="h-4 w-4 mr-1" /> Download PDF</>}
+                  </Button>
+                </div>
               </div>
-              <div className="overflow-auto rounded-xl border border-border shadow-card" style={{ maxHeight: "70vh" }}>
-                <div ref={previewRef} style={{ transform: "scale(0.5)", transformOrigin: "top left", width: 816 }}>
+              <div className="overflow-auto rounded-xl border border-border shadow-card bg-secondary/20" style={{ maxHeight: "70vh" }}>
+                <div ref={previewRef} style={{ transform: `scale(${previewScale})`, transformOrigin: "top left", width: ps.w }}>
                   <ResumePreview templateId={activeTemplate} data={resumeData} />
                 </div>
               </div>
