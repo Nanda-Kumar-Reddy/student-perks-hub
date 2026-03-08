@@ -99,6 +99,7 @@ const adminNav = [
   { label: "Users", href: "/admin/users", icon: <Users className="h-4 w-4" /> },
   { label: "Vendors", href: "/admin/vendors", icon: <Store className="h-4 w-4" /> },
   { label: "Transactions", href: "/admin/transactions", icon: <Activity className="h-4 w-4" /> },
+  { label: "Community Tasks", href: "/admin/community-tasks", icon: <ShieldCheck className="h-4 w-4" /> },
   { label: "Analysis", href: "/admin/analysis", icon: <BarChart3 className="h-4 w-4" /> },
 ];
 
