@@ -18,6 +18,11 @@ const envSchema = z.object({
   UPLOAD_DIR: z.string().default("./uploads"),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().default(900000),
   RATE_LIMIT_MAX_REQUESTS: z.coerce.number().default(100),
+  // AWS S3
+  AWS_ACCESS_KEY_ID: z.string().optional(),
+  AWS_SECRET_ACCESS_KEY: z.string().optional(),
+  AWS_REGION: z.string().default("ap-southeast-2"),
+  AWS_S3_BUCKET: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -48,6 +53,12 @@ export const config = {
   rateLimit: {
     windowMs: parsed.data.RATE_LIMIT_WINDOW_MS,
     maxRequests: parsed.data.RATE_LIMIT_MAX_REQUESTS,
+  },
+  aws: {
+    accessKeyId: parsed.data.AWS_ACCESS_KEY_ID,
+    secretAccessKey: parsed.data.AWS_SECRET_ACCESS_KEY,
+    region: parsed.data.AWS_REGION,
+    s3Bucket: parsed.data.AWS_S3_BUCKET,
   },
 };
 
