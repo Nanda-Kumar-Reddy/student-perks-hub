@@ -65,6 +65,67 @@ export default function ProfilePage() {
   const [password, setPassword] = useState({ current: "", new: "", confirm: "" });
   const update = (k: string, v: string) => setForm((p) => ({ ...p, [k]: v }));
 
+  // Load profile from database
+  useEffect(() => {
+    if (!user) return;
+    setForm((p) => ({ ...p, name: user.fullName, email: user.email }));
+    getProfile(user.id)
+      .then((profile) => {
+        setForm((prev) => ({
+          ...prev,
+          name: profile.full_name || prev.name,
+          phone: profile.phone || "",
+          address: profile.address || "",
+          university: profile.university || "",
+        }));
+        setProfileLoaded(true);
+      })
+      .catch(() => setProfileLoaded(true));
+  }, [user]);
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      await updateProfile(user.id, {
+        full_name: form.name,
+        phone: form.phone || null,
+        address: form.address || null,
+        university: form.university || null,
+      });
+      toast({ title: "Profile updated!", description: "Your changes have been saved." });
+    } catch (err: any) {
+      toast({ title: "Save failed", description: err.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!password.new.trim()) {
+      toast({ title: "Error", description: "New password is required", variant: "destructive" });
+      return;
+    }
+    if (password.new.length < 6) {
+      toast({ title: "Error", description: "Password must be at least 6 characters", variant: "destructive" });
+      return;
+    }
+    if (password.new !== password.confirm) {
+      toast({ title: "Error", description: "Passwords do not match", variant: "destructive" });
+      return;
+    }
+    setSavingPw(true);
+    try {
+      await updatePassword(password.new);
+      toast({ title: "Password updated!" });
+      setPassword({ current: "", new: "", confirm: "" });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setSavingPw(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Profile Header */}
