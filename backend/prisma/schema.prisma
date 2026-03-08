@@ -111,6 +111,7 @@ model User {
     conversationsAsUser1   Conversation[]      @relation("ConversationsAsUser1")
     conversationsAsUser2   Conversation[]      @relation("ConversationsAsUser2")
     sentChatMessages       Message[]           @relation("SentChatMessages")
+    payments               Payment[]
 
     @@index([vendorStatus])
     @@map("users")
