@@ -62,6 +62,9 @@ router.use("/vendor", vendorRoutes);
 // ── Community Tasks ────────────────────────────────
 router.use("/community/tasks", communityRoutes);
 
+// ── Chat ────────────────────────────────────────────
+router.use("/chat", chatRoutes);
+
 // ── Legacy ──────────────────────────────────────────
 router.use("/bookings", bookingRoutes);
 
