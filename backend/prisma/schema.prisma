@@ -17,6 +17,14 @@ enum AppRole {
   admin
 }
 
+enum RequestStatus {
+  pending
+  approved
+  rejected
+  cancelled
+  completed
+}
+
 enum BookingStatus {
   pending
   confirmed
@@ -31,23 +39,47 @@ enum TransactionStatus {
   refunded
 }
 
+enum NotificationType {
+  info
+  success
+  warning
+  error
+  booking
+  application
+  enquiry
+  system
+}
+
 // =============================================
 // Auth & Users
 // =============================================
 
 model User {
-  id             String         @id @default(uuid()) @db.Uuid
-  email          String         @unique @db.VarChar(255)
-  passwordHash   String         @map("password_hash")
-  emailVerified  Boolean        @default(false) @map("email_verified")
-  createdAt      DateTime       @default(now()) @map("created_at")
-  updatedAt      DateTime       @updatedAt @map("updated_at")
+  id             String   @id @default(uuid()) @db.Uuid
+  email          String   @unique @db.VarChar(255)
+  passwordHash   String?  @map("password_hash")
+  googleId       String?  @unique @map("google_id") @db.VarChar(255)
+  emailVerified  Boolean  @default(false) @map("email_verified")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
-  profile        Profile?
-  roles          UserRole[]
-  refreshTokens  RefreshToken[]
-  bookings       Booking[]
-  transactions   Transaction[]
+  profile                Profile?
+  roles                  UserRole[]
+  refreshTokens          RefreshToken[]
+  otpCodes               OtpCode[]
+  bookings               Booking[]
+  transactions           Transaction[]
+  airportPickups         AirportPickup[]
+  accommodationEnquiries AccommodationEnquiry[]
+  carRentRequests        CarRentRequest[]
+  jobApplications        JobApplication[]
+  loanApplications       LoanApplication[]
+  consultations          Consultation[]
+  accountingBookings     AccountingBooking[]
+  drivingLicenseBookings DrivingLicenseBooking[]
+  eventRegistrations     EventRegistration[]
+  certificationRequests  CertificationRequest[]
+  notifications          Notification[]
 
   @@map("users")
 }
@@ -93,23 +125,39 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
+model OtpCode {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  code      String   @db.VarChar(6)
+  purpose   String   @db.VarChar(50) // signup, password_reset, verification
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("otp_codes")
+}
+
 // =============================================
 // Services
 // =============================================
 
 model Accommodation {
-  id          String   @id @default(uuid()) @db.Uuid
-  title       String   @db.VarChar(300)
-  description String?  @db.Text
-  address     String   @db.Text
-  pricePerWeek Decimal @map("price_per_week") @db.Decimal(10, 2)
-  imageUrls   String[] @map("image_urls")
-  vendorId    String   @map("vendor_id") @db.Uuid
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(uuid()) @db.Uuid
+  title        String   @db.VarChar(300)
+  description  String?  @db.Text
+  address      String   @db.Text
+  pricePerWeek Decimal  @map("price_per_week") @db.Decimal(10, 2)
+  imageUrls    String[] @map("image_urls")
+  vendorId     String   @map("vendor_id") @db.Uuid
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
-  bookings Booking[]
+  bookings  Booking[]
+  enquiries AccommodationEnquiry[]
 
   @@map("accommodations")
 }
@@ -122,11 +170,13 @@ model Job {
   location    String?  @db.VarChar(300)
   salaryMin   Decimal? @map("salary_min") @db.Decimal(10, 2)
   salaryMax   Decimal? @map("salary_max") @db.Decimal(10, 2)
-  type        String   @db.VarChar(50) // full-time, part-time, casual
+  type        String   @db.VarChar(50)
   vendorId    String   @map("vendor_id") @db.Uuid
   isActive    Boolean  @default(true) @map("is_active")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
+
+  applications JobApplication[]
 
   @@map("jobs")
 }
@@ -134,7 +184,7 @@ model Job {
 model Booking {
   id          String        @id @default(uuid()) @db.Uuid
   userId      String        @map("user_id") @db.Uuid
-  serviceType String        @map("service_type") @db.VarChar(50) // accommodation, airport_pickup, car_rent, etc.
+  serviceType String        @map("service_type") @db.VarChar(50)
   serviceId   String        @map("service_id") @db.Uuid
   status      BookingStatus @default(pending)
   startDate   DateTime?     @map("start_date")
@@ -169,4 +219,201 @@ model Transaction {
 
   @@index([userId])
   @@map("transactions")
+}
+
+// =============================================
+// Student Service Requests
+// =============================================
+
+model AirportPickup {
+  id            String        @id @default(uuid()) @db.Uuid
+  userId        String        @map("user_id") @db.Uuid
+  flightNumber  String        @map("flight_number") @db.VarChar(50)
+  arrivalDate   DateTime      @map("arrival_date")
+  arrivalTime   String        @map("arrival_time") @db.VarChar(20)
+  airport       String        @db.VarChar(200)
+  destination   String        @db.VarChar(500)
+  passengers    Int           @default(1)
+  notes         String?       @db.Text
+  status        RequestStatus @default(pending)
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("airport_pickups")
+}
+
+model AccommodationEnquiry {
+  id              String        @id @default(uuid()) @db.Uuid
+  userId          String        @map("user_id") @db.Uuid
+  accommodationId String        @map("accommodation_id") @db.Uuid
+  type            String        @db.VarChar(50) // chat, enquiry
+  message         String        @db.Text
+  status          RequestStatus @default(pending)
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accommodation Accommodation @relation(fields: [accommodationId], references: [id])
+
+  @@index([userId])
+  @@map("accommodation_enquiries")
+}
+
+model CarRentRequest {
+  id        String        @id @default(uuid()) @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
+  carTitle  String        @map("car_title") @db.VarChar(300)
+  vendorId  String?       @map("vendor_id") @db.Uuid
+  type      String        @db.VarChar(50) // rent, sale
+  message   String?       @db.Text
+  startDate DateTime?     @map("start_date")
+  endDate   DateTime?     @map("end_date")
+  status    RequestStatus @default(pending)
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("car_rent_requests")
+}
+
+model JobApplication {
+  id         String        @id @default(uuid()) @db.Uuid
+  userId     String        @map("user_id") @db.Uuid
+  jobId      String        @map("job_id") @db.Uuid
+  resumeUrl  String?       @map("resume_url") @db.VarChar(500)
+  coverLetter String?      @map("cover_letter") @db.Text
+  status     RequestStatus @default(pending)
+  createdAt  DateTime      @default(now()) @map("created_at")
+  updatedAt  DateTime      @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job  Job  @relation(fields: [jobId], references: [id])
+
+  @@index([userId])
+  @@map("job_applications")
+}
+
+model LoanApplication {
+  id          String        @id @default(uuid()) @db.Uuid
+  userId      String        @map("user_id") @db.Uuid
+  amount      Decimal       @db.Decimal(10, 2)
+  purpose     String        @db.VarChar(300)
+  description String?       @db.Text
+  status      RequestStatus @default(pending)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("loan_applications")
+}
+
+model Consultation {
+  id           String        @id @default(uuid()) @db.Uuid
+  userId       String        @map("user_id") @db.Uuid
+  consultantId String?       @map("consultant_id") @db.Uuid
+  vendorId     String?       @map("vendor_id") @db.Uuid
+  topic        String        @db.VarChar(300)
+  message      String?       @db.Text
+  date         DateTime?
+  timeSlot     String?       @map("time_slot") @db.VarChar(50)
+  status       RequestStatus @default(pending)
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("consultations")
+}
+
+model AccountingBooking {
+  id        String        @id @default(uuid()) @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
+  vendorId  String?       @map("vendor_id") @db.Uuid
+  service   String        @db.VarChar(300)
+  message   String?       @db.Text
+  date      DateTime?
+  timeSlot  String?       @map("time_slot") @db.VarChar(50)
+  status    RequestStatus @default(pending)
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("accounting_bookings")
+}
+
+model DrivingLicenseBooking {
+  id          String        @id @default(uuid()) @db.Uuid
+  userId      String        @map("user_id") @db.Uuid
+  licenseType String        @map("license_type") @db.VarChar(100)
+  preferredDate DateTime?   @map("preferred_date")
+  notes       String?       @db.Text
+  status      RequestStatus @default(pending)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("driving_license_bookings")
+}
+
+model EventRegistration {
+  id        String        @id @default(uuid()) @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
+  eventId   String        @map("event_id") @db.Uuid
+  notes     String?       @db.Text
+  status    RequestStatus @default(pending)
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("event_registrations")
+}
+
+model CertificationRequest {
+  id                String        @id @default(uuid()) @db.Uuid
+  userId            String        @map("user_id") @db.Uuid
+  certificationName String        @map("certification_name") @db.VarChar(300)
+  notes             String?       @db.Text
+  status            RequestStatus @default(pending)
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("certification_requests")
+}
+
+// =============================================
+// Notifications
+// =============================================
+
+model Notification {
+  id           String           @id @default(uuid()) @db.Uuid
+  receiverId   String           @map("receiver_id") @db.Uuid
+  receiverRole AppRole          @map("receiver_role")
+  title        String           @db.VarChar(300)
+  message      String           @db.Text
+  type         NotificationType @default(info)
+  isRead       Boolean          @default(false) @map("is_read")
+  createdAt    DateTime         @default(now()) @map("created_at")
+
+  receiver User @relation(fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@index([receiverId])
+  @@index([receiverRole])
+  @@map("notifications")
 }
