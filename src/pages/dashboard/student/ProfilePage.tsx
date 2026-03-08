@@ -16,12 +16,6 @@ import { getProfile, updateProfile } from "@/services/database";
 import { updatePassword } from "@/services/auth";
 import { toast } from "@/hooks/use-toast";
 import ViewApplicationsDialog, { type TaskApplication } from "@/components/profile/ViewApplicationsDialog";
-import FormSection from "@/components/shared/FormSection";
-import PhoneField from "@/components/shared/PhoneField";
-import { useAuth } from "@/contexts/AuthContext";
-import { getProfile, updateProfile } from "@/services/database";
-import { updatePassword } from "@/services/auth";
-import { toast } from "@/hooks/use-toast";
 
 const verificationBadges = [
   { label: "Phone Verified", icon: <Phone className="h-3.5 w-3.5" />, verified: true },
