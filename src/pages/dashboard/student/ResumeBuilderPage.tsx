@@ -94,6 +94,8 @@ export default function ResumeBuilderPage() {
   const [downloading, setDownloading] = useState(false);
   const [pageSize, setPageSize] = useState<PageSize>("letter");
   const previewRef = useRef<HTMLDivElement>(null);
+  const previewViewportRef = useRef<HTMLDivElement>(null);
+  const [previewScale, setPreviewScale] = useState(1);
 
   const resumeData: ResumeData = { name, jobTitle, email, phone, address, linkedin, portfolio, summary, experience, education, skills, projects, certifications, languages };
 
