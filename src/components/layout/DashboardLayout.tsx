@@ -40,7 +40,9 @@ function getRoleIcon(title: string) {
 export default function DashboardLayout({ title, navItems, notifications = [], showDiscounts = false, showFloatingButtons = false }: DashboardLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
+  const roleIcon = getRoleIcon(title);
+  const displayName = user?.fullName?.split(" ")[0] || "User";
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const [discountDropdown, setDiscountDropdown] = useState(false);
