@@ -142,7 +142,7 @@ export default function ResumeBuilderPage() {
             {experience.map((e, i) => (
               <div key={i} className="rounded-lg bg-secondary/30 p-3 space-y-2">
                 <div className="flex justify-between items-start"><span className="text-xs font-medium text-muted-foreground">Entry {i + 1}</span><Button variant="ghost" size="sm" onClick={() => setExperience(p => p.filter((_, j) => j !== i))}><Trash2 className="h-3.5 w-3.5" /></Button></div>
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className="grid gap-2 md:grid-cols-2">
                   <div><Label className="text-xs">Company Name</Label><Input className="mt-1" placeholder="Company Name" value={e.company} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], company: ev.target.value }; setExperience(n); }} /></div>
                   <div><Label className="text-xs">Job Title</Label><Input className="mt-1" placeholder="Job Title" value={e.jobTitle} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], jobTitle: ev.target.value }; setExperience(n); }} /></div>
                   <div><Label className="text-xs">Start Date</Label><Input className="mt-1" placeholder="e.g. Jan 2023" value={e.startDate} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], startDate: ev.target.value }; setExperience(n); }} /></div>
