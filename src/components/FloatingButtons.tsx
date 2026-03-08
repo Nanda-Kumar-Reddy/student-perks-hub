@@ -44,13 +44,15 @@ export default function FloatingButtons() {
           {/* Rotating arrow ring with arrowhead */}
           <div className="absolute inset-[-6px] animate-[spin_2.5s_linear_infinite]">
             <svg width="60" height="60" viewBox="0 0 60 60" className="w-full h-full">
-              <path
-                d="M 30 4 A 26 26 0 1 1 8 20"
+              <circle
+                cx="30"
+                cy="30"
+                r="26"
                 fill="none"
                 stroke="hsl(var(--primary))"
                 strokeWidth="2.5"
                 strokeLinecap="round"
-                strokeDasharray="100 64"
+                strokeDasharray="40 123.4"
                 opacity="0.5"
               />
             </svg>
