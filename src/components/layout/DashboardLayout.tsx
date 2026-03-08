@@ -135,7 +135,7 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
             >
               <Menu className="h-5 w-5" />
             </button>
-            <h1 className="font-display text-lg font-bold">{title}</h1>
+            <h1 className="font-display text-lg font-bold">Welcome, {roleInfo.name} 👋</h1>
           </div>
           <div className="flex items-center gap-2">
             {showDiscounts && (
