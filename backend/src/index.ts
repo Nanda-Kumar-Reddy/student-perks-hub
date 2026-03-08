@@ -4,9 +4,9 @@ import cookieParser from "cookie-parser";
 import { env } from "./config/env";
 import { secureHeaders } from "./middleware/secureHeaders";
 import { apiLimiter } from "./middleware/rateLimiter";
+import { errorHandler } from "./middleware/errorHandler";
 import routes from "./routes";
 import { prisma } from "./lib/prisma";
-import fs from "fs";
 
 const app = express();
 
@@ -24,11 +24,10 @@ const allowedOrigins =
       ]
     : env.PRODUCTION_URLS
       ? env.PRODUCTION_URLS.split(",").map((url) => url.trim())
-      : ["https://id-preview--bf3eca69-f7cc-41be-950f-9cb7562410b4.lovable.app"];
+      : [];
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -46,11 +45,6 @@ app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: false, limit: "1mb" }));
 app.use(cookieParser());
 
-// ── Ensure upload directory ──────────────────────────
-if (!fs.existsSync(env.UPLOAD_DIR)) {
-  fs.mkdirSync(env.UPLOAD_DIR, { recursive: true });
-}
-
 // ── Routes ───────────────────────────────────────────
 app.use("/api", routes);
 
@@ -60,13 +54,7 @@ app.use((_req, res) => {
 });
 
 // ── Global Error Handler ─────────────────────────────
-app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error("Unhandled error:", err.message);
-
-  // Don't leak internal errors in production
-  const message = env.NODE_ENV === "production" ? "Internal server error" : err.message;
-  res.status(500).json({ error: message });
-});
+app.use(errorHandler);
 
 // ── Start Server ─────────────────────────────────────
 async function start() {
