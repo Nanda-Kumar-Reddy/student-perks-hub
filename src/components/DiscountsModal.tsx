@@ -58,7 +58,7 @@ export default function DiscountsModal({ open, onOpenChange, initialCategory }: 
               <button
                 key={cat}
                 onClick={() => setActive(cat)}
-                className={`whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors text-left flex-shrink-0 ${
+                className={`whitespace-nowrap rounded-lg px-3 py-2 text-xs sm:text-sm font-medium transition-colors text-left flex-shrink-0 ${
                   active === cat ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary"
                 }`}
               >
