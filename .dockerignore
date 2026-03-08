@@ -1,0 +1,10 @@
+# ============================================
+# Docker .dockerignore (shared)
+# ============================================
+node_modules
+dist
+.env*
+!.env.docker.example
+*.log
+.git
+.DS_Store
