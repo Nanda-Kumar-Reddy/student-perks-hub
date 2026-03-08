@@ -30,7 +30,7 @@ const verificationBadges = [
 
 const skills = ["Gardening", "Childcare", "First Aid", "Driver License"];
 
-const activeTasks = [
+const initialActiveTasks = [
   { id: "1", title: "Garden Maintenance — Mowing & Weeding", applications: 5, status: "APPROVED" },
   { id: "2", title: "Babysitting — Saturday Evening", applications: 3, status: "APPROVED" },
   { id: "3", title: "Help Moving Furniture", applications: 0, status: "PENDING_APPROVAL" },
