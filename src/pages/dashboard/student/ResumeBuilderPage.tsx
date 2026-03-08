@@ -101,6 +101,28 @@ export default function ResumeBuilderPage() {
 
   const ps = pageSizes[pageSize];
 
+  useEffect(() => {
+    const viewport = previewViewportRef.current;
+    if (!viewport) return;
+
+    const calculateScale = () => {
+      const availableWidth = Math.max(viewport.clientWidth - 24, 280);
+      const nextScale = Math.min(1, availableWidth / ps.w);
+      setPreviewScale(Number(nextScale.toFixed(3)));
+    };
+
+    calculateScale();
+
+    if (typeof ResizeObserver !== "undefined") {
+      const observer = new ResizeObserver(calculateScale);
+      observer.observe(viewport);
+      return () => observer.disconnect();
+    }
+
+    window.addEventListener("resize", calculateScale);
+    return () => window.removeEventListener("resize", calculateScale);
+  }, [ps.w]);
+
   const handleDownload = useCallback(async () => {
     if (!previewRef.current || downloading) return;
     setDownloading(true);
