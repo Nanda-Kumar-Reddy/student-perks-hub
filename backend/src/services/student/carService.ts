@@ -1,8 +1,8 @@
 /**
  * Car Rent/Sale Request Service
  */
-import { db } from "../wrappers/databaseWrapper";
-import { notifications } from "../wrappers/notificationWrapper";
+import { db } from "../../wrappers/databaseWrapper";
+import { notifications } from "../../wrappers/notificationWrapper";
 
 export interface CarRequestInput {
   carTitle: string;

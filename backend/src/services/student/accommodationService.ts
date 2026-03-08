@@ -1,8 +1,8 @@
 /**
  * Accommodation Service
  */
-import { db } from "../wrappers/databaseWrapper";
-import { notifications } from "../wrappers/notificationWrapper";
+import { db } from "../../wrappers/databaseWrapper";
+import { notifications } from "../../wrappers/notificationWrapper";
 
 export interface AccommodationEnquiryInput {
   accommodationId: string;

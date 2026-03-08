@@ -1,7 +1,7 @@
 /**
  * Vendor Service — all business logic & database queries for vendor portal
  */
-import { db } from "../wrappers/databaseWrapper";
+import { db } from "../../wrappers/databaseWrapper";
 
 class VendorService {
   // ── Dashboard ──────────────────────────────────────

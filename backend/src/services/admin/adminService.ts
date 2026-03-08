@@ -1,7 +1,7 @@
 /**
  * Admin Service — all business logic & database queries for admin portal
  */
-import { db } from "../wrappers/databaseWrapper";
+import { db } from "../../wrappers/databaseWrapper";
 
 class AdminService {
   // ── Dashboard Aggregates ─────────────────────────────

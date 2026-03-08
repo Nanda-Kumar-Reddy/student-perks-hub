@@ -1,7 +1,7 @@
 /**
  * Student Dashboard Service — aggregates all student activity
  */
-import { db } from "../wrappers/databaseWrapper";
+import { db } from "../../wrappers/databaseWrapper";
 
 class StudentDashboardService {
   async getMyBookings(userId: string, page: number = 1, limit: number = 20) {

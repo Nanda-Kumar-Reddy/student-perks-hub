@@ -1,8 +1,8 @@
 /**
  * Loan Application Service
  */
-import { db } from "../wrappers/databaseWrapper";
-import { notifications } from "../wrappers/notificationWrapper";
+import { db } from "../../wrappers/databaseWrapper";
+import { notifications } from "../../wrappers/notificationWrapper";
 
 export interface LoanApplicationInput {
   amount: number;
