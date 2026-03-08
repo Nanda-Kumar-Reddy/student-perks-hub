@@ -224,7 +224,7 @@ export default function ChatPopup() {
                             {convo.otherUser.fullName.charAt(0).toUpperCase()}
                           </div>
                           {onlineUsers.includes(convo.otherUser.id) && (
-                            <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card bg-success/>
+                            <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card bg-success" />
                           )}
                         </div>
                         <div className="flex-1 min-w-0">

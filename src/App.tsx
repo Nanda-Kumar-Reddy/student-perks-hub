@@ -230,6 +230,7 @@ const App = () => (
           </Routes>
           </ChatProvider>
         </AuthProvider>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );
