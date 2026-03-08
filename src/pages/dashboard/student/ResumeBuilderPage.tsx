@@ -215,17 +215,17 @@ export default function ResumeBuilderPage() {
         <h1 className="font-display text-2xl font-bold flex items-center gap-2"><FileText className="h-6 w-6 text-primary" /> Resume Builder</h1>
         <p className="text-sm text-muted-foreground mt-1">Build your professional resume</p>
       </div>
-      <Tabs defaultValue="build" className="w-full">
-        <TabsList>
-          <TabsTrigger value="build">Build It Myself</TabsTrigger>
-          <TabsTrigger value="expert">Hire an Expert</TabsTrigger>
-          <TabsTrigger value="requests">My Requests</TabsTrigger>
+      <Tabs defaultValue="build" className="w-full min-w-0">
+        <TabsList className="w-full justify-start overflow-x-auto whitespace-nowrap">
+          <TabsTrigger value="build" className="shrink-0">Build It Myself</TabsTrigger>
+          <TabsTrigger value="expert" className="shrink-0">Hire an Expert</TabsTrigger>
+          <TabsTrigger value="requests" className="shrink-0">My Requests</TabsTrigger>
         </TabsList>
 
         <TabsContent value="build" className="mt-4">
           <div className="grid gap-6 lg:grid-cols-2">
-            <div className="space-y-4">
-              <div className="flex gap-2">
+            <div className="min-w-0 space-y-4">
+              <div className="flex flex-wrap gap-2">
                 <Button variant={contentTab === "content" ? "default" : "outline"} size="sm" onClick={() => setContentTab("content")}>Content</Button>
                 <Button variant={contentTab === "templates" ? "default" : "outline"} size="sm" onClick={() => setContentTab("templates")}>Templates ({templateMeta.length})</Button>
               </div>
@@ -245,14 +245,16 @@ export default function ResumeBuilderPage() {
                   ))}
                 </div>
               ) : (
-                <div className="rounded-xl border border-border bg-card p-2 sm:p-4 shadow-card space-y-2.5 sm:space-y-4 w-full min-w-0 overflow-hidden">
-                  <div className="flex gap-1 overflow-x-auto pb-1.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                    {contentSections.map(s => (
-                      <button key={s} onClick={() => setActiveSection(s)}
-                        className={`rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeSection === s ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>{s}</button>
-                    ))}
+                <div className="flex max-w-full min-w-0 flex-col space-y-2.5 rounded-xl border border-border bg-card p-2 shadow-card sm:space-y-4 sm:p-4">
+                  <div className="w-full overflow-x-auto pb-1.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    <div className="flex min-w-max gap-1 pr-1">
+                      {contentSections.map(s => (
+                        <button key={s} onClick={() => setActiveSection(s)}
+                          className={`rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeSection === s ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>{s}</button>
+                      ))}
+                    </div>
                   </div>
-                  <div className="min-w-0 w-full overflow-x-hidden">
+                  <div className="min-w-0 w-full overflow-x-hidden overflow-y-auto max-h-[62vh] sm:max-h-none pb-20 sm:pb-0">
                     {renderSectionEditor()}
                   </div>
                 </div>
