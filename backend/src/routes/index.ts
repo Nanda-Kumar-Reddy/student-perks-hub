@@ -44,6 +44,9 @@ router.use("/students", studentRoutes);
 // ── Admin Portal ────────────────────────────────────
 router.use("/admin", adminRoutes);
 
+// ── Vendor Portal ──────────────────────────────────
+router.use("/vendor", vendorRoutes);
+
 // ── Legacy ──────────────────────────────────────────
 router.use("/bookings", bookingRoutes);
 
