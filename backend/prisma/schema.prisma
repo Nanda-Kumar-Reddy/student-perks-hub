@@ -1,0 +1,172 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================
+// Enums
+// =============================================
+
+enum AppRole {
+  student
+  vendor
+  admin
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  cancelled
+  completed
+}
+
+enum TransactionStatus {
+  pending
+  completed
+  failed
+  refunded
+}
+
+// =============================================
+// Auth & Users
+// =============================================
+
+model User {
+  id             String         @id @default(uuid()) @db.Uuid
+  email          String         @unique @db.VarChar(255)
+  passwordHash   String         @map("password_hash")
+  emailVerified  Boolean        @default(false) @map("email_verified")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  profile        Profile?
+  roles          UserRole[]
+  refreshTokens  RefreshToken[]
+  bookings       Booking[]
+  transactions   Transaction[]
+
+  @@map("users")
+}
+
+model Profile {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @unique @map("user_id") @db.Uuid
+  fullName   String?  @map("full_name") @db.VarChar(200)
+  avatarUrl  String?  @map("avatar_url") @db.VarChar(500)
+  phone      String?  @db.VarChar(30)
+  address    String?  @db.Text
+  university String?  @db.VarChar(300)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model UserRole {
+  id     String  @id @default(uuid()) @db.Uuid
+  userId String  @map("user_id") @db.Uuid
+  role   AppRole
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, role])
+  @@map("user_roles")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  token     String   @unique @db.VarChar(500)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  revoked   Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+// =============================================
+// Services
+// =============================================
+
+model Accommodation {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String   @db.VarChar(300)
+  description String?  @db.Text
+  address     String   @db.Text
+  pricePerWeek Decimal @map("price_per_week") @db.Decimal(10, 2)
+  imageUrls   String[] @map("image_urls")
+  vendorId    String   @map("vendor_id") @db.Uuid
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  bookings Booking[]
+
+  @@map("accommodations")
+}
+
+model Job {
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String   @db.VarChar(300)
+  company     String   @db.VarChar(300)
+  description String?  @db.Text
+  location    String?  @db.VarChar(300)
+  salaryMin   Decimal? @map("salary_min") @db.Decimal(10, 2)
+  salaryMax   Decimal? @map("salary_max") @db.Decimal(10, 2)
+  type        String   @db.VarChar(50) // full-time, part-time, casual
+  vendorId    String   @map("vendor_id") @db.Uuid
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("jobs")
+}
+
+model Booking {
+  id          String        @id @default(uuid()) @db.Uuid
+  userId      String        @map("user_id") @db.Uuid
+  serviceType String        @map("service_type") @db.VarChar(50) // accommodation, airport_pickup, car_rent, etc.
+  serviceId   String        @map("service_id") @db.Uuid
+  status      BookingStatus @default(pending)
+  startDate   DateTime?     @map("start_date")
+  endDate     DateTime?     @map("end_date")
+  notes       String?       @db.Text
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accommodation Accommodation? @relation(fields: [serviceId], references: [id])
+  transaction   Transaction?
+
+  @@index([userId])
+  @@index([serviceType, serviceId])
+  @@map("bookings")
+}
+
+model Transaction {
+  id            String            @id @default(uuid()) @db.Uuid
+  userId        String            @map("user_id") @db.Uuid
+  bookingId     String?           @unique @map("booking_id") @db.Uuid
+  amount        Decimal           @db.Decimal(10, 2)
+  currency      String            @default("AUD") @db.VarChar(3)
+  status        TransactionStatus @default(pending)
+  paymentMethod String?           @map("payment_method") @db.VarChar(50)
+  stripeId      String?           @map("stripe_id") @db.VarChar(255)
+  createdAt     DateTime          @default(now()) @map("created_at")
+  updatedAt     DateTime          @updatedAt @map("updated_at")
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  booking Booking? @relation(fields: [bookingId], references: [id])
+
+  @@index([userId])
+  @@map("transactions")
+}
