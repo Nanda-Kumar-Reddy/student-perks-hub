@@ -12,10 +12,14 @@ import {
 import FormSection from "@/components/shared/FormSection";
 import PhoneField from "@/components/shared/PhoneField";
 import { useAuth } from "@/contexts/AuthContext";
-import { getProfile, updateProfile } from "@/services/database";
+import { getProfile, updateProfile, updateCommunityTaskStatus } from "@/services/database";
 import { updatePassword } from "@/services/auth";
 import { toast } from "@/hooks/use-toast";
 import ViewTaskDetailDialog from "@/components/profile/ViewTaskDetailDialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const verificationBadges = [
   { label: "Phone Verified", icon: <Phone className="h-3.5 w-3.5" />, verified: true },
