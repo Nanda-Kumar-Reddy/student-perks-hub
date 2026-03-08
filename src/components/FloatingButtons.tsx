@@ -41,14 +41,28 @@ export default function FloatingButtons() {
           <MessageCircle className="h-5 w-5" />
         </a>
         <div className="relative flex items-center justify-center">
-          {/* Rotating arrow ring */}
-          <div className="absolute inset-[-6px] animate-[spin_3s_linear_infinite]">
+          {/* Rotating arrow ring with arrowhead */}
+          <div className="absolute inset-[-6px] animate-[spin_2.5s_linear_infinite]">
             <svg width="60" height="60" viewBox="0 0 60 60" className="w-full h-full">
-              <circle cx="30" cy="30" r="26" fill="none" stroke="hsl(var(--primary))" strokeWidth="2" strokeDasharray="12 150" strokeLinecap="round" opacity="0.5" />
-              {/* Arrow head */}
-              <polygon points="48,18 54,24 42,24" fill="hsl(var(--primary))" opacity="0.6" />
+              <defs>
+                <marker id="arrowHead" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                  <path d="M0,0 L6,3 L0,6 Z" fill="hsl(var(--primary))" opacity="0.8" />
+                </marker>
+              </defs>
+              <path
+                d="M 30 4 A 26 26 0 1 1 8 20"
+                fill="none"
+                stroke="hsl(var(--primary))"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeDasharray="100 64"
+                opacity="0.5"
+                markerEnd="url(#arrowHead)"
+              />
             </svg>
           </div>
+          {/* Shine burst animation */}
+          <div className="absolute inset-[-8px] rounded-full animate-[shine-burst_2.5s_ease-in-out_infinite] pointer-events-none" />
           <button onClick={handleOpenScanner}
             className="relative flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-110 active:scale-95 glow-primary">
             <QrCode className="h-5 w-5" />
