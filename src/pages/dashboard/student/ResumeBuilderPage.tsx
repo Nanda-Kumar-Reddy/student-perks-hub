@@ -160,7 +160,7 @@ export default function ResumeBuilderPage() {
             {education.map((e, i) => (
               <div key={i} className="rounded-lg bg-secondary/30 p-3 space-y-2">
                 <div className="flex justify-between items-start"><span className="text-xs font-medium text-muted-foreground">Entry {i + 1}</span><Button variant="ghost" size="sm" onClick={() => setEducation(p => p.filter((_, j) => j !== i))}><Trash2 className="h-3.5 w-3.5" /></Button></div>
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className="grid gap-2 md:grid-cols-2">
                   <div><Label className="text-xs">Institution</Label><Input className="mt-1" placeholder="University / Institution" value={e.institution} onChange={ev => { const n = [...education]; n[i] = { ...n[i], institution: ev.target.value }; setEducation(n); }} /></div>
                   <div><Label className="text-xs">Degree / Course</Label><Input className="mt-1" placeholder="Degree / Course" value={e.degree} onChange={ev => { const n = [...education]; n[i] = { ...n[i], degree: ev.target.value }; setEducation(n); }} /></div>
                   <div><Label className="text-xs">Start Date</Label><Input className="mt-1" placeholder="e.g. 2017" value={e.startDate} onChange={ev => { const n = [...education]; n[i] = { ...n[i], startDate: ev.target.value }; setEducation(n); }} /></div>
