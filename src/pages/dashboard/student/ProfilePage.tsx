@@ -308,13 +308,10 @@ export default function ProfilePage() {
         </div>
       </div>
       {selectedTask && (
-        <ViewApplicationsDialog
+        <ViewTaskDetailDialog
           open={appDialogOpen}
           onOpenChange={setAppDialogOpen}
-          taskTitle={selectedTask.title}
-          applications={demoApplications[selectedTask.id] || []}
-          onAccept={(id) => toast({ title: "Application accepted", description: `Application ${id} has been accepted.` })}
-          onReject={(id) => toast({ title: "Application rejected", description: `Application ${id} has been rejected.` })}
+          task={taskDetails[selectedTask.id] || null}
         />
       )}
     </div>
