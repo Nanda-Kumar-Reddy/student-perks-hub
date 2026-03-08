@@ -42,6 +42,18 @@ enum BookingStatus {
   completed
 }
 
+enum PaymentStatus {
+  requires_payment_method
+  requires_confirmation
+  requires_action
+  processing
+  succeeded
+  failed
+  canceled
+  refunded
+  partially_refunded
+}
+
 enum TransactionStatus {
   pending
   completed
