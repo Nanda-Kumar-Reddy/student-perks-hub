@@ -33,7 +33,8 @@ export async function getUserRole(userId: string) {
     .from("user_roles")
     .select("role")
     .eq("user_id", userId)
-    .single();
+    .limit(1)
+    .maybeSingle();
   if (error) throw error;
   return data?.role as "student" | "vendor" | "admin" | null;
 }

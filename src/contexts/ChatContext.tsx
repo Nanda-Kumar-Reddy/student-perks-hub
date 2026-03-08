@@ -94,6 +94,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
     const sock = connectSocket(token);
     socketRef.current = sock;
 
+    // If no realtime server configured, stay in demo mode
+    if (!sock) return;
+
     sock.on("connect", () => setIsConnected(true));
     sock.on("disconnect", () => setIsConnected(false));
 

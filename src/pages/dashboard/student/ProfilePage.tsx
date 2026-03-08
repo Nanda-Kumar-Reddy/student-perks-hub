@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,10 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import {
   User, CheckCircle2, Phone, Mail, Shield, FileCheck,
   Star, ClipboardCheck, BarChart3, MapPin, Calendar,
-  Eye, XCircle, Clock, Award, X
+  Eye, XCircle, Clock, Award, X, Loader2
 } from "lucide-react";
 import FormSection from "@/components/shared/FormSection";
 import PhoneField from "@/components/shared/PhoneField";
+import { useAuth } from "@/contexts/AuthContext";
+import { getProfile, updateProfile } from "@/services/database";
+import { updatePassword } from "@/services/auth";
+import { toast } from "@/hooks/use-toast";
 
 const verificationBadges = [
   { label: "Phone Verified", icon: <Phone className="h-3.5 w-3.5" />, verified: true },
@@ -47,16 +51,80 @@ const statusColor: Record<string, string> = {
 };
 
 export default function ProfilePage() {
-  const [saved, setSaved] = useState(false);
+  const { user } = useAuth();
+  const [saving, setSaving] = useState(false);
+  const [savingPw, setSavingPw] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
   const [form, setForm] = useState({
-    name: "John Doe",
-    email: "john@university.edu",
-    phone: "+61 400 123 456",
-    address: "Melbourne, VIC",
-    university: "University of Melbourne",
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    university: "",
   });
   const [password, setPassword] = useState({ current: "", new: "", confirm: "" });
   const update = (k: string, v: string) => setForm((p) => ({ ...p, [k]: v }));
+
+  // Load profile from database
+  useEffect(() => {
+    if (!user) return;
+    setForm((p) => ({ ...p, name: user.fullName, email: user.email }));
+    getProfile(user.id)
+      .then((profile) => {
+        setForm((prev) => ({
+          ...prev,
+          name: profile.full_name || prev.name,
+          phone: profile.phone || "",
+          address: profile.address || "",
+          university: profile.university || "",
+        }));
+        setProfileLoaded(true);
+      })
+      .catch(() => setProfileLoaded(true));
+  }, [user]);
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      await updateProfile(user.id, {
+        full_name: form.name,
+        phone: form.phone || null,
+        address: form.address || null,
+        university: form.university || null,
+      });
+      toast({ title: "Profile updated!", description: "Your changes have been saved." });
+    } catch (err: any) {
+      toast({ title: "Save failed", description: err.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!password.new.trim()) {
+      toast({ title: "Error", description: "New password is required", variant: "destructive" });
+      return;
+    }
+    if (password.new.length < 6) {
+      toast({ title: "Error", description: "Password must be at least 6 characters", variant: "destructive" });
+      return;
+    }
+    if (password.new !== password.confirm) {
+      toast({ title: "Error", description: "Passwords do not match", variant: "destructive" });
+      return;
+    }
+    setSavingPw(true);
+    try {
+      await updatePassword(password.new);
+      toast({ title: "Password updated!" });
+      setPassword({ current: "", new: "", confirm: "" });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setSavingPw(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -122,11 +190,6 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {saved && (
-        <div className="flex items-center gap-2 rounded-lg bg-success/10 p-3 text-sm text-success">
-          <CheckCircle2 className="h-4 w-4" /> Profile updated successfully!
-        </div>
-      )}
 
       {/* Task Tabs */}
       <Tabs defaultValue="active" className="w-full">
@@ -201,7 +264,10 @@ export default function ProfilePage() {
             <PhoneField value={form.phone} onChange={(v) => update("phone", v)} />
             <div><Label>Address</Label><Input className="mt-1.5" value={form.address} onChange={(e) => update("address", e.target.value)} /></div>
           </FormSection>
-          <Button onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 3000); }}>Save Changes</Button>
+          <Button onClick={handleSaveProfile} disabled={saving}>
+            {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            Save Changes
+          </Button>
         </div>
         <div className="rounded-xl border border-border bg-card p-6 shadow-card space-y-6">
           <FormSection title="Change Password">
@@ -209,7 +275,10 @@ export default function ProfilePage() {
             <div><Label>New Password</Label><Input className="mt-1.5" type="password" value={password.new} onChange={(e) => setPassword((p) => ({ ...p, new: e.target.value }))} /></div>
             <div><Label>Confirm New Password</Label><Input className="mt-1.5" type="password" value={password.confirm} onChange={(e) => setPassword((p) => ({ ...p, confirm: e.target.value }))} /></div>
           </FormSection>
-          <Button variant="outline">Update Password</Button>
+          <Button variant="outline" onClick={handleUpdatePassword} disabled={savingPw}>
+            {savingPw ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            Update Password
+          </Button>
         </div>
       </div>
     </div>

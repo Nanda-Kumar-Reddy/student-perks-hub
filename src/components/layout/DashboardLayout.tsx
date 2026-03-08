@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { Zap, LogOut, Menu, Sun, Moon, Tag, ChevronDown, User, Store, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -30,14 +31,18 @@ const discountCategories = [
   "Lifeline Accounting",
 ];
 
-function getRoleInfo(title: string) {
-  if (title.toLowerCase().includes("vendor")) return { role: "vendor", icon: <Store className="h-4 w-4" />, name: "Joe" };
-  if (title.toLowerCase().includes("admin")) return { role: "admin", icon: <ShieldCheck className="h-4 w-4" />, name: "Admin" };
-  return { role: "student", icon: <User className="h-4 w-4" />, name: "John" };
+function getRoleIcon(title: string) {
+  if (title.toLowerCase().includes("vendor")) return <Store className="h-4 w-4" />;
+  if (title.toLowerCase().includes("admin")) return <ShieldCheck className="h-4 w-4" />;
+  return <User className="h-4 w-4" />;
 }
 
 export default function DashboardLayout({ title, navItems, notifications = [], showDiscounts = false, showFloatingButtons = false }: DashboardLayoutProps) {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
+  const roleIcon = getRoleIcon(title);
+  const displayName = user?.fullName?.split(" ")[0] || "User";
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const [discountDropdown, setDiscountDropdown] = useState(false);
@@ -45,7 +50,7 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
   const [selectedDiscountCategory, setSelectedDiscountCategory] = useState("Lifeline Liquor");
   const [profileDropdown, setProfileDropdown] = useState(false);
 
-  const roleInfo = getRoleInfo(title);
+  const roleInfo = { icon: roleIcon, name: displayName };
 
   const openDiscountModal = (category: string) => {
     setSelectedDiscountCategory(category);
@@ -187,14 +192,17 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
               </button>
               {profileDropdown && (
                 <div className="absolute right-0 top-full mt-1 w-40 rounded-xl border border-border bg-card p-1.5 shadow-card-hover z-50 animate-scale-in">
-                  <Link
-                    to="/"
-                    onClick={() => setProfileDropdown(false)}
+                  <button
+                    onClick={async () => {
+                      setProfileDropdown(false);
+                      await signOut();
+                      navigate("/login");
+                    }}
                     className="flex items-center gap-2 w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
                   >
                     <LogOut className="h-4 w-4" />
                     Sign Out
-                  </Link>
+                  </button>
                 </div>
               )}
             </div>
