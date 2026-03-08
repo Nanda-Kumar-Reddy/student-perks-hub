@@ -190,11 +190,6 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {saved && (
-        <div className="flex items-center gap-2 rounded-lg bg-success/10 p-3 text-sm text-success">
-          <CheckCircle2 className="h-4 w-4" /> Profile updated successfully!
-        </div>
-      )}
 
       {/* Task Tabs */}
       <Tabs defaultValue="active" className="w-full">
