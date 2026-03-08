@@ -50,7 +50,7 @@ export default function NotificationDropdown({ notifications }: NotificationDrop
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-sm rounded-xl border border-border bg-card shadow-card-hover z-50">
+        <div className="fixed right-2 left-2 top-16 sm:absolute sm:left-auto sm:top-full sm:mt-2 sm:right-0 sm:w-80 rounded-xl border border-border bg-card shadow-lg z-50">
           <div className="border-b border-border px-4 py-3 flex items-center justify-between">
             <h3 className="font-display text-sm font-bold">Notifications</h3>
             {unreadCount > 0 && (
