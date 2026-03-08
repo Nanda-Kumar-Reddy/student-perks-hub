@@ -16,6 +16,7 @@ export const updateProfileSchema = z.object({
   phone: z.string().trim().max(30).optional(),
   address: z.string().trim().max(500).optional(),
   university: z.string().trim().max(300).optional(),
+  skills: z.array(z.string().trim().max(100)).max(20).optional(),
 });
 
 export const createBookingSchema = z.object({

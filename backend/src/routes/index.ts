@@ -56,6 +56,9 @@ router.use("/admin", adminRoutes);
 // ── Vendor Portal ──────────────────────────────────
 router.use("/vendor", vendorRoutes);
 
+// ── Community Tasks ────────────────────────────────
+router.use("/community/tasks", communityRoutes);
+
 // ── Legacy ──────────────────────────────────────────
 router.use("/bookings", bookingRoutes);
 
