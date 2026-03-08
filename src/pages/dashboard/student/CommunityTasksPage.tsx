@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Search, Plus, MapPin, Clock, DollarSign, Star, ChevronRight,
-  Home, Baby, BookOpen, Sparkles, Truck, PawPrint, Monitor, PartyPopper, Package, MoreHorizontal
+  Home, Baby, BookOpen, Sparkles, Truck, PawPrint, Monitor, PartyPopper, Package, MoreHorizontal, ListTodo
 } from "lucide-react";
+import { motion } from "framer-motion";
 import CreateCommunityTaskDialog from "@/components/community/CreateCommunityTaskDialog";
 
 const categoryIcons: Record<string, React.ReactNode> = {
@@ -49,9 +51,12 @@ const tasks = [
   },
 ];
 
+const sortOptions = ["Newest", "Payment", "Duration"];
+
 export default function CommunityTasksPage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [sort, setSort] = useState("Newest");
   const [createOpen, setCreateOpen] = useState(false);
 
   const filteredTasks = tasks.filter((t) => {
@@ -68,7 +73,9 @@ export default function CommunityTasksPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="font-display text-2xl font-bold">Community Tasks</h1>
+          <h1 className="font-display text-2xl font-bold flex items-center gap-2">
+            <ListTodo className="h-6 w-6 text-primary" /> Community Tasks
+          </h1>
           <p className="text-sm text-muted-foreground mt-1">Find tasks near you or post your own</p>
         </div>
         <Button onClick={() => setCreateOpen(true)} className="gap-2">
@@ -77,21 +84,23 @@ export default function CommunityTasksPage() {
       </div>
 
       {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search by title, category, or location..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-10"
-        />
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by title, category, or location..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
       </div>
 
       {/* Category Filter */}
       <div className="flex flex-wrap gap-2">
         <Badge
           variant={!selectedCategory ? "default" : "outline"}
-          className="cursor-pointer"
+          className="cursor-pointer transition-transform duration-200 hover:scale-105"
           onClick={() => setSelectedCategory(null)}
         >
           All
@@ -100,7 +109,7 @@ export default function CommunityTasksPage() {
           <Badge
             key={cat}
             variant={selectedCategory === cat ? "default" : "outline"}
-            className="cursor-pointer gap-1"
+            className="cursor-pointer gap-1 transition-transform duration-200 hover:scale-105"
             onClick={() => setSelectedCategory(selectedCategory === cat ? null : cat)}
           >
             {categoryIcons[cat]}
@@ -109,44 +118,67 @@ export default function CommunityTasksPage() {
         ))}
       </div>
 
+      {/* Results count + sort */}
+      <div className="flex items-center justify-between border-t border-border pt-3">
+        <span className="text-xs text-muted-foreground">{filteredTasks.length} tasks found</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Sort by</span>
+          <Select value={sort} onValueChange={setSort}>
+            <SelectTrigger className="h-8 w-32 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>{sortOptions.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+      </div>
+
       {/* Task List */}
       <div className="space-y-3">
-        {filteredTasks.map((task) => (
-          <Link
+        {filteredTasks.map((task, i) => (
+          <motion.div
             key={task.id}
-            to={`/student/community-tasks/${task.id}`}
-            className="block rounded-xl border border-border bg-card p-5 shadow-card transition-all hover:shadow-card-hover hover:border-primary/30"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.06, duration: 0.3 }}
           >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-3 flex-1">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
-                  {categoryIcons[task.category] || <MoreHorizontal className="h-5 w-5" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-sm">{task.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{task.description}</p>
-                  <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {task.duration}</span>
-                    <span className="flex items-center gap-1 font-semibold text-success"><DollarSign className="h-3 w-3" /> {task.payment}</span>
-                    <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {task.location}</span>
-                    <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {task.date}</span>
+            <Link
+              to={`/student/community-tasks/${task.id}`}
+              className="block rounded-xl border border-border bg-card p-5 shadow-card transition-all hover:shadow-card-hover hover:-translate-y-0.5"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3 flex-1">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
+                    {categoryIcons[task.category] || <MoreHorizontal className="h-5 w-5" />}
                   </div>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="text-xs font-medium">{task.poster}</span>
-                    <span className="flex items-center gap-0.5 text-xs text-warning">
-                      <Star className="h-3 w-3 fill-warning" /> {task.rating}
-                    </span>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-display text-sm font-bold">{task.title}</h3>
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{task.description}</p>
+                    <div className="flex flex-wrap items-center gap-3 mt-2 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {task.duration}</span>
+                      <span className="flex items-center gap-1 font-semibold text-success"><DollarSign className="h-3 w-3" /> {task.payment}</span>
+                      <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {task.location}</span>
+                      <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {task.date}</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-xs font-medium">{task.poster}</span>
+                      <span className="flex items-center gap-0.5 text-xs text-warning">
+                        <Star className="h-3 w-3 fill-warning" /> {task.rating}
+                      </span>
+                    </div>
                   </div>
                 </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0 mt-1" />
               </div>
-              <ChevronRight className="h-5 w-5 text-muted-foreground shrink-0 mt-1" />
-            </div>
-          </Link>
+            </Link>
+          </motion.div>
         ))}
         {filteredTasks.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="text-center py-12 text-muted-foreground rounded-xl border border-border bg-card"
+          >
             <p className="text-sm">No tasks found matching your criteria.</p>
-          </div>
+          </motion.div>
         )}
       </div>
 
