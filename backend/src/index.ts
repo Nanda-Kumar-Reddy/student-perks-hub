@@ -12,8 +12,29 @@ const app = express();
 
 // ── Security ─────────────────────────────────────────
 app.use(secureHeaders);
+const allowedOrigins =
+  env.NODE_ENV === "development"
+    ? [
+        "http://localhost",
+        "https://localhost",
+        "http://localhost:3000",
+        "https://localhost:3000",
+        "http://localhost:5173",
+        "https://localhost:5173",
+      ]
+    : env.PRODUCTION_URLS
+      ? env.PRODUCTION_URLS.split(",").map((url) => url.trim())
+      : ["https://id-preview--bf3eca69-f7cc-41be-950f-9cb7562410b4.lovable.app"];
+
 app.use(cors({
-  origin: env.CORS_ORIGIN,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
