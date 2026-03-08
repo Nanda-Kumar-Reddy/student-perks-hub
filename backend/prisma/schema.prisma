@@ -25,6 +25,16 @@ enum RequestStatus {
   completed
 }
 
+enum CommunityTaskStatus {
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  FLAGGED
+  FILLED
+  CANCELLED
+  COMPLETED
+}
+
 enum BookingStatus {
   pending
   confirmed
