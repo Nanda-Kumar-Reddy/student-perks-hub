@@ -275,7 +275,10 @@ export default function ProfilePage() {
             <div><Label>New Password</Label><Input className="mt-1.5" type="password" value={password.new} onChange={(e) => setPassword((p) => ({ ...p, new: e.target.value }))} /></div>
             <div><Label>Confirm New Password</Label><Input className="mt-1.5" type="password" value={password.confirm} onChange={(e) => setPassword((p) => ({ ...p, confirm: e.target.value }))} /></div>
           </FormSection>
-          <Button variant="outline">Update Password</Button>
+          <Button variant="outline" onClick={handleUpdatePassword} disabled={savingPw}>
+            {savingPw ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            Update Password
+          </Button>
         </div>
       </div>
     </div>
