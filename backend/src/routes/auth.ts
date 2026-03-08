@@ -4,7 +4,7 @@ import { validate } from "../middleware/validate";
 import { authenticate } from "../middleware/auth";
 import { authLimiter } from "../middleware/rateLimiter";
 import { signupSchema, loginSchema } from "../validators/auth";
-import { googleLoginSchema } from "../validators/student";
+import { googleLoginSchema } from "../validators/student/student";
 import catchErrors from "../utils/catchErrors";
 
 const router = Router();

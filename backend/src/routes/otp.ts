@@ -2,7 +2,7 @@ import { Router } from "express";
 import { sendOtp, verifyOtp } from "../controllers/otp";
 import { validate } from "../middleware/validate";
 import { authenticate } from "../middleware/auth";
-import { sendOtpSchema, verifyOtpSchema } from "../validators/student";
+import { sendOtpSchema, verifyOtpSchema } from "../validators/student/student";
 import catchErrors from "../utils/catchErrors";
 
 const router = Router();

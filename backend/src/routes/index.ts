@@ -3,20 +3,26 @@ import authRoutes from "./auth";
 import otpRoutes from "./otp";
 import profileRoutes from "./profiles";
 import bookingRoutes from "./bookings";
-import airportPickupRoutes from "./airportPickups";
-import accommodationRoutes from "./accommodations";
-import jobRoutes from "./jobs";
-import loanRoutes from "./loans";
-import consultationRoutes from "./consultations";
-import accountingRoutes from "./accounting";
-import carRoutes from "./cars";
-import eventRoutes from "./events";
-import certificationRoutes from "./certifications";
-import drivingLicenseRoutes from "./drivingLicense";
 import notificationRoutes from "./notifications";
-import studentRoutes from "./students";
-import adminRoutes from "./admin";
-import vendorRoutes from "./vendor";
+
+// Student feature routes
+import airportPickupRoutes from "./student/airportPickups";
+import accommodationRoutes from "./student/accommodations";
+import jobRoutes from "./student/jobs";
+import loanRoutes from "./student/loans";
+import consultationRoutes from "./student/consultations";
+import accountingRoutes from "./student/accounting";
+import carRoutes from "./student/cars";
+import eventRoutes from "./student/events";
+import certificationRoutes from "./student/certifications";
+import drivingLicenseRoutes from "./student/drivingLicense";
+import studentRoutes from "./student/students";
+
+// Admin routes
+import adminRoutes from "./admin/admin";
+
+// Vendor routes
+import vendorRoutes from "./vendor/vendor";
 
 const router = Router();
 
