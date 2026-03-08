@@ -38,3 +38,33 @@ export async function getUserRole(userId: string) {
   if (error) throw error;
   return data?.role as "student" | "vendor" | "admin" | null;
 }
+
+// ── Community Task Status Updates ────────────────────
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+
+export async function updateCommunityTaskStatus(
+  taskId: string,
+  status: "FILLED" | "CANCELLED"
+): Promise<{ success: boolean }> {
+  if (!API_BASE) {
+    // Demo mode — simulate success
+    return { success: true };
+  }
+
+  const token = localStorage.getItem("access_token") || "";
+  const res = await fetch(`${API_BASE}/community-tasks/${taskId}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: "Request failed" }));
+    throw new Error(err.message || "Failed to update task status");
+  }
+
+  return { success: true };
+}
