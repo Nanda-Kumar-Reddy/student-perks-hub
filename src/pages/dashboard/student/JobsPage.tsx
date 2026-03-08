@@ -69,10 +69,16 @@ function JobsTab({ jobType }: { jobType: string }) {
             <SelectItem value="Brisbane">Brisbane</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={sort} onValueChange={setSort}>
-          <SelectTrigger className="w-full sm:w-36"><SelectValue /></SelectTrigger>
-          <SelectContent>{sortOptions.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-        </Select>
+      </div>
+      <div className="flex items-center justify-between border-t border-border pt-3">
+        <span className="text-xs text-muted-foreground">{filtered.length} jobs found</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Sort by</span>
+          <Select value={sort} onValueChange={setSort}>
+            <SelectTrigger className="h-8 w-32 text-xs"><SelectValue /></SelectTrigger>
+            <SelectContent>{sortOptions.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
       </div>
       <div className="space-y-3">
         {filtered.map((j, i) => (
