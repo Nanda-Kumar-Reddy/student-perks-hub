@@ -1,36 +1,31 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { Zap, Mail, ArrowLeft } from "lucide-react";
+import { Zap, ArrowLeft, Loader2 } from "lucide-react";
+import { resetPasswordForEmail } from "@/services/auth";
+import { toast } from "@/hooks/use-toast";
 
 export default function ForgotPasswordPage() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [otpOpen, setOtpOpen] = useState(false);
-  const [otp, setOtp] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
 
-  const handleSubmit = () => {
-    if (!email.trim()) {
-      setError("Email is required");
-      return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError("Enter a valid email");
-      return;
-    }
+  const handleSubmit = async () => {
+    if (!email.trim()) { setError("Email is required"); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError("Enter a valid email"); return; }
     setError("");
-    setOtpOpen(true);
-  };
-
-  const handleVerifyOtp = () => {
-    if (otp.length === 6) {
-      setOtpOpen(false);
-      navigate("/reset-password", { state: { email } });
+    setLoading(true);
+    try {
+      await resetPasswordForEmail(email);
+      setSent(true);
+      toast({ title: "Reset link sent!", description: "Check your email for the password reset link." });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,27 +41,39 @@ export default function ForgotPasswordPage() {
           </Link>
           <h1 className="mt-6 font-display text-2xl font-bold">Forgot password?</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Enter your email and we'll send you a verification code
+            {sent ? "Check your email for the reset link" : "Enter your email and we'll send you a reset link"}
           </p>
         </div>
         <div className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-card">
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@university.edu"
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); if (error) setError(""); }}
-                className={`mt-1.5 ${error ? "border-destructive" : ""}`}
-              />
-              {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
+          {sent ? (
+            <div className="text-center space-y-4">
+              <p className="text-sm text-muted-foreground">
+                We've sent a password reset link to <span className="font-medium text-foreground">{email}</span>
+              </p>
+              <Button variant="outline" className="w-full" onClick={() => setSent(false)}>
+                Send again
+              </Button>
             </div>
-            <Button className="w-full" size="lg" onClick={handleSubmit}>
-              Send Verification Code
-            </Button>
-          </div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@university.edu"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); if (error) setError(""); }}
+                  className={`mt-1.5 ${error ? "border-destructive" : ""}`}
+                />
+                {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
+              </div>
+              <Button className="w-full" size="lg" onClick={handleSubmit} disabled={loading}>
+                {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Send Reset Link
+              </Button>
+            </div>
+          )}
           <div className="mt-4 text-center">
             <Link to="/login" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
               <ArrowLeft className="h-3.5 w-3.5" />
@@ -75,39 +82,6 @@ export default function ForgotPasswordPage() {
           </div>
         </div>
       </div>
-
-      <Dialog open={otpOpen} onOpenChange={setOtpOpen}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle className="text-center">Verify your email</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col items-center gap-4 py-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
-              <Mail className="h-7 w-7 text-primary" />
-            </div>
-            <p className="text-center text-sm text-muted-foreground">
-              We've sent a 6-digit code to<br />
-              <span className="font-medium text-foreground">{email}</span>
-            </p>
-            <InputOTP maxLength={6} value={otp} onChange={setOtp}>
-              <InputOTPGroup>
-                <InputOTPSlot index={0} />
-                <InputOTPSlot index={1} />
-                <InputOTPSlot index={2} />
-                <InputOTPSlot index={3} />
-                <InputOTPSlot index={4} />
-                <InputOTPSlot index={5} />
-              </InputOTPGroup>
-            </InputOTP>
-            <Button className="w-full" onClick={handleVerifyOtp} disabled={otp.length < 6}>
-              Verify Code
-            </Button>
-            <button className="text-xs text-muted-foreground hover:text-primary transition-colors">
-              Didn't receive the code? Resend
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

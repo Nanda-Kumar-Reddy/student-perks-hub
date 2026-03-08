@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Zap, CheckCircle2 } from "lucide-react";
+import { Zap, CheckCircle2, Loader2 } from "lucide-react";
+import { updatePassword } from "@/services/auth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -12,6 +15,22 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<{ password?: string; confirmPassword?: string }>({});
   const [successOpen, setSuccessOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    // Listen for PASSWORD_RECOVERY event from the URL hash
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setReady(true);
+      }
+    });
+    // Also check if we already have a session (user clicked the link)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) setReady(true);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   const validate = () => {
     const errs: typeof errors = {};
@@ -23,9 +42,16 @@ export default function ResetPasswordPage() {
     return Object.keys(errs).length === 0;
   };
 
-  const handleSubmit = () => {
-    if (validate()) {
+  const handleSubmit = async () => {
+    if (!validate()) return;
+    setLoading(true);
+    try {
+      await updatePassword(password);
       setSuccessOpen(true);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -33,6 +59,17 @@ export default function ResetPasswordPage() {
     setSuccessOpen(false);
     navigate("/login");
   };
+
+  if (!ready) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-secondary/30 px-4">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+          <p className="text-sm text-muted-foreground">Verifying your reset link...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/30 px-4">
@@ -73,7 +110,8 @@ export default function ResetPasswordPage() {
               />
               {errors.confirmPassword && <p className="mt-1 text-xs text-destructive">{errors.confirmPassword}</p>}
             </div>
-            <Button className="w-full" size="lg" onClick={handleSubmit}>
+            <Button className="w-full" size="lg" onClick={handleSubmit} disabled={loading}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
               Reset Password
             </Button>
           </div>
