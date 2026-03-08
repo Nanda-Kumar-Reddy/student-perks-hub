@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,10 +94,34 @@ export default function ResumeBuilderPage() {
   const [downloading, setDownloading] = useState(false);
   const [pageSize, setPageSize] = useState<PageSize>("letter");
   const previewRef = useRef<HTMLDivElement>(null);
+  const previewViewportRef = useRef<HTMLDivElement>(null);
+  const [previewScale, setPreviewScale] = useState(1);
 
   const resumeData: ResumeData = { name, jobTitle, email, phone, address, linkedin, portfolio, summary, experience, education, skills, projects, certifications, languages };
 
   const ps = pageSizes[pageSize];
+
+  useEffect(() => {
+    const viewport = previewViewportRef.current;
+    if (!viewport) return;
+
+    const calculateScale = () => {
+      const availableWidth = Math.max(viewport.clientWidth - 24, 280);
+      const nextScale = Math.min(1, availableWidth / ps.w);
+      setPreviewScale(Number(nextScale.toFixed(3)));
+    };
+
+    calculateScale();
+
+    if (typeof ResizeObserver !== "undefined") {
+      const observer = new ResizeObserver(calculateScale);
+      observer.observe(viewport);
+      return () => observer.disconnect();
+    }
+
+    window.addEventListener("resize", calculateScale);
+    return () => window.removeEventListener("resize", calculateScale);
+  }, [ps.w]);
 
   const handleDownload = useCallback(async () => {
     if (!previewRef.current || downloading) return;
@@ -207,10 +231,10 @@ export default function ResumeBuilderPage() {
     }
   };
 
-  const previewScale = pageSize === "a5" ? 0.55 : 0.5;
+  
 
   return (
-    <div className="space-y-6">
+    <div className="min-w-0 space-y-4 sm:space-y-6">
       <div>
         <h1 className="font-display text-2xl font-bold flex items-center gap-2"><FileText className="h-6 w-6 text-primary" /> Resume Builder</h1>
         <p className="text-sm text-muted-foreground mt-1">Build your professional resume</p>
@@ -222,8 +246,8 @@ export default function ResumeBuilderPage() {
           <TabsTrigger value="requests" className="shrink-0">My Requests</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="build" className="mt-4">
-          <div className="grid gap-6 lg:grid-cols-2">
+        <TabsContent value="build" className="mt-4 min-w-0">
+          <div className="grid gap-4 xl:grid-cols-2">
             <div className="min-w-0 space-y-4">
               <div className="flex flex-wrap gap-2">
                 <Button variant={contentTab === "content" ? "default" : "outline"} size="sm" onClick={() => setContentTab("content")}>Content</Button>
@@ -254,17 +278,17 @@ export default function ResumeBuilderPage() {
                       ))}
                     </div>
                   </div>
-                  <div className="min-w-0 w-full overflow-x-hidden overflow-y-auto max-h-[62vh] sm:max-h-none pb-20 sm:pb-0">
+                  <div className="min-w-0 w-full overflow-x-hidden overflow-y-auto max-h-[65vh] lg:max-h-[68vh] xl:max-h-none pr-14 sm:pr-0 pb-28 sm:pb-0">
                     {renderSectionEditor()}
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="print:shadow-none">
-              <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+            <div className="min-w-0 print:shadow-none">
+              <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <h3 className="font-display text-sm font-bold">Live Preview — {templateMeta.find(t => t.id === activeTemplate)?.name}</h3>
-                <div className="flex items-center gap-2">
+                <div className="flex w-full items-center gap-2 sm:w-auto">
                   <Select value={pageSize} onValueChange={(v) => setPageSize(v as PageSize)}>
                     <SelectTrigger className="h-8 w-24 text-xs"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -276,9 +300,13 @@ export default function ResumeBuilderPage() {
                   </Button>
                 </div>
               </div>
-              <div className="overflow-auto rounded-xl border border-border shadow-card bg-secondary/20" style={{ maxHeight: "70vh" }}>
-                <div ref={previewRef} style={{ transform: `scale(${previewScale})`, transformOrigin: "top left", width: ps.w }}>
-                  <ResumePreview templateId={activeTemplate} data={resumeData} />
+              <div ref={previewViewportRef} className="overflow-auto rounded-xl border border-border shadow-card bg-secondary/20 p-2 sm:p-3" style={{ maxHeight: "72vh" }}>
+                <div className="mx-auto" style={{ width: ps.w * previewScale, minWidth: ps.w * previewScale, height: ps.h * previewScale }}>
+                  <div style={{ width: ps.w, transform: `scale(${previewScale})`, transformOrigin: "top left" }}>
+                    <div ref={previewRef}>
+                      <ResumePreview templateId={activeTemplate} data={resumeData} />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
