@@ -663,3 +663,26 @@ model TaskHistory {
   @@index([userId])
   @@map("task_history")
 }
+
+// =============================================
+// Payments
+// =============================================
+
+model Payment {
+  id                     String        @id @default(uuid()) @db.Uuid
+  userId                 String        @map("user_id") @db.Uuid
+  stripePaymentIntentId  String        @unique @map("stripe_payment_intent_id") @db.VarChar(255)
+  amount                 Int           // in cents
+  currency               String        @default("aud") @db.VarChar(3)
+  status                 PaymentStatus @default(requires_payment_method)
+  description            String?       @db.VarChar(500)
+  refundedAmount         Int?          @map("refunded_amount")
+  createdAt              DateTime      @default(now()) @map("created_at")
+  updatedAt              DateTime      @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([stripePaymentIntentId])
+  @@map("payments")
+}
