@@ -112,7 +112,32 @@ const adminNotifications = [
   { id: "3", title: "Activity Spike", message: "Unusual activity detected on vendor TaxEasy.", time: "1d ago", read: true },
 ];
 
-const Loading = () => <div className="flex items-center justify-center py-20 text-muted-foreground">Loading...</div>;
+const Loading = () => (
+  <div className="flex flex-col items-center justify-center py-20 gap-6">
+    <div className="flex items-center gap-2">
+      {"LifeLineAustralia".split("").map((char, i) => (
+        <span
+          key={i}
+          className="font-display text-2xl font-bold text-primary"
+          style={{
+            animation: `fade-in 0.4s ease-out ${i * 0.06}s both, pulse 1.5s ease-in-out ${0.4 + i * 0.06}s infinite`,
+          }}
+        >
+          {char}
+        </span>
+      ))}
+    </div>
+    <div className="flex gap-1.5">
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className="h-2 w-2 rounded-full bg-primary/60"
+          style={{ animation: `pulse 1.2s ease-in-out ${i * 0.2}s infinite` }}
+        />
+      ))}
+    </div>
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
