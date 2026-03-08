@@ -72,6 +72,8 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [savingPw, setSavingPw] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
+  const [appDialogOpen, setAppDialogOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<{ id: string; title: string } | null>(null);
   const [form, setForm] = useState({
     name: "",
     email: "",
