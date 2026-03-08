@@ -215,6 +215,25 @@ class CommunityTaskService {
     });
   }
 
+  // ── Admin: edit task ───────────────────────────────
+  async editTask(taskId: string, input: Partial<CreateTaskInput> & { adminNotes?: string }) {
+    const task = await db.findById("CommunityTask", taskId);
+    if (!task) throw Object.assign(new Error("Task not found"), { status: 404 });
+
+    const updateData: any = {};
+    if (input.title) { this.validateContent(input.title); updateData.title = input.title; }
+    if (input.description) { this.validateContent(input.description); updateData.description = input.description; }
+    if (input.category) updateData.category = input.category;
+    if (input.location) updateData.location = input.location;
+    if (input.date) updateData.date = new Date(input.date);
+    if (input.time) updateData.time = input.time;
+    if (input.duration) updateData.duration = input.duration;
+    if (input.payment !== undefined) updateData.payment = input.payment;
+    if (input.adminNotes) updateData.adminNotes = input.adminNotes;
+
+    return db.update("CommunityTask", taskId, updateData);
+  }
+
   // ── Automated content validation ─────────────────────
   private validateContent(text: string) {
     const lower = text.toLowerCase();

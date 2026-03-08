@@ -72,3 +72,8 @@ export async function flagTask(req: Request, res: Response) {
   const task = await communityTaskService.flagTask(req.params.id, req.body.adminNotes);
   return res.json(task);
 }
+
+export async function editTask(req: Request, res: Response) {
+  const task = await communityTaskService.editTask(req.params.id, req.body);
+  return res.json(task);
+}
