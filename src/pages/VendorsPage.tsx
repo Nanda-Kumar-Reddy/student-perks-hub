@@ -6,17 +6,17 @@ import { motion } from "framer-motion";
 import { Search, Star, MapPin, Filter } from "lucide-react";
 
 const allVendors = [
-  { id: 1, name: "The Green Bowl", cat: "Restaurant", rating: 4.8, offer: "15% off on meals", emoji: "🥗", location: "MG Road" },
-  { id: 2, name: "Bean Counter Café", cat: "Café", rating: 4.9, offer: "Free cookie with coffee", emoji: "☕", location: "College Street" },
-  { id: 3, name: "FitZone Gym", cat: "Gym", rating: 4.7, offer: "First month free", emoji: "🏋️", location: "Park Avenue" },
-  { id: 4, name: "Page Turner Books", cat: "Bookstore", rating: 4.6, offer: "10% on textbooks", emoji: "📚", location: "Library Lane" },
-  { id: 5, name: "Campus Bites", cat: "Restaurant", rating: 4.5, offer: "Buy 1 Get 1 Free", emoji: "🍔", location: "University Road" },
-  { id: 6, name: "Zen Spa", cat: "Services", rating: 4.8, offer: "20% off first visit", emoji: "💆", location: "Wellness Street" },
-  { id: 7, name: "Quick Print", cat: "Services", rating: 4.3, offer: "Free binding", emoji: "🖨️", location: "Tech Park" },
-  { id: 8, name: "Fresh Juice Corner", cat: "Café", rating: 4.4, offer: "₹10 off smoothies", emoji: "🥤", location: "Market Road" },
+  { id: 1, name: "HomeNest Stays", cat: "Accommodations", rating: 4.8, offer: "First month 10% off", emoji: "🏠", location: "City Centre" },
+  { id: 2, name: "EduPath Advisors", cat: "1:1 Consultations", rating: 4.9, offer: "Free first session", emoji: "🎓", location: "University Ave" },
+  { id: 3, name: "SkyRide Transfers", cat: "Airport Pickup", rating: 4.7, offer: "15% off first ride", emoji: "✈️", location: "Airport Road" },
+  { id: 4, name: "NumPro Accounting", cat: "Accounting Services", rating: 4.6, offer: "Free consultation", emoji: "📊", location: "Finance District" },
+  { id: 5, name: "DriveEasy School", cat: "Driving Licence", rating: 4.5, offer: "₹500 off package", emoji: "🚗", location: "Main Street" },
+  { id: 6, name: "CampusFest Events", cat: "Events", rating: 4.8, offer: "Early bird 20% off", emoji: "🎉", location: "Event Plaza" },
+  { id: 7, name: "AutoHub Rentals", cat: "Car Rent/Sale", rating: 4.3, offer: "Weekend special rates", emoji: "🚙", location: "Motor Lane" },
+  { id: 8, name: "CareerLaunch Jobs", cat: "Jobs", rating: 4.4, offer: "Premium listing free", emoji: "💼", location: "Tech Park" },
 ];
 
-const categories = ["All", "Restaurant", "Café", "Gym", "Bookstore", "Services"];
+const categories = ["All", "Accommodations", "1:1 Consultations", "Airport Pickup", "Accounting Services", "Driving Licence", "Events", "Car Rent/Sale", "Jobs"];
 
 export default function VendorsPage() {
   const [search, setSearch] = useState("");
