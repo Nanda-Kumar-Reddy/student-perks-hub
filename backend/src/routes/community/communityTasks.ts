@@ -7,6 +7,7 @@ import {
   applyForTaskSchema,
   sendTaskMessageSchema,
   adminTaskActionSchema,
+  adminEditTaskSchema,
   taskSearchQuery,
 } from "../../validators/community";
 import {
@@ -22,6 +23,7 @@ import {
   approveTask,
   rejectTask,
   flagTask,
+  editTask,
 } from "../../controllers/community/communityTask";
 import catchErrors from "../../utils/catchErrors";
 
