@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { createChat, createEnquiry, getMyEnquiries } from "../controllers/accommodation";
-import { validate } from "../middleware/validate";
-import { authenticate } from "../middleware/auth";
-import { rbac } from "../middleware/rbac";
-import { accommodationChatSchema, accommodationEnquirySchema } from "../validators/student";
-import { paginationQuery } from "../validators/common";
-import catchErrors from "../utils/catchErrors";
+import { createChat, createEnquiry, getMyEnquiries } from "../../controllers/student/accommodation";
+import { validate } from "../../middleware/validate";
+import { authenticate } from "../../middleware/auth";
+import { rbac } from "../../middleware/rbac";
+import { accommodationChatSchema, accommodationEnquirySchema } from "../../validators/student/student";
+import { paginationQuery } from "../../validators/common";
+import catchErrors from "../../utils/catchErrors";
 
 const router = Router();
 

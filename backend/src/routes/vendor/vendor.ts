@@ -2,12 +2,12 @@
  * Vendor Routes — protected by JWT + vendor RBAC
  */
 import { Router } from "express";
-import { authenticate } from "../middleware/auth";
-import { rbac } from "../middleware/rbac";
-import { validate } from "../middleware/validate";
-import catchErrors from "../utils/catchErrors";
-import * as vendorController from "../controllers/vendor";
-import { createCouponSchema, updateSettingsSchema } from "../validators/vendor";
+import { authenticate } from "../../middleware/auth";
+import { rbac } from "../../middleware/rbac";
+import { validate } from "../../middleware/validate";
+import catchErrors from "../../utils/catchErrors";
+import * as vendorController from "../../controllers/vendor/vendor";
+import { createCouponSchema, updateSettingsSchema } from "../../validators/vendor/vendor";
 
 const router = Router();
 

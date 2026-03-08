@@ -2,10 +2,10 @@
  * Admin Routes — protected by JWT + admin RBAC
  */
 import { Router } from "express";
-import { authenticate } from "../middleware/auth";
-import { rbac } from "../middleware/rbac";
-import catchErrors from "../utils/catchErrors";
-import * as adminController from "../controllers/admin";
+import { authenticate } from "../../middleware/auth";
+import { rbac } from "../../middleware/rbac";
+import catchErrors from "../../utils/catchErrors";
+import * as adminController from "../../controllers/admin/admin";
 
 const router = Router();
 
