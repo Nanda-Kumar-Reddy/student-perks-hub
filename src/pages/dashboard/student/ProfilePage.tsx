@@ -159,6 +159,26 @@ export default function ProfilePage() {
     }
   };
 
+  const handleTaskAction = async () => {
+    if (!confirmAction) return;
+    setActionLoading(true);
+    try {
+      await updateCommunityTaskStatus(confirmAction.taskId, confirmAction.type);
+      setActiveTasks((prev) => prev.filter((t) => t.id !== confirmAction.taskId));
+      toast({
+        title: confirmAction.type === "FILLED" ? "Task marked as filled" : "Task cancelled",
+        description: confirmAction.type === "FILLED"
+          ? `"${confirmAction.taskTitle}" has been marked as filled and removed from active tasks.`
+          : `"${confirmAction.taskTitle}" has been cancelled and removed.`,
+      });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setActionLoading(false);
+      setConfirmAction(null);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Profile Header */}
