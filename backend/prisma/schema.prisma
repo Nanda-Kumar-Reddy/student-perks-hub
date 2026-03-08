@@ -517,3 +517,93 @@ model Notification {
   @@index([receiverRole])
   @@map("notifications")
 }
+
+// =============================================
+// Community Tasks
+// =============================================
+
+model CommunityTask {
+  id                String              @id @default(uuid()) @db.Uuid
+  userId            String              @map("user_id") @db.Uuid
+  title             String              @db.VarChar(300)
+  category          String              @db.VarChar(100)
+  description       String              @db.Text
+  location          String              @db.VarChar(500)
+  date              DateTime
+  time              String              @db.VarChar(50)
+  duration          String              @db.VarChar(100)
+  payment           Decimal             @db.Decimal(10, 2)
+  status            CommunityTaskStatus @default(PENDING_APPROVAL)
+  // Worker qualifications
+  requiresExperience         Boolean @default(false) @map("requires_experience")
+  requiresTransport          Boolean @default(false) @map("requires_transport")
+  requiresPoliceCheck        Boolean @default(false) @map("requires_police_check")
+  requiresChildrenCheck      Boolean @default(false) @map("requires_children_check")
+  requiresFirstAid           Boolean @default(false) @map("requires_first_aid")
+  // Contact
+  showPhonePublicly          Boolean @default(false) @map("show_phone_publicly")
+  chatThroughApp             Boolean @default(true)  @map("chat_through_app")
+  // Admin
+  adminNotes        String?  @map("admin_notes") @db.Text
+  rejectionReason   String?  @map("rejection_reason") @db.Text
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applications TaskApplication[]
+  messages     TaskMessage[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([category])
+  @@index([location])
+  @@index([createdAt])
+  @@map("community_tasks")
+}
+
+model TaskApplication {
+  id        String        @id @default(uuid()) @db.Uuid
+  taskId    String        @map("task_id") @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
+  message   String?       @db.Text
+  status    RequestStatus @default(pending)
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  task CommunityTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, userId])
+  @@index([taskId])
+  @@index([userId])
+  @@map("task_applications")
+}
+
+model TaskMessage {
+  id        String   @id @default(uuid()) @db.Uuid
+  taskId    String   @map("task_id") @db.Uuid
+  senderId  String   @map("sender_id") @db.Uuid
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  task   CommunityTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  sender User          @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([senderId])
+  @@map("task_messages")
+}
+
+model TaskHistory {
+  id          String   @id @default(uuid()) @db.Uuid
+  taskId      String   @map("task_id") @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  workerName  String?  @map("worker_name") @db.VarChar(200)
+  duration    String?  @db.VarChar(100)
+  payment     Decimal? @db.Decimal(10, 2)
+  rating      Int?     @db.SmallInt
+  completedAt DateTime @default(now()) @map("completed_at")
+
+  @@index([userId])
+  @@map("task_history")
+}
