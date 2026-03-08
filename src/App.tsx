@@ -157,7 +157,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
+          <ChatProvider>
             {/* Public */}
             <Route element={<PublicLayout />}>
               <Route path="/" element={<HomePage />} />
