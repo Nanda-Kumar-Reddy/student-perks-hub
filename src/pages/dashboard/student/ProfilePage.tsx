@@ -264,7 +264,10 @@ export default function ProfilePage() {
             <PhoneField value={form.phone} onChange={(v) => update("phone", v)} />
             <div><Label>Address</Label><Input className="mt-1.5" value={form.address} onChange={(e) => update("address", e.target.value)} /></div>
           </FormSection>
-          <Button onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 3000); }}>Save Changes</Button>
+          <Button onClick={handleSaveProfile} disabled={saving}>
+            {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            Save Changes
+          </Button>
         </div>
         <div className="rounded-xl border border-border bg-card p-6 shadow-card space-y-6">
           <FormSection title="Change Password">
