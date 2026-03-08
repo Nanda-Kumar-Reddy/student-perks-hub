@@ -341,6 +341,33 @@ export default function ProfilePage() {
           task={taskDetails[selectedTask.id] || null}
         />
       )}
+
+      {/* Confirm Mark Filled / Cancel Dialog */}
+      <AlertDialog open={!!confirmAction} onOpenChange={(open) => !open && setConfirmAction(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmAction?.type === "FILLED" ? "Mark Task as Filled?" : "Cancel Task?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmAction?.type === "FILLED"
+                ? `Are you sure you want to mark "${confirmAction?.taskTitle}" as filled? This will close the task and stop accepting new applications.`
+                : `Are you sure you want to cancel "${confirmAction?.taskTitle}"? This action cannot be undone and the task will be removed permanently.`}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionLoading}>Go Back</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleTaskAction}
+              disabled={actionLoading}
+              className={confirmAction?.type === "CANCELLED" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90" : ""}
+            >
+              {actionLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              {confirmAction?.type === "FILLED" ? "Mark as Filled" : "Cancel Task"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
