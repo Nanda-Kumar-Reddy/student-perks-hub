@@ -120,7 +120,7 @@ export default function ResumeBuilderPage() {
     switch (activeSection) {
       case "Personal":
         return (
-          <div className="grid gap-2.5 sm:gap-3 grid-cols-1 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2.5 sm:gap-3 md:grid-cols-2">
             <div className="min-w-0"><Label className="text-xs sm:text-sm">Full Name</Label><Input className="mt-1 text-sm" value={name} onChange={e => setName(e.target.value)} placeholder="Enter your full name" /><p className="mt-0.5 text-[9px] sm:text-[10px] text-muted-foreground">💡 Use your legal name as it appears on official documents.</p></div>
             <div className="min-w-0"><Label className="text-xs sm:text-sm">Job Title</Label><Input className="mt-1 text-sm" value={jobTitle} onChange={e => setJobTitle(e.target.value)} placeholder="e.g. Full Stack Developer" /><p className="mt-0.5 text-[9px] sm:text-[10px] text-muted-foreground">💡 Match this to the role you're applying for.</p></div>
             <div className="min-w-0"><Label className="text-xs sm:text-sm">Email</Label><Input className="mt-1 text-sm" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" /></div>
