@@ -228,16 +228,16 @@ export default function ChatPopup() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between gap-2">
                             <span className="text-xs font-semibold truncate">{convo.otherUser.fullName}</span>
                             {convo.lastMessage && (
-                              <span className="text-[10px] text-muted-foreground flex-shrink-0 ml-1">
+                              <span className="text-[10px] text-muted-foreground flex-shrink-0">
                                 {formatTime(convo.lastMessage.createdAt)}
                               </span>
                             )}
                           </div>
-                          <div className="flex items-center justify-between mt-0.5">
-                            <p className="text-[11px] text-muted-foreground truncate max-w-[100px]">
+                          <div className="flex items-center justify-between mt-1">
+                            <p className="text-[11px] text-muted-foreground truncate max-w-[100px] leading-relaxed">
                               {convo.lastMessage?.text ?? "No messages yet"}
                             </p>
                             {convo.unreadCount > 0 && (
