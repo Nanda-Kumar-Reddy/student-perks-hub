@@ -271,6 +271,12 @@ export default function ProfilePage() {
               </div>
             </div>
           ))}
+          {activeTasks.length === 0 && (
+            <div className="rounded-xl border border-border bg-card p-8 text-center">
+              <CheckCircle2 className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">No active tasks</p>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="pending" className="space-y-3 mt-4">
