@@ -231,7 +231,7 @@ export default function ResumeBuilderPage() {
     }
   };
 
-  const previewScale = pageSize === "a5" ? 0.55 : 0.5;
+  
 
   return (
     <div className="space-y-6">
