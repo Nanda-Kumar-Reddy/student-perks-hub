@@ -15,6 +15,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { getProfile, updateProfile } from "@/services/database";
 import { updatePassword } from "@/services/auth";
 import { toast } from "@/hooks/use-toast";
+import ViewApplicationsDialog, { type TaskApplication } from "@/components/profile/ViewApplicationsDialog";
 
 const verificationBadges = [
   { label: "Phone Verified", icon: <Phone className="h-3.5 w-3.5" />, verified: true },
@@ -30,6 +31,22 @@ const activeTasks = [
   { id: "2", title: "Babysitting — Saturday Evening", applications: 3, status: "APPROVED" },
   { id: "3", title: "Help Moving Furniture", applications: 0, status: "PENDING_APPROVAL" },
 ];
+
+const demoApplications: Record<string, TaskApplication[]> = {
+  "1": [
+    { id: "a1", applicantName: "Alex Thompson", rating: 4.7, completedTasks: 8, location: "Carlton, VIC", appliedAt: "2h ago", message: "I have 3 years of gardening experience and own my own tools. Happy to help with mowing and weeding!", status: "pending" },
+    { id: "a2", applicantName: "Maria Garcia", rating: 4.9, completedTasks: 15, location: "Fitzroy, VIC", appliedAt: "5h ago", message: "Professional gardener available. I can bring my own equipment if needed.", status: "pending" },
+    { id: "a3", applicantName: "Liam Chen", rating: 4.3, completedTasks: 4, location: "Brunswick, VIC", appliedAt: "8h ago", message: "I'm a uni student looking for part-time work. I've maintained my family garden for years.", status: "accepted" },
+    { id: "a4", applicantName: "Sophie Williams", rating: 4.5, completedTasks: 6, location: "Parkville, VIC", appliedAt: "1d ago", message: "Available on the requested date. I have experience with hedge trimming too.", status: "rejected" },
+    { id: "a5", applicantName: "Daniel Kim", rating: 4.1, completedTasks: 2, location: "North Melbourne, VIC", appliedAt: "1d ago", message: "Happy to help! I'm reliable and punctual.", status: "pending" },
+  ],
+  "2": [
+    { id: "a6", applicantName: "Emma Johnson", rating: 4.8, completedTasks: 12, location: "South Yarra, VIC", appliedAt: "3h ago", message: "I have a Working with Children Check and 5 years of babysitting experience.", status: "pending" },
+    { id: "a7", applicantName: "Olivia Brown", rating: 4.6, completedTasks: 9, location: "Prahran, VIC", appliedAt: "6h ago", message: "Early childhood education student. Experienced with kids aged 3-8.", status: "pending" },
+    { id: "a8", applicantName: "Noah Davis", rating: 4.4, completedTasks: 5, location: "Richmond, VIC", appliedAt: "1d ago", message: "I have first aid certification and love working with children.", status: "pending" },
+  ],
+  "3": [],
+};
 
 const pendingApprovals = [
   { id: "4", title: "Dog Walking — Daily Morning Run", submitted: "2h ago", status: "PENDING_APPROVAL" },
@@ -55,6 +72,8 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [savingPw, setSavingPw] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
+  const [appDialogOpen, setAppDialogOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<{ id: string; title: string } | null>(null);
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -212,7 +231,7 @@ export default function ProfilePage() {
                 </span>
               </div>
               <div className="flex gap-2 mt-3">
-                <Button size="sm" variant="outline" className="text-xs gap-1"><Eye className="h-3 w-3" /> View Applications</Button>
+                <Button size="sm" variant="outline" className="text-xs gap-1" onClick={() => { setSelectedTask({ id: t.id, title: t.title }); setAppDialogOpen(true); }}><Eye className="h-3 w-3" /> View Applications</Button>
                 <Button size="sm" variant="outline" className="text-xs gap-1"><CheckCircle2 className="h-3 w-3" /> Mark Filled</Button>
                 <Button size="sm" variant="outline" className="text-xs gap-1 text-destructive hover:text-destructive"><XCircle className="h-3 w-3" /> Cancel</Button>
               </div>
@@ -281,6 +300,16 @@ export default function ProfilePage() {
           </Button>
         </div>
       </div>
+      {selectedTask && (
+        <ViewApplicationsDialog
+          open={appDialogOpen}
+          onOpenChange={setAppDialogOpen}
+          taskTitle={selectedTask.title}
+          applications={demoApplications[selectedTask.id] || []}
+          onAccept={(id) => toast({ title: "Application accepted", description: `Application ${id} has been accepted.` })}
+          onReject={(id) => toast({ title: "Application rejected", description: `Application ${id} has been rejected.` })}
+        />
+      )}
     </div>
   );
 }
