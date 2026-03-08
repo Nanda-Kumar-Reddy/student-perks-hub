@@ -228,8 +228,8 @@ const App = () => (
 
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </ChatProvider>
         </AuthProvider>
-      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );

@@ -175,7 +175,7 @@ export default function ChatPopup() {
                   {!showConvoList && activeConvo ? activeConvo.otherUser.fullName : "Messages"}
                 </span>
                 {!showConvoList && activeConvo && onlineUsers.includes(activeConvo.otherUser.id) && (
-                  <Circle className="h-2.5 w-2.5 fill-green-400 text-green-400" />
+                  <Circle className="h-2.5 w-2.5 fill-[hsl(var(--success))] text-[hsl(var(--success))]" />
                 )}
               </div>
               <button onClick={() => setChatOpen(false)} className="rounded-lg p-1.5 text-primary-foreground/70 hover:text-primary-foreground transition-colors">
@@ -224,7 +224,7 @@ export default function ChatPopup() {
                             {convo.otherUser.fullName.charAt(0).toUpperCase()}
                           </div>
                           {onlineUsers.includes(convo.otherUser.id) && (
-                            <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card bg-success" />
+                            <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-card bg-success/>
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
