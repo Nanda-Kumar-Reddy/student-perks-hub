@@ -44,15 +44,16 @@ export default function DiscountsModal({ open, onOpenChange, initialCategory }: 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl max-h-[80vh] p-0 overflow-hidden">
-        <DialogHeader className="px-6 pt-6 pb-0">
-          <DialogTitle className="font-display flex items-center gap-2">
+      <DialogContent className="sm:max-w-2xl w-[calc(100vw-2rem)] max-h-[85vh] p-0 overflow-hidden">
+        <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-0">
+          <DialogTitle className="font-display flex items-center gap-2 text-base sm:text-lg">
             <Tag className="h-5 w-5 text-primary" /> Discounts & Offers
           </DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col sm:flex-row h-full min-h-[350px]">
-          {/* Left menu - scrollable on small screens */}
-          <div className="sm:w-48 flex-shrink-0 border-b sm:border-b-0 sm:border-r border-border p-3 flex sm:flex-col gap-1 overflow-x-auto sm:overflow-x-visible overflow-y-auto max-h-[120px] sm:max-h-none">
+        <div className="flex flex-col sm:flex-row h-full min-h-0 sm:min-h-[350px]">
+          {/* Left menu - horizontal scroll on mobile */}
+          <div className="sm:w-48 flex-shrink-0 border-b sm:border-b-0 sm:border-r border-border p-2 sm:p-3 flex sm:flex-col gap-1 overflow-x-auto sm:overflow-x-visible sm:overflow-y-auto"
+          >
             {categories.map((cat) => (
               <button
                 key={cat}
