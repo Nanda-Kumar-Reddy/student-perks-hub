@@ -111,6 +111,20 @@ model Profile {
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
 
+  // Verification badges
+  phoneVerified  Boolean  @default(false) @map("phone_verified")
+  emailVerified  Boolean  @default(false) @map("email_verified")
+  idUploaded     Boolean  @default(false) @map("id_uploaded")
+  policeCheck    Boolean  @default(false) @map("police_check")
+
+  // Skills & Qualifications
+  skills         String[] @default([])
+
+  // Stats
+  rating         Decimal  @default(0) @db.Decimal(3, 2)
+  completedTasks Int      @default(0) @map("completed_tasks")
+  responseRate   Int      @default(100) @map("response_rate")
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("profiles")
