@@ -50,6 +50,8 @@ const MyBookingsPage = lazy(() => import("./pages/dashboard/student/MyBookingsPa
 const ProfilePage = lazy(() => import("./pages/dashboard/student/ProfilePage"));
 const CertificationsPage = lazy(() => import("./pages/dashboard/student/CertificationsPage"));
 const CertificationDetailPage = lazy(() => import("./pages/dashboard/student/CertificationDetailPage"));
+const CommunityTasksPage = lazy(() => import("./pages/dashboard/student/CommunityTasksPage"));
+const CommunityTaskDetailPage = lazy(() => import("./pages/dashboard/student/CommunityTaskDetailPage"));
 
 // Lazy load vendor pages
 const VerifyTransactionPage = lazy(() => import("./pages/dashboard/vendor/VerifyTransactionPage"));
