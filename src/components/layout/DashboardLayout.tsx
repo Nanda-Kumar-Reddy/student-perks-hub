@@ -50,7 +50,7 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
   const [selectedDiscountCategory, setSelectedDiscountCategory] = useState("Lifeline Liquor");
   const [profileDropdown, setProfileDropdown] = useState(false);
 
-  const roleInfo = getRoleInfo(title);
+  const roleInfo = { icon: roleIcon, name: displayName };
 
   const openDiscountModal = (category: string) => {
     setSelectedDiscountCategory(category);
