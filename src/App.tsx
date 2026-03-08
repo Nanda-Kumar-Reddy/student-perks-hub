@@ -23,7 +23,8 @@ import NotFound from "./pages/NotFound";
 import {
   LayoutDashboard, Plane, Home, Car, Briefcase, FileText, DollarSign,
   Users, Calculator, CarFront, CalendarDays, CalendarCheck, User,
-  Award, QrCode, BarChart3, Gift, Settings, Store, Activity
+  Award, QrCode, BarChart3, Gift, Settings, Store, Activity, ShieldCheck,
+  ListTodo
 } from "lucide-react";
 
 // Lazy load student feature pages
