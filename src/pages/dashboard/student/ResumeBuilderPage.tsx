@@ -120,15 +120,15 @@ export default function ResumeBuilderPage() {
     switch (activeSection) {
       case "Personal":
         return (
-          <div className="grid gap-2.5 sm:gap-3 grid-cols-1 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-2.5 sm:gap-3 md:grid-cols-2">
             <div className="min-w-0"><Label className="text-xs sm:text-sm">Full Name</Label><Input className="mt-1 text-sm" value={name} onChange={e => setName(e.target.value)} placeholder="Enter your full name" /><p className="mt-0.5 text-[9px] sm:text-[10px] text-muted-foreground">💡 Use your legal name as it appears on official documents.</p></div>
             <div className="min-w-0"><Label className="text-xs sm:text-sm">Job Title</Label><Input className="mt-1 text-sm" value={jobTitle} onChange={e => setJobTitle(e.target.value)} placeholder="e.g. Full Stack Developer" /><p className="mt-0.5 text-[9px] sm:text-[10px] text-muted-foreground">💡 Match this to the role you're applying for.</p></div>
             <div className="min-w-0"><Label className="text-xs sm:text-sm">Email</Label><Input className="mt-1 text-sm" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" /></div>
             <div className="min-w-0"><Label className="text-xs sm:text-sm">Phone</Label><Input className="mt-1 text-sm" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+61 4XX XXX XXX" /><p className="mt-0.5 text-[9px] sm:text-[10px] text-muted-foreground">Format: +61 4XX XXX XXX or 04XX XXX XXX</p></div>
             <div className="min-w-0"><Label className="text-xs sm:text-sm">Address</Label><Input className="mt-1 text-sm" value={address} onChange={e => setAddress(e.target.value)} placeholder="City, State, Country" /></div>
             <div className="min-w-0"><Label className="text-xs sm:text-sm">LinkedIn URL</Label><Input className="mt-1 text-sm" value={linkedin} onChange={e => setLinkedin(e.target.value)} placeholder="linkedin.com/in/yourname" /></div>
-            <div className="sm:col-span-2 min-w-0"><Label className="text-xs sm:text-sm">Portfolio Website</Label><Input className="mt-1 text-sm" value={portfolio} onChange={e => setPortfolio(e.target.value)} placeholder="yourportfolio.com" /></div>
-            <div className="sm:col-span-2 min-w-0">
+            <div className="md:col-span-2 min-w-0"><Label className="text-xs sm:text-sm">Portfolio Website</Label><Input className="mt-1 text-sm" value={portfolio} onChange={e => setPortfolio(e.target.value)} placeholder="yourportfolio.com" /></div>
+            <div className="md:col-span-2 min-w-0">
               <Label className="text-xs sm:text-sm">Profile Summary</Label>
               <Textarea className="mt-1 text-sm" value={summary} onChange={e => setSummary(e.target.value)} rows={3} placeholder="A brief summary of your professional background..." />
               <p className="mt-0.5 text-[9px] sm:text-[10px] text-muted-foreground">💡 Keep the summary concise and highlight your strongest professional achievements.</p>
@@ -142,7 +142,7 @@ export default function ResumeBuilderPage() {
             {experience.map((e, i) => (
               <div key={i} className="rounded-lg bg-secondary/30 p-3 space-y-2">
                 <div className="flex justify-between items-start"><span className="text-xs font-medium text-muted-foreground">Entry {i + 1}</span><Button variant="ghost" size="sm" onClick={() => setExperience(p => p.filter((_, j) => j !== i))}><Trash2 className="h-3.5 w-3.5" /></Button></div>
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className="grid gap-2 md:grid-cols-2">
                   <div><Label className="text-xs">Company Name</Label><Input className="mt-1" placeholder="Company Name" value={e.company} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], company: ev.target.value }; setExperience(n); }} /></div>
                   <div><Label className="text-xs">Job Title</Label><Input className="mt-1" placeholder="Job Title" value={e.jobTitle} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], jobTitle: ev.target.value }; setExperience(n); }} /></div>
                   <div><Label className="text-xs">Start Date</Label><Input className="mt-1" placeholder="e.g. Jan 2023" value={e.startDate} onChange={ev => { const n = [...experience]; n[i] = { ...n[i], startDate: ev.target.value }; setExperience(n); }} /></div>
@@ -160,7 +160,7 @@ export default function ResumeBuilderPage() {
             {education.map((e, i) => (
               <div key={i} className="rounded-lg bg-secondary/30 p-3 space-y-2">
                 <div className="flex justify-between items-start"><span className="text-xs font-medium text-muted-foreground">Entry {i + 1}</span><Button variant="ghost" size="sm" onClick={() => setEducation(p => p.filter((_, j) => j !== i))}><Trash2 className="h-3.5 w-3.5" /></Button></div>
-                <div className="grid gap-2 sm:grid-cols-2">
+                <div className="grid gap-2 md:grid-cols-2">
                   <div><Label className="text-xs">Institution</Label><Input className="mt-1" placeholder="University / Institution" value={e.institution} onChange={ev => { const n = [...education]; n[i] = { ...n[i], institution: ev.target.value }; setEducation(n); }} /></div>
                   <div><Label className="text-xs">Degree / Course</Label><Input className="mt-1" placeholder="Degree / Course" value={e.degree} onChange={ev => { const n = [...education]; n[i] = { ...n[i], degree: ev.target.value }; setEducation(n); }} /></div>
                   <div><Label className="text-xs">Start Date</Label><Input className="mt-1" placeholder="e.g. 2017" value={e.startDate} onChange={ev => { const n = [...education]; n[i] = { ...n[i], startDate: ev.target.value }; setEducation(n); }} /></div>
@@ -215,17 +215,17 @@ export default function ResumeBuilderPage() {
         <h1 className="font-display text-2xl font-bold flex items-center gap-2"><FileText className="h-6 w-6 text-primary" /> Resume Builder</h1>
         <p className="text-sm text-muted-foreground mt-1">Build your professional resume</p>
       </div>
-      <Tabs defaultValue="build" className="w-full">
-        <TabsList>
-          <TabsTrigger value="build">Build It Myself</TabsTrigger>
-          <TabsTrigger value="expert">Hire an Expert</TabsTrigger>
-          <TabsTrigger value="requests">My Requests</TabsTrigger>
+      <Tabs defaultValue="build" className="w-full min-w-0">
+        <TabsList className="w-full justify-start overflow-x-auto whitespace-nowrap">
+          <TabsTrigger value="build" className="shrink-0">Build It Myself</TabsTrigger>
+          <TabsTrigger value="expert" className="shrink-0">Hire an Expert</TabsTrigger>
+          <TabsTrigger value="requests" className="shrink-0">My Requests</TabsTrigger>
         </TabsList>
 
         <TabsContent value="build" className="mt-4">
           <div className="grid gap-6 lg:grid-cols-2">
-            <div className="space-y-4">
-              <div className="flex gap-2">
+            <div className="min-w-0 space-y-4">
+              <div className="flex flex-wrap gap-2">
                 <Button variant={contentTab === "content" ? "default" : "outline"} size="sm" onClick={() => setContentTab("content")}>Content</Button>
                 <Button variant={contentTab === "templates" ? "default" : "outline"} size="sm" onClick={() => setContentTab("templates")}>Templates ({templateMeta.length})</Button>
               </div>
@@ -245,14 +245,16 @@ export default function ResumeBuilderPage() {
                   ))}
                 </div>
               ) : (
-                <div className="rounded-xl border border-border bg-card p-2 sm:p-4 shadow-card space-y-2.5 sm:space-y-4 w-full min-w-0 overflow-hidden">
-                  <div className="flex gap-1 overflow-x-auto pb-1.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                    {contentSections.map(s => (
-                      <button key={s} onClick={() => setActiveSection(s)}
-                        className={`rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeSection === s ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>{s}</button>
-                    ))}
+                <div className="flex max-w-full min-w-0 flex-col space-y-2.5 rounded-xl border border-border bg-card p-2 shadow-card sm:space-y-4 sm:p-4">
+                  <div className="w-full overflow-x-auto pb-1.5 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    <div className="flex min-w-max gap-1 pr-1">
+                      {contentSections.map(s => (
+                        <button key={s} onClick={() => setActiveSection(s)}
+                          className={`rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 text-[10px] sm:text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeSection === s ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>{s}</button>
+                      ))}
+                    </div>
                   </div>
-                  <div className="min-w-0 w-full overflow-x-hidden">
+                  <div className="min-w-0 w-full overflow-x-hidden overflow-y-auto max-h-[62vh] sm:max-h-none pb-20 sm:pb-0">
                     {renderSectionEditor()}
                   </div>
                 </div>
