@@ -190,14 +190,17 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
               </button>
               {profileDropdown && (
                 <div className="absolute right-0 top-full mt-1 w-40 rounded-xl border border-border bg-card p-1.5 shadow-card-hover z-50 animate-scale-in">
-                  <Link
-                    to="/"
-                    onClick={() => setProfileDropdown(false)}
+                  <button
+                    onClick={async () => {
+                      setProfileDropdown(false);
+                      await signOut();
+                      navigate("/login");
+                    }}
                     className="flex items-center gap-2 w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
                   >
                     <LogOut className="h-4 w-4" />
                     Sign Out
-                  </Link>
+                  </button>
                 </div>
               )}
             </div>
