@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import { Search, Star, MapPin, Filter } from "lucide-react";
+import { Search, Star, MapPin, ChevronDown } from "lucide-react";
 
 const allVendors = [
   { id: 1, name: "HomeNest Stays", cat: "Accommodations", rating: 4.8, offer: "First month 10% off", emoji: "🏠", location: "City Centre" },
@@ -16,17 +16,31 @@ const allVendors = [
   { id: 8, name: "CareerLaunch Jobs", cat: "Jobs", rating: 4.4, offer: "Premium listing free", emoji: "💼", location: "Tech Park" },
 ];
 
-const categories = ["All", "Accommodations", "1:1 Consultations", "Airport Pickup", "Accounting Services", "Driving Licence", "Events", "Car Rent/Sale", "Jobs"];
+const visibleCategories = ["All", "Accommodations", "1:1 Consultations", "Airport Pickup"];
+const moreCategories = ["Accounting Services", "Driving Licence", "Events", "Car Rent/Sale", "Jobs"];
 
 export default function VendorsPage() {
   const [search, setSearch] = useState("");
   const [activeCat, setActiveCat] = useState("All");
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) setMoreOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   const filtered = allVendors.filter(
     (v) =>
       (activeCat === "All" || v.cat === activeCat) &&
       v.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  const isMoreActive = moreCategories.includes(activeCat);
 
   return (
     <div className="py-12">
@@ -45,12 +59,12 @@ export default function VendorsPage() {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((cat) => (
+          <div className="flex items-center gap-2">
+            {visibleCategories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCat(cat)}
-                className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap ${
                   activeCat === cat
                     ? "bg-primary text-primary-foreground"
                     : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
@@ -59,6 +73,35 @@ export default function VendorsPage() {
                 {cat}
               </button>
             ))}
+            {/* More dropdown */}
+            <div className="relative" ref={moreRef}>
+              <button
+                onClick={() => setMoreOpen(!moreOpen)}
+                className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-xs font-medium transition-colors whitespace-nowrap ${
+                  isMoreActive
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                }`}
+              >
+                {isMoreActive ? activeCat : "More"}
+                <ChevronDown className={`h-3 w-3 transition-transform ${moreOpen ? "rotate-180" : ""}`} />
+              </button>
+              {moreOpen && (
+                <div className="absolute right-0 top-full mt-1 w-48 rounded-xl border border-border bg-card p-1 shadow-lg z-50">
+                  {moreCategories.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => { setActiveCat(cat); setMoreOpen(false); }}
+                      className={`w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors ${
+                        activeCat === cat ? "bg-primary/10 text-primary" : "hover:bg-secondary"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -70,6 +113,7 @@ export default function VendorsPage() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
+              onClick={() => navigate("/signup")}
               className="group cursor-pointer rounded-2xl border border-border bg-card overflow-hidden shadow-card transition-all hover:shadow-card-hover"
             >
               <div className="flex h-28 items-center justify-center bg-secondary text-4xl">
