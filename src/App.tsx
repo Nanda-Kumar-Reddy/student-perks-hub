@@ -64,6 +64,7 @@ const AdminUsersPage = lazy(() => import("./pages/dashboard/admin/UsersPage"));
 const AdminVendorsPage = lazy(() => import("./pages/dashboard/admin/VendorsPage"));
 const AdminTransactionsPage = lazy(() => import("./pages/dashboard/admin/TransactionsPage"));
 const AdminAnalysisPage = lazy(() => import("./pages/dashboard/admin/AnalysisPage"));
+const AdminCommunityTasksPage = lazy(() => import("./pages/dashboard/admin/CommunityTasksPage"));
 
 const queryClient = new QueryClient();
 
