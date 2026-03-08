@@ -31,10 +31,10 @@ const discountCategories = [
   "Lifeline Accounting",
 ];
 
-function getRoleInfo(title: string) {
-  if (title.toLowerCase().includes("vendor")) return { role: "vendor", icon: <Store className="h-4 w-4" />, name: "Joe" };
-  if (title.toLowerCase().includes("admin")) return { role: "admin", icon: <ShieldCheck className="h-4 w-4" />, name: "Admin" };
-  return { role: "student", icon: <User className="h-4 w-4" />, name: "John" };
+function getRoleIcon(title: string) {
+  if (title.toLowerCase().includes("vendor")) return <Store className="h-4 w-4" />;
+  if (title.toLowerCase().includes("admin")) return <ShieldCheck className="h-4 w-4" />;
+  return <User className="h-4 w-4" />;
 }
 
 export default function DashboardLayout({ title, navItems, notifications = [], showDiscounts = false, showFloatingButtons = false }: DashboardLayoutProps) {
