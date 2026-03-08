@@ -32,22 +32,29 @@ const activeTasks = [
   { id: "3", title: "Help Moving Furniture", applications: 0, status: "PENDING_APPROVAL" },
 ];
 
-const demoApplications: Record<string, TaskApplication[]> = {
-  "1": [
-    { id: "a1", applicantName: "Alex Thompson", rating: 4.7, completedTasks: 8, location: "Carlton, VIC", appliedAt: "2h ago", message: "I have 3 years of gardening experience and own my own tools. Happy to help with mowing and weeding!", status: "pending" },
-    { id: "a2", applicantName: "Maria Garcia", rating: 4.9, completedTasks: 15, location: "Fitzroy, VIC", appliedAt: "5h ago", message: "Professional gardener available. I can bring my own equipment if needed.", status: "pending" },
-    { id: "a3", applicantName: "Liam Chen", rating: 4.3, completedTasks: 4, location: "Brunswick, VIC", appliedAt: "8h ago", message: "I'm a uni student looking for part-time work. I've maintained my family garden for years.", status: "accepted" },
-    { id: "a4", applicantName: "Sophie Williams", rating: 4.5, completedTasks: 6, location: "Parkville, VIC", appliedAt: "1d ago", message: "Available on the requested date. I have experience with hedge trimming too.", status: "rejected" },
-    { id: "a5", applicantName: "Daniel Kim", rating: 4.1, completedTasks: 2, location: "North Melbourne, VIC", appliedAt: "1d ago", message: "Happy to help! I'm reliable and punctual.", status: "pending" },
-  ],
-  "2": [
-    { id: "a6", applicantName: "Emma Johnson", rating: 4.8, completedTasks: 12, location: "South Yarra, VIC", appliedAt: "3h ago", message: "I have a Working with Children Check and 5 years of babysitting experience.", status: "pending" },
-    { id: "a7", applicantName: "Olivia Brown", rating: 4.6, completedTasks: 9, location: "Prahran, VIC", appliedAt: "6h ago", message: "Early childhood education student. Experienced with kids aged 3-8.", status: "pending" },
-    { id: "a8", applicantName: "Noah Davis", rating: 4.4, completedTasks: 5, location: "Richmond, VIC", appliedAt: "1d ago", message: "I have first aid certification and love working with children.", status: "pending" },
-  ],
-  "3": [],
+const taskDetails: Record<string, any> = {
+  "1": {
+    id: "1", title: "Garden Maintenance — Mowing & Weeding", category: "Home & Garden",
+    description: "Need someone to mow the front and back lawn, weed the garden beds, and trim the hedges. All tools and equipment will be provided. The property is a standard suburban block.",
+    location: "42 Oak Street, Carlton, VIC 3053", date: "March 15, 2026", time: "9:00 AM", duration: "3 hours", payment: "$90",
+    poster: { name: "Sarah Mitchell", rating: 4.8, responseRate: "92%", completedTasks: 15 },
+    qualifications: { requiresExperience: true, requiresTransport: false, requiresPoliceCheck: false, requiresChildrenCheck: false, requiresFirstAid: false },
+  },
+  "2": {
+    id: "2", title: "Babysitting — Saturday Evening", category: "Childcare",
+    description: "Looking for an experienced babysitter for two children aged 4 and 7. Kids are well-behaved. Need someone from 6 PM to 11 PM. Dinner will be provided.",
+    location: "18 Elm Ave, South Yarra, VIC 3141", date: "March 16, 2026", time: "6:00 PM", duration: "5 hours", payment: "$150",
+    poster: { name: "James Cooper", rating: 4.5, responseRate: "88%", completedTasks: 8 },
+    qualifications: { requiresExperience: true, requiresTransport: false, requiresPoliceCheck: false, requiresChildrenCheck: true, requiresFirstAid: true },
+  },
+  "3": {
+    id: "3", title: "Help Moving Furniture", category: "Moving",
+    description: "Need help moving furniture from a 2-bedroom apartment to a new location 15 minutes away. Items include a couch, bed frame, desk, and boxes.",
+    location: "7 Rose St, Fitzroy, VIC 3065", date: "March 18, 2026", time: "10:00 AM", duration: "4 hours", payment: "$160",
+    poster: { name: "Emily Chen", rating: 4.9, responseRate: "95%", completedTasks: 22 },
+    qualifications: { requiresExperience: false, requiresTransport: true, requiresPoliceCheck: false, requiresChildrenCheck: false, requiresFirstAid: false },
+  },
 };
-
 const pendingApprovals = [
   { id: "4", title: "Dog Walking — Daily Morning Run", submitted: "2h ago", status: "PENDING_APPROVAL" },
   { id: "5", title: "Tutoring — Year 10 Mathematics", submitted: "1d ago", status: "PENDING_APPROVAL" },
