@@ -11,7 +11,8 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRES_IN: z.string().default("7d"),
   PORT: z.coerce.number().default(4000),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-  CORS_ORIGIN: z.string().default("http://localhost:5173"),
+  CORS_ORIGIN: z.string().optional(),
+  PRODUCTION_URLS: z.string().optional(), // comma-separated production origins
   MAX_FILE_SIZE_MB: z.coerce.number().default(10),
   UPLOAD_DIR: z.string().default("./uploads"),
   RATE_LIMIT_WINDOW_MS: z.coerce.number().default(900000),
