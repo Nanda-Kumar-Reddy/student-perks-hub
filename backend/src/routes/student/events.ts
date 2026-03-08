@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { registerForEvent, getMyEventRegistrations } from "../controllers/event";
-import { validate } from "../middleware/validate";
-import { authenticate } from "../middleware/auth";
-import { rbac } from "../middleware/rbac";
-import { eventRegistrationSchema } from "../validators/student";
-import { paginationQuery } from "../validators/common";
-import catchErrors from "../utils/catchErrors";
+import { registerForEvent, getMyEventRegistrations } from "../../controllers/student/event";
+import { validate } from "../../middleware/validate";
+import { authenticate } from "../../middleware/auth";
+import { rbac } from "../../middleware/rbac";
+import { eventRegistrationSchema } from "../../validators/student/student";
+import { paginationQuery } from "../../validators/common";
+import catchErrors from "../../utils/catchErrors";
 
 const router = Router();
 

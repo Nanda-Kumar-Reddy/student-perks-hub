@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { bookConsultation, getMyConsultations } from "../controllers/consultation";
-import { validate } from "../middleware/validate";
-import { authenticate } from "../middleware/auth";
-import { rbac } from "../middleware/rbac";
-import { consultationSchema } from "../validators/student";
-import { paginationQuery } from "../validators/common";
-import catchErrors from "../utils/catchErrors";
+import { bookConsultation, getMyConsultations } from "../../controllers/student/consultation";
+import { validate } from "../../middleware/validate";
+import { authenticate } from "../../middleware/auth";
+import { rbac } from "../../middleware/rbac";
+import { consultationSchema } from "../../validators/student/student";
+import { paginationQuery } from "../../validators/common";
+import catchErrors from "../../utils/catchErrors";
 
 const router = Router();
 

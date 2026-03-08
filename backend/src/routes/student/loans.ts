@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { applyForLoan, getMyLoanApplications } from "../controllers/loan";
-import { validate } from "../middleware/validate";
-import { authenticate } from "../middleware/auth";
-import { rbac } from "../middleware/rbac";
-import { loanApplicationSchema } from "../validators/student";
-import { paginationQuery } from "../validators/common";
-import catchErrors from "../utils/catchErrors";
+import { applyForLoan, getMyLoanApplications } from "../../controllers/student/loan";
+import { validate } from "../../middleware/validate";
+import { authenticate } from "../../middleware/auth";
+import { rbac } from "../../middleware/rbac";
+import { loanApplicationSchema } from "../../validators/student/student";
+import { paginationQuery } from "../../validators/common";
+import catchErrors from "../../utils/catchErrors";
 
 const router = Router();
 

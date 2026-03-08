@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { bookDrivingLicense, getMyDrivingLicenseBookings } from "../controllers/drivingLicense";
-import { validate } from "../middleware/validate";
-import { authenticate } from "../middleware/auth";
-import { rbac } from "../middleware/rbac";
-import { drivingLicenseSchema } from "../validators/student";
-import { paginationQuery } from "../validators/common";
-import catchErrors from "../utils/catchErrors";
+import { bookDrivingLicense, getMyDrivingLicenseBookings } from "../../controllers/student/drivingLicense";
+import { validate } from "../../middleware/validate";
+import { authenticate } from "../../middleware/auth";
+import { rbac } from "../../middleware/rbac";
+import { drivingLicenseSchema } from "../../validators/student/student";
+import { paginationQuery } from "../../validators/common";
+import catchErrors from "../../utils/catchErrors";
 
 const router = Router();
 

@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { getMyBookings, getMyRequests } from "../controllers/studentDashboard";
-import { validate } from "../middleware/validate";
-import { authenticate } from "../middleware/auth";
-import { rbac } from "../middleware/rbac";
-import { paginationQuery } from "../validators/common";
-import catchErrors from "../utils/catchErrors";
+import { getMyBookings, getMyRequests } from "../../controllers/student/studentDashboard";
+import { validate } from "../../middleware/validate";
+import { authenticate } from "../../middleware/auth";
+import { rbac } from "../../middleware/rbac";
+import { paginationQuery } from "../../validators/common";
+import catchErrors from "../../utils/catchErrors";
 
 const router = Router();
 

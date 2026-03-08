@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { applyForJob, getMyApplications } from "../controllers/jobApplication";
-import { validate } from "../middleware/validate";
-import { authenticate } from "../middleware/auth";
-import { rbac } from "../middleware/rbac";
-import { jobApplicationSchema } from "../validators/student";
-import { paginationQuery } from "../validators/common";
-import { upload } from "../middleware/upload";
-import catchErrors from "../utils/catchErrors";
+import { applyForJob, getMyApplications } from "../../controllers/student/jobApplication";
+import { validate } from "../../middleware/validate";
+import { authenticate } from "../../middleware/auth";
+import { rbac } from "../../middleware/rbac";
+import { jobApplicationSchema } from "../../validators/student/student";
+import { paginationQuery } from "../../validators/common";
+import { upload } from "../../middleware/upload";
+import catchErrors from "../../utils/catchErrors";
 
 const router = Router();
 
