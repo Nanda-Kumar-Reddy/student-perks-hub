@@ -158,6 +158,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <ChatProvider>
+          <Routes>
             {/* Public */}
             <Route element={<PublicLayout />}>
               <Route path="/" element={<HomePage />} />
