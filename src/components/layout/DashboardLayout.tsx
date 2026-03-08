@@ -86,7 +86,7 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-sidebar-primary">
             <Zap className="h-3.5 w-3.5 text-sidebar-primary-foreground" />
           </div>
-          <span className="font-display text-sm font-bold text-sidebar-foreground">{title}</span>
+          <span className="font-display text-sm font-bold text-sidebar-foreground">LifeLineAustralia</span>
         </div>
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
           <NavLinks />
