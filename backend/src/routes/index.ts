@@ -30,6 +30,9 @@ import communityRoutes from "./community/communityTasks";
 // Chat routes
 import chatRoutes from "./chat";
 
+// Payment routes
+import paymentRoutes from "./payment";
+
 const router = Router();
 
 // ── Auth & OTP ──────────────────────────────────────
@@ -64,6 +67,9 @@ router.use("/community/tasks", communityRoutes);
 
 // ── Chat ────────────────────────────────────────────
 router.use("/chat", chatRoutes);
+
+// ── Payments ────────────────────────────────────────
+router.use("/payments", paymentRoutes);
 
 // ── Legacy ──────────────────────────────────────────
 router.use("/bookings", bookingRoutes);
