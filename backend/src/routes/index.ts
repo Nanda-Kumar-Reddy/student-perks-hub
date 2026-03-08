@@ -27,6 +27,9 @@ import vendorRoutes from "./vendor/vendor";
 // Community routes
 import communityRoutes from "./community/communityTasks";
 
+// Chat routes
+import chatRoutes from "./chat";
+
 const router = Router();
 
 // ── Auth & OTP ──────────────────────────────────────
