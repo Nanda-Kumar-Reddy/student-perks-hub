@@ -245,14 +245,16 @@ export default function ResumeBuilderPage() {
                   ))}
                 </div>
               ) : (
-                <div className="rounded-xl border border-border bg-card p-4 shadow-card space-y-4">
-                  <div className="flex flex-wrap gap-1">
+                <div className="rounded-xl border border-border bg-card p-2.5 sm:p-4 shadow-card space-y-3 sm:space-y-4 w-full min-w-0 overflow-hidden">
+                  <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
                     {contentSections.map(s => (
                       <button key={s} onClick={() => setActiveSection(s)}
-                        className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${activeSection === s ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>{s}</button>
+                        className={`rounded-lg px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeSection === s ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>{s}</button>
                     ))}
                   </div>
-                  {renderSectionEditor()}
+                  <div className="min-w-0 overflow-x-hidden">
+                    {renderSectionEditor()}
+                  </div>
                 </div>
               )}
             </div>
