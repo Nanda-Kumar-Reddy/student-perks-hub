@@ -65,6 +65,7 @@ model User {
   updatedAt      DateTime @updatedAt @map("updated_at")
 
   profile                Profile?
+  vendorProfile          VendorProfile?
   roles                  UserRole[]
   refreshTokens          RefreshToken[]
   otpCodes               OtpCode[]
