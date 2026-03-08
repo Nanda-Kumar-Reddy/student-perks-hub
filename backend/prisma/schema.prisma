@@ -95,6 +95,9 @@ model User {
     communityTasks         CommunityTask[]
     taskApplications       TaskApplication[]
     sentTaskMessages       TaskMessage[]       @relation("SentMessages")
+    conversationsAsUser1   Conversation[]      @relation("ConversationsAsUser1")
+    conversationsAsUser2   Conversation[]      @relation("ConversationsAsUser2")
+    sentChatMessages       Message[]           @relation("SentChatMessages")
 
     @@index([vendorStatus])
     @@map("users")
