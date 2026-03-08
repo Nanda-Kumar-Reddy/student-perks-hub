@@ -127,8 +127,8 @@ export default function ResumeBuilderPage() {
             <div className="min-w-0"><Label className="text-xs sm:text-sm">Phone</Label><Input className="mt-1 text-sm" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+61 4XX XXX XXX" /><p className="mt-0.5 text-[9px] sm:text-[10px] text-muted-foreground">Format: +61 4XX XXX XXX or 04XX XXX XXX</p></div>
             <div className="min-w-0"><Label className="text-xs sm:text-sm">Address</Label><Input className="mt-1 text-sm" value={address} onChange={e => setAddress(e.target.value)} placeholder="City, State, Country" /></div>
             <div className="min-w-0"><Label className="text-xs sm:text-sm">LinkedIn URL</Label><Input className="mt-1 text-sm" value={linkedin} onChange={e => setLinkedin(e.target.value)} placeholder="linkedin.com/in/yourname" /></div>
-            <div className="sm:col-span-2 min-w-0"><Label className="text-xs sm:text-sm">Portfolio Website</Label><Input className="mt-1 text-sm" value={portfolio} onChange={e => setPortfolio(e.target.value)} placeholder="yourportfolio.com" /></div>
-            <div className="sm:col-span-2 min-w-0">
+            <div className="md:col-span-2 min-w-0"><Label className="text-xs sm:text-sm">Portfolio Website</Label><Input className="mt-1 text-sm" value={portfolio} onChange={e => setPortfolio(e.target.value)} placeholder="yourportfolio.com" /></div>
+            <div className="md:col-span-2 min-w-0">
               <Label className="text-xs sm:text-sm">Profile Summary</Label>
               <Textarea className="mt-1 text-sm" value={summary} onChange={e => setSummary(e.target.value)} rows={3} placeholder="A brief summary of your professional background..." />
               <p className="mt-0.5 text-[9px] sm:text-[10px] text-muted-foreground">💡 Keep the summary concise and highlight your strongest professional achievements.</p>
