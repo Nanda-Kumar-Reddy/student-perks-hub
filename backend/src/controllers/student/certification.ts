@@ -2,7 +2,7 @@
  * Certification Controller
  */
 import { Request, Response } from "express";
-import { certificationService } from "../services/certificationService";
+import { certificationService } from "../../services/student/certificationService";
 
 export async function requestCertification(req: Request, res: Response) {
   const userId = (req as any).user.userId;

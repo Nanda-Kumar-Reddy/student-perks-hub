@@ -2,7 +2,7 @@
  * Airport Pickup Controller
  */
 import { Request, Response } from "express";
-import { airportPickupService } from "../services/airportPickupService";
+import { airportPickupService } from "../../services/student/airportPickupService";
 
 export async function createAirportPickup(req: Request, res: Response) {
   const userId = (req as any).user.userId;

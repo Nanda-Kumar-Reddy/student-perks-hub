@@ -2,7 +2,7 @@
  * Admin Controller — thin, delegates to adminService
  */
 import { Request, Response } from "express";
-import { adminService } from "../services/adminService";
+import { adminService } from "../../services/admin/adminService";
 
 export async function getDashboard(_req: Request, res: Response) {
   const stats = await adminService.getDashboardStats();

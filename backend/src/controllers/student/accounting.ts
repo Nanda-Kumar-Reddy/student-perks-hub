@@ -2,7 +2,7 @@
  * Accounting Controller
  */
 import { Request, Response } from "express";
-import { accountingService } from "../services/accountingService";
+import { accountingService } from "../../services/student/accountingService";
 
 export async function bookAccounting(req: Request, res: Response) {
   const userId = (req as any).user.userId;

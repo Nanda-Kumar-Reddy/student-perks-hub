@@ -2,7 +2,7 @@
  * Event Controller
  */
 import { Request, Response } from "express";
-import { eventService } from "../services/eventService";
+import { eventService } from "../../services/student/eventService";
 
 export async function registerForEvent(req: Request, res: Response) {
   const userId = (req as any).user.userId;

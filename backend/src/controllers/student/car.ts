@@ -2,7 +2,7 @@
  * Car Controller
  */
 import { Request, Response } from "express";
-import { carService } from "../services/carService";
+import { carService } from "../../services/student/carService";
 
 export async function createCarRequest(req: Request, res: Response) {
   const userId = (req as any).user.userId;

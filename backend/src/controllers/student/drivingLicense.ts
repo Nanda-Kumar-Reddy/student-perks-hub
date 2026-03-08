@@ -2,7 +2,7 @@
  * Driving License Controller
  */
 import { Request, Response } from "express";
-import { drivingLicenseService } from "../services/drivingLicenseService";
+import { drivingLicenseService } from "../../services/student/drivingLicenseService";
 
 export async function bookDrivingLicense(req: Request, res: Response) {
   const userId = (req as any).user.userId;

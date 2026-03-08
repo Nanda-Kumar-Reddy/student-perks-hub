@@ -2,7 +2,7 @@
  * Student Dashboard Controller
  */
 import { Request, Response } from "express";
-import { studentDashboardService } from "../services/studentDashboardService";
+import { studentDashboardService } from "../../services/student/studentDashboardService";
 
 export async function getMyBookings(req: Request, res: Response) {
   const userId = (req as any).user.userId;

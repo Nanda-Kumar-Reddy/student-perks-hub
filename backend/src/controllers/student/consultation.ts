@@ -2,7 +2,7 @@
  * Consultation Controller
  */
 import { Request, Response } from "express";
-import { consultationService } from "../services/consultationService";
+import { consultationService } from "../../services/student/consultationService";
 
 export async function bookConsultation(req: Request, res: Response) {
   const userId = (req as any).user.userId;

@@ -2,7 +2,7 @@
  * Loan Controller
  */
 import { Request, Response } from "express";
-import { loanApplicationService } from "../services/loanService";
+import { loanApplicationService } from "../../services/student/loanService";
 
 export async function applyForLoan(req: Request, res: Response) {
   const userId = (req as any).user.userId;

@@ -2,7 +2,7 @@
  * Job Application Controller
  */
 import { Request, Response } from "express";
-import { jobApplicationService } from "../services/jobApplicationService";
+import { jobApplicationService } from "../../services/student/jobApplicationService";
 
 export async function applyForJob(req: Request, res: Response) {
   const userId = (req as any).user.userId;

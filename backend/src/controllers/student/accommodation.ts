@@ -2,7 +2,7 @@
  * Accommodation Controller
  */
 import { Request, Response } from "express";
-import { accommodationService } from "../services/accommodationService";
+import { accommodationService } from "../../services/student/accommodationService";
 
 export async function createChat(req: Request, res: Response) {
   const userId = (req as any).user.userId;

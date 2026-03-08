@@ -2,7 +2,7 @@
  * Vendor Controller — thin, delegates to vendorService
  */
 import { Request, Response } from "express";
-import { vendorService } from "../services/vendorService";
+import { vendorService } from "../../services/vendor/vendorService";
 
 export async function getDashboard(req: Request, res: Response) {
   const userId = (req as any).user.userId;
