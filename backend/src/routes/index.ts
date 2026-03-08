@@ -68,6 +68,9 @@ router.use("/community/tasks", communityRoutes);
 // ── Chat ────────────────────────────────────────────
 router.use("/chat", chatRoutes);
 
+// ── Payments ────────────────────────────────────────
+router.use("/payments", paymentRoutes);
+
 // ── Legacy ──────────────────────────────────────────
 router.use("/bookings", bookingRoutes);
 

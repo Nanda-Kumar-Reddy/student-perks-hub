@@ -63,6 +63,10 @@ export const config = {
     region: parsed.data.AWS_REGION,
     s3Bucket: parsed.data.AWS_S3_BUCKET,
   },
+  stripe: {
+    secretKey: parsed.data.STRIPE_SECRET_KEY,
+    webhookSecret: parsed.data.STRIPE_WEBHOOK_SECRET,
+  },
 };
 
 // Keep backward-compatible `env` export
