@@ -21,3 +21,24 @@ export async function listProfiles(req: Request, res: Response) {
   const result = await profileService.listProfiles(page, limit, sortBy, sortOrder);
   return res.json(result);
 }
+
+export async function getMyActiveTasks(req: Request, res: Response) {
+  const userId = (req as any).user.userId;
+  const { page, limit } = req.query as any;
+  const result = await profileService.getMyActiveTasks(userId, page, limit);
+  return res.json(result);
+}
+
+export async function getMyPendingApprovals(req: Request, res: Response) {
+  const userId = (req as any).user.userId;
+  const { page, limit } = req.query as any;
+  const result = await profileService.getMyPendingApprovals(userId, page, limit);
+  return res.json(result);
+}
+
+export async function getMyTaskHistory(req: Request, res: Response) {
+  const userId = (req as any).user.userId;
+  const { page, limit } = req.query as any;
+  const result = await profileService.getMyTaskHistory(userId, page, limit);
+  return res.json(result);
+}

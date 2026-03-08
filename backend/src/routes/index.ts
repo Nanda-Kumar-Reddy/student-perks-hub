@@ -24,6 +24,9 @@ import adminRoutes from "./admin/admin";
 // Vendor routes
 import vendorRoutes from "./vendor/vendor";
 
+// Community routes
+import communityRoutes from "./community/communityTasks";
+
 const router = Router();
 
 // ── Auth & OTP ──────────────────────────────────────
@@ -52,6 +55,9 @@ router.use("/admin", adminRoutes);
 
 // ── Vendor Portal ──────────────────────────────────
 router.use("/vendor", vendorRoutes);
+
+// ── Community Tasks ────────────────────────────────
+router.use("/community/tasks", communityRoutes);
 
 // ── Legacy ──────────────────────────────────────────
 router.use("/bookings", bookingRoutes);

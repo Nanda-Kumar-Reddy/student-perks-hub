@@ -23,7 +23,8 @@ import NotFound from "./pages/NotFound";
 import {
   LayoutDashboard, Plane, Home, Car, Briefcase, FileText, DollarSign,
   Users, Calculator, CarFront, CalendarDays, CalendarCheck, User,
-  Award, QrCode, BarChart3, Gift, Settings, Store, Activity
+  Award, QrCode, BarChart3, Gift, Settings, Store, Activity, ShieldCheck,
+  ListTodo
 } from "lucide-react";
 
 // Lazy load student feature pages
@@ -49,6 +50,8 @@ const MyBookingsPage = lazy(() => import("./pages/dashboard/student/MyBookingsPa
 const ProfilePage = lazy(() => import("./pages/dashboard/student/ProfilePage"));
 const CertificationsPage = lazy(() => import("./pages/dashboard/student/CertificationsPage"));
 const CertificationDetailPage = lazy(() => import("./pages/dashboard/student/CertificationDetailPage"));
+const CommunityTasksPage = lazy(() => import("./pages/dashboard/student/CommunityTasksPage"));
+const CommunityTaskDetailPage = lazy(() => import("./pages/dashboard/student/CommunityTaskDetailPage"));
 
 // Lazy load vendor pages
 const VerifyTransactionPage = lazy(() => import("./pages/dashboard/vendor/VerifyTransactionPage"));
@@ -61,6 +64,7 @@ const AdminUsersPage = lazy(() => import("./pages/dashboard/admin/UsersPage"));
 const AdminVendorsPage = lazy(() => import("./pages/dashboard/admin/VendorsPage"));
 const AdminTransactionsPage = lazy(() => import("./pages/dashboard/admin/TransactionsPage"));
 const AdminAnalysisPage = lazy(() => import("./pages/dashboard/admin/AnalysisPage"));
+const AdminCommunityTasksPage = lazy(() => import("./pages/dashboard/admin/CommunityTasksPage"));
 
 const queryClient = new QueryClient();
 
@@ -78,6 +82,7 @@ const studentNav = [
   { label: "Events", href: "/student/events", icon: <CalendarDays className="h-4 w-4" /> },
   { label: "My Bookings", href: "/student/bookings", icon: <CalendarCheck className="h-4 w-4" /> },
   { label: "Certifications", href: "/student/certifications", icon: <Award className="h-4 w-4" /> },
+  { label: "Community Tasks", href: "/student/community-tasks", icon: <ListTodo className="h-4 w-4" /> },
   { label: "Profile", href: "/student/profile", icon: <User className="h-4 w-4" /> },
 ];
 
@@ -94,6 +99,7 @@ const adminNav = [
   { label: "Users", href: "/admin/users", icon: <Users className="h-4 w-4" /> },
   { label: "Vendors", href: "/admin/vendors", icon: <Store className="h-4 w-4" /> },
   { label: "Transactions", href: "/admin/transactions", icon: <Activity className="h-4 w-4" /> },
+  { label: "Community Tasks", href: "/admin/community-tasks", icon: <ShieldCheck className="h-4 w-4" /> },
   { label: "Analysis", href: "/admin/analysis", icon: <BarChart3 className="h-4 w-4" /> },
 ];
 
@@ -190,6 +196,8 @@ const App = () => (
                 <Route path="/student/bookings" element={<Suspense fallback={<Loading />}><MyBookingsPage /></Suspense>} />
                 <Route path="/student/certifications" element={<Suspense fallback={<Loading />}><CertificationsPage /></Suspense>} />
                 <Route path="/student/certifications/:id" element={<Suspense fallback={<Loading />}><CertificationDetailPage /></Suspense>} />
+                <Route path="/student/community-tasks" element={<Suspense fallback={<Loading />}><CommunityTasksPage /></Suspense>} />
+                <Route path="/student/community-tasks/:id" element={<Suspense fallback={<Loading />}><CommunityTaskDetailPage /></Suspense>} />
                 <Route path="/student/profile" element={<Suspense fallback={<Loading />}><ProfilePage /></Suspense>} />
               </Route>
             </Route>
@@ -212,6 +220,7 @@ const App = () => (
                 <Route path="/admin/users" element={<Suspense fallback={<Loading />}><AdminUsersPage /></Suspense>} />
                 <Route path="/admin/vendors" element={<Suspense fallback={<Loading />}><AdminVendorsPage /></Suspense>} />
                 <Route path="/admin/transactions" element={<Suspense fallback={<Loading />}><AdminTransactionsPage /></Suspense>} />
+                <Route path="/admin/community-tasks" element={<Suspense fallback={<Loading />}><AdminCommunityTasksPage /></Suspense>} />
                 <Route path="/admin/analysis" element={<Suspense fallback={<Loading />}><AdminAnalysisPage /></Suspense>} />
               </Route>
             </Route>
