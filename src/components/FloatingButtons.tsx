@@ -44,11 +44,6 @@ export default function FloatingButtons() {
           {/* Rotating arrow ring with arrowhead */}
           <div className="absolute inset-[-6px] animate-[spin_2.5s_linear_infinite]">
             <svg width="60" height="60" viewBox="0 0 60 60" className="w-full h-full">
-              <defs>
-                <marker id="arrowHead" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
-                  <path d="M0,0 L6,3 L0,6 Z" fill="hsl(var(--primary))" opacity="0.8" />
-                </marker>
-              </defs>
               <path
                 d="M 30 4 A 26 26 0 1 1 8 20"
                 fill="none"
@@ -57,7 +52,6 @@ export default function FloatingButtons() {
                 strokeLinecap="round"
                 strokeDasharray="100 64"
                 opacity="0.5"
-                markerEnd="url(#arrowHead)"
               />
             </svg>
           </div>
