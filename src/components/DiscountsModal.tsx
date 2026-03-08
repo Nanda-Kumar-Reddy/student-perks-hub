@@ -44,43 +44,44 @@ export default function DiscountsModal({ open, onOpenChange, initialCategory }: 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl w-[calc(100vw-2rem)] max-h-[85vh] p-0 overflow-hidden">
-        <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-0">
-          <DialogTitle className="font-display flex items-center gap-2 text-base sm:text-lg">
-            <Tag className="h-5 w-5 text-primary" /> Discounts & Offers
+      <DialogContent className="sm:max-w-2xl w-[calc(100vw-1.5rem)] max-h-[80vh] p-0 overflow-hidden rounded-xl">
+        <DialogHeader className="px-3 sm:px-6 pt-3 sm:pt-6 pb-0 flex-shrink-0">
+          <DialogTitle className="font-display flex items-center gap-2 text-sm sm:text-lg">
+            <Tag className="h-4 w-4 sm:h-5 sm:w-5 text-primary" /> Discounts & Offers
           </DialogTitle>
         </DialogHeader>
-        <div className="flex flex-col sm:flex-row h-full min-h-0 sm:min-h-[350px]">
-          {/* Left menu - horizontal scroll on mobile */}
-          <div className="sm:w-48 flex-shrink-0 border-b sm:border-b-0 sm:border-r border-border p-2 sm:p-3 flex sm:flex-col gap-1 overflow-x-auto sm:overflow-x-visible sm:overflow-y-auto"
-          >
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActive(cat)}
-                className={`whitespace-nowrap rounded-lg px-3 py-2 text-xs sm:text-sm font-medium transition-colors text-left flex-shrink-0 ${
-                  active === cat ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary"
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+        <div className="flex flex-col sm:flex-row flex-1 min-h-0 overflow-hidden">
+          {/* Category tabs - horizontal scroll on mobile, vertical on desktop */}
+          <div className="flex-shrink-0 border-b sm:border-b-0 sm:border-r border-border p-2 sm:p-3 sm:w-44">
+            <div className="flex sm:flex-col gap-1 overflow-x-auto sm:overflow-x-visible sm:overflow-y-auto pb-1 sm:pb-0 scrollbar-thin">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActive(cat)}
+                  className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-2 text-[11px] sm:text-sm font-medium transition-colors text-left flex-shrink-0 ${
+                    active === cat ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
-          {/* Right content */}
-          <div className="flex-1 p-3 sm:p-4 space-y-3 overflow-y-auto min-h-0">
+          {/* Offers content - scrollable */}
+          <div className="flex-1 p-2.5 sm:p-4 space-y-2 sm:space-y-3 overflow-y-auto min-h-0">
             {offers.map((offer) => (
-              <div key={offer.title} className="rounded-xl border border-border bg-secondary/30 p-3 sm:p-4 flex items-start gap-3 sm:gap-4">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Percent className="h-5 w-5" />
+              <div key={offer.title} className="rounded-xl border border-border bg-secondary/30 p-2.5 sm:p-4 flex items-start gap-2.5 sm:gap-4">
+                <div className="flex h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Percent className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <h4 className="font-display text-sm font-bold">{offer.title}</h4>
-                    <span className="inline-flex rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-bold text-accent whitespace-nowrap">
+                  <div className="flex items-start justify-between gap-1.5">
+                    <h4 className="font-display text-xs sm:text-sm font-bold leading-tight">{offer.title}</h4>
+                    <span className="inline-flex flex-shrink-0 rounded-full bg-accent/10 px-1.5 sm:px-2.5 py-0.5 text-[10px] sm:text-xs font-bold text-accent whitespace-nowrap">
                       {offer.discount}
                     </span>
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">{offer.desc}</p>
+                  <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-muted-foreground leading-snug">{offer.desc}</p>
                 </div>
               </div>
             ))}
