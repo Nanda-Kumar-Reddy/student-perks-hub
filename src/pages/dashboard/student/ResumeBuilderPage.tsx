@@ -120,15 +120,15 @@ export default function ResumeBuilderPage() {
     switch (activeSection) {
       case "Personal":
         return (
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div><Label>Full Name</Label><Input className="mt-1" value={name} onChange={e => setName(e.target.value)} placeholder="Enter your full name" /><p className="mt-0.5 text-[10px] text-muted-foreground">💡 Use your legal name as it appears on official documents.</p></div>
-            <div><Label>Job Title</Label><Input className="mt-1" value={jobTitle} onChange={e => setJobTitle(e.target.value)} placeholder="e.g. Full Stack Developer" /><p className="mt-0.5 text-[10px] text-muted-foreground">💡 Match this to the role you're applying for.</p></div>
-            <div><Label>Email</Label><Input className="mt-1" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" /></div>
-            <div><Label>Phone</Label><Input className="mt-1" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+61 4XX XXX XXX" /><p className="mt-0.5 text-[10px] text-muted-foreground">Format: +61 4XX XXX XXX or 04XX XXX XXX</p></div>
-            <div><Label>Address</Label><Input className="mt-1" value={address} onChange={e => setAddress(e.target.value)} placeholder="City, State, Country" /></div>
-            <div><Label>LinkedIn URL</Label><Input className="mt-1" value={linkedin} onChange={e => setLinkedin(e.target.value)} placeholder="linkedin.com/in/yourname" /></div>
-            <div className="sm:col-span-2"><Label>Portfolio Website</Label><Input className="mt-1" value={portfolio} onChange={e => setPortfolio(e.target.value)} placeholder="yourportfolio.com" /></div>
-            <div className="sm:col-span-2">
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
+            <div className="min-w-0"><Label>Full Name</Label><Input className="mt-1" value={name} onChange={e => setName(e.target.value)} placeholder="Enter your full name" /><p className="mt-0.5 text-[10px] text-muted-foreground">💡 Use your legal name as it appears on official documents.</p></div>
+            <div className="min-w-0"><Label>Job Title</Label><Input className="mt-1" value={jobTitle} onChange={e => setJobTitle(e.target.value)} placeholder="e.g. Full Stack Developer" /><p className="mt-0.5 text-[10px] text-muted-foreground">💡 Match this to the role you're applying for.</p></div>
+            <div className="min-w-0"><Label>Email</Label><Input className="mt-1" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" /></div>
+            <div className="min-w-0"><Label>Phone</Label><Input className="mt-1" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+61 4XX XXX XXX" /><p className="mt-0.5 text-[10px] text-muted-foreground">Format: +61 4XX XXX XXX or 04XX XXX XXX</p></div>
+            <div className="min-w-0"><Label>Address</Label><Input className="mt-1" value={address} onChange={e => setAddress(e.target.value)} placeholder="City, State, Country" /></div>
+            <div className="min-w-0"><Label>LinkedIn URL</Label><Input className="mt-1" value={linkedin} onChange={e => setLinkedin(e.target.value)} placeholder="linkedin.com/in/yourname" /></div>
+            <div className="sm:col-span-2 min-w-0"><Label>Portfolio Website</Label><Input className="mt-1" value={portfolio} onChange={e => setPortfolio(e.target.value)} placeholder="yourportfolio.com" /></div>
+            <div className="sm:col-span-2 min-w-0">
               <Label>Profile Summary</Label>
               <Textarea className="mt-1" value={summary} onChange={e => setSummary(e.target.value)} rows={3} placeholder="A brief summary of your professional background..." />
               <p className="mt-0.5 text-[10px] text-muted-foreground">💡 Keep the summary concise and highlight your strongest professional achievements.</p>
@@ -245,14 +245,16 @@ export default function ResumeBuilderPage() {
                   ))}
                 </div>
               ) : (
-                <div className="rounded-xl border border-border bg-card p-4 shadow-card space-y-4">
-                  <div className="flex flex-wrap gap-1">
+                <div className="rounded-xl border border-border bg-card p-2.5 sm:p-4 shadow-card space-y-3 sm:space-y-4 w-full min-w-0 overflow-hidden">
+                  <div className="flex gap-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
                     {contentSections.map(s => (
                       <button key={s} onClick={() => setActiveSection(s)}
-                        className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${activeSection === s ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>{s}</button>
+                        className={`rounded-lg px-2.5 sm:px-3 py-1 sm:py-1.5 text-[11px] sm:text-xs font-medium transition-colors whitespace-nowrap flex-shrink-0 ${activeSection === s ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>{s}</button>
                     ))}
                   </div>
-                  {renderSectionEditor()}
+                  <div className="min-w-0 overflow-x-hidden">
+                    {renderSectionEditor()}
+                  </div>
                 </div>
               )}
             </div>
