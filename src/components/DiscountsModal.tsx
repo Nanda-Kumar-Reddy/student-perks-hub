@@ -67,9 +67,9 @@ export default function DiscountsModal({ open, onOpenChange, initialCategory }: 
             ))}
           </div>
           {/* Right content */}
-          <div className="flex-1 p-4 space-y-3 overflow-y-auto">
+          <div className="flex-1 p-3 sm:p-4 space-y-3 overflow-y-auto min-h-0">
             {offers.map((offer) => (
-              <div key={offer.title} className="rounded-xl border border-border bg-secondary/30 p-4 flex items-start gap-4">
+              <div key={offer.title} className="rounded-xl border border-border bg-secondary/30 p-3 sm:p-4 flex items-start gap-3 sm:gap-4">
                 <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                   <Percent className="h-5 w-5" />
                 </div>
