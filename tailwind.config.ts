@@ -96,12 +96,18 @@ export default {
           from: { opacity: "0", transform: "translateX(20px)" },
           to: { opacity: "1", transform: "translateX(0)" },
         },
+        "shine-burst": {
+          "0%, 80%": { boxShadow: "0 0 0 0 transparent", opacity: "0" },
+          "90%": { boxShadow: "0 0 12px 6px hsl(var(--primary) / 0.4)", opacity: "1" },
+          "100%": { boxShadow: "0 0 0 0 transparent", opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.5s ease-out forwards",
         "slide-in-right": "slide-in-right 0.5s ease-out forwards",
+        "shine-burst": "shine-burst 2.5s ease-in-out infinite",
       },
     },
   },
