@@ -31,18 +31,34 @@ export default function TransactionsPage() {
         <Input className="pl-9" placeholder="Search by user or vendor..." value={search} onChange={e => setSearch(e.target.value)} />
       </div>
 
-      <div className="rounded-xl border border-border bg-card shadow-card overflow-hidden">
-        <div className="hidden sm:grid grid-cols-5 gap-4 px-4 py-3 bg-secondary/50 text-xs font-medium text-muted-foreground">
+      {/* Desktop list */}
+      <div className="hidden sm:block rounded-xl border border-border bg-card shadow-card overflow-hidden">
+        <div className="grid grid-cols-5 gap-4 px-4 py-3 bg-secondary/50 text-xs font-medium text-muted-foreground">
           <span>Date</span><span>Time</span><span>User</span><span>Vendor</span><span className="text-right">Amount</span>
         </div>
         {filtered.map((t, i) => (
           <motion.div key={t.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
-            className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-4 px-4 py-3 border-t border-border text-sm">
+            className="grid grid-cols-5 gap-4 px-4 py-3 border-t border-border text-sm">
             <span className="text-muted-foreground">{t.date}</span>
             <span className="text-muted-foreground">{t.time}</span>
             <span className="font-medium">{t.user}</span>
             <span>{t.vendor}</span>
             <span className="text-right font-medium">{t.amount}</span>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Mobile cards */}
+      <div className="sm:hidden grid gap-3">
+        {filtered.map((t, i) => (
+          <motion.div key={t.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+            className="rounded-xl border border-border bg-card p-4 shadow-card">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium">{t.user}</span>
+              <span className="text-sm font-bold">{t.amount}</span>
+            </div>
+            <div className="text-xs text-muted-foreground">{t.vendor}</div>
+            <div className="text-xs text-muted-foreground mt-1">{t.date} · {t.time}</div>
           </motion.div>
         ))}
       </div>

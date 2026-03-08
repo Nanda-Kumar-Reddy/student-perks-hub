@@ -51,13 +51,13 @@ export default function DiscountsModal({ open, onOpenChange, initialCategory }: 
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col sm:flex-row h-full min-h-[350px]">
-          {/* Left menu */}
-          <div className="sm:w-48 flex-shrink-0 border-b sm:border-b-0 sm:border-r border-border p-3 flex sm:flex-col gap-1 overflow-x-auto sm:overflow-x-visible">
+          {/* Left menu - scrollable on small screens */}
+          <div className="sm:w-48 flex-shrink-0 border-b sm:border-b-0 sm:border-r border-border p-3 flex sm:flex-col gap-1 overflow-x-auto sm:overflow-x-visible overflow-y-auto max-h-[120px] sm:max-h-none">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActive(cat)}
-                className={`whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors text-left ${
+                className={`whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors text-left flex-shrink-0 ${
                   active === cat ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary"
                 }`}
               >

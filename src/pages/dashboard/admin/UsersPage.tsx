@@ -27,9 +27,9 @@ export default function UsersPage() {
         <Input className="pl-9" placeholder="Search users..." value={search} onChange={e => setSearch(e.target.value)} />
       </div>
       
-      {/* List view */}
-      <div className="rounded-xl border border-border bg-card shadow-card overflow-hidden">
-        <div className="hidden sm:grid grid-cols-6 gap-4 p-4 border-b border-border text-xs font-medium text-muted-foreground">
+      {/* Desktop list view */}
+      <div className="hidden sm:block rounded-xl border border-border bg-card shadow-card overflow-hidden">
+        <div className="grid grid-cols-6 gap-4 p-4 border-b border-border text-xs font-medium text-muted-foreground">
           <span>Name</span>
           <span>Joined</span>
           <span className="text-center">Vendors</span>
@@ -43,7 +43,7 @@ export default function UsersPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
-            className="grid grid-cols-1 sm:grid-cols-6 gap-2 sm:gap-4 p-4 border-b border-border last:border-0 hover:bg-secondary/30 transition-colors items-center"
+            className="grid grid-cols-6 gap-4 p-4 border-b border-border last:border-0 hover:bg-secondary/30 transition-colors items-center"
           >
             <div className="flex items-center gap-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{u.avatar}</div>
@@ -54,6 +54,33 @@ export default function UsersPage() {
             <div className="text-sm font-medium text-center">{u.transactions}</div>
             <div className="text-sm font-medium text-right">{u.revenue}</div>
             <div className="text-sm font-medium text-right">{u.points}</div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Mobile card view */}
+      <div className="sm:hidden grid gap-3">
+        {filtered.map((u, i) => (
+          <motion.div
+            key={u.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.05 }}
+            className="rounded-xl border border-border bg-card p-4 shadow-card space-y-3"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">{u.avatar}</div>
+              <div>
+                <div className="text-sm font-medium">{u.name}</div>
+                <div className="text-xs text-muted-foreground">Joined {u.joined}</div>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="rounded-lg bg-secondary/50 p-2"><span className="text-muted-foreground">Vendors</span><div className="font-medium">{u.vendors}</div></div>
+              <div className="rounded-lg bg-secondary/50 p-2"><span className="text-muted-foreground">Transactions</span><div className="font-medium">{u.transactions}</div></div>
+              <div className="rounded-lg bg-secondary/50 p-2"><span className="text-muted-foreground">Revenue</span><div className="font-medium">{u.revenue}</div></div>
+              <div className="rounded-lg bg-secondary/50 p-2"><span className="text-muted-foreground">Points</span><div className="font-medium">{u.points}</div></div>
+            </div>
           </motion.div>
         ))}
       </div>
