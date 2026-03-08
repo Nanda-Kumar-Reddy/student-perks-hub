@@ -82,6 +82,7 @@ const studentNav = [
   { label: "Events", href: "/student/events", icon: <CalendarDays className="h-4 w-4" /> },
   { label: "My Bookings", href: "/student/bookings", icon: <CalendarCheck className="h-4 w-4" /> },
   { label: "Certifications", href: "/student/certifications", icon: <Award className="h-4 w-4" /> },
+  { label: "Community Tasks", href: "/student/community-tasks", icon: <ListTodo className="h-4 w-4" /> },
   { label: "Profile", href: "/student/profile", icon: <User className="h-4 w-4" /> },
 ];
 
