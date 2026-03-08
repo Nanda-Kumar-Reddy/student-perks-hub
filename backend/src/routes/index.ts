@@ -24,6 +24,9 @@ import adminRoutes from "./admin/admin";
 // Vendor routes
 import vendorRoutes from "./vendor/vendor";
 
+// Community routes
+import communityRoutes from "./community/communityTasks";
+
 const router = Router();
 
 // ── Auth & OTP ──────────────────────────────────────
