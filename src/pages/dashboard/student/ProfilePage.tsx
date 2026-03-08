@@ -85,6 +85,9 @@ export default function ProfilePage() {
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [appDialogOpen, setAppDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<{ id: string; title: string } | null>(null);
+  const [activeTasks, setActiveTasks] = useState(initialActiveTasks);
+  const [confirmAction, setConfirmAction] = useState<{ taskId: string; taskTitle: string; type: "FILLED" | "CANCELLED" } | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
   const [form, setForm] = useState({
     name: "",
     email: "",
