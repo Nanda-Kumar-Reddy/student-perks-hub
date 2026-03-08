@@ -16,6 +16,7 @@ import drivingLicenseRoutes from "./drivingLicense";
 import notificationRoutes from "./notifications";
 import studentRoutes from "./students";
 import adminRoutes from "./admin";
+import vendorRoutes from "./vendor";
 
 const router = Router();
 
