@@ -31,6 +31,7 @@ const CarDetailPage = lazy(() => import("./pages/dashboard/student/CarDetailPage
 const JobsPage = lazy(() => import("./pages/dashboard/student/JobsPage"));
 const JobDetailPage = lazy(() => import("./pages/dashboard/student/JobDetailPage"));
 const ResumeBuilderPage = lazy(() => import("./pages/dashboard/student/ResumeBuilderPage"));
+const ExpertDetailPage = lazy(() => import("./pages/dashboard/student/ExpertDetailPage"));
 const LoansPage = lazy(() => import("./pages/dashboard/student/LoansPage"));
 const ConsultationsPage = lazy(() => import("./pages/dashboard/student/ConsultationsPage"));
 const ConsultantDetailPage = lazy(() => import("./pages/dashboard/student/ConsultantDetailPage"));
@@ -143,6 +144,7 @@ const App = () => (
             <Route path="/student/jobs" element={<Suspense fallback={<Loading />}><JobsPage /></Suspense>} />
             <Route path="/student/jobs/:id" element={<Suspense fallback={<Loading />}><JobDetailPage /></Suspense>} />
             <Route path="/student/resume-builder" element={<Suspense fallback={<Loading />}><ResumeBuilderPage /></Suspense>} />
+            <Route path="/student/resume-builder/expert/:id" element={<Suspense fallback={<Loading />}><ExpertDetailPage /></Suspense>} />
             <Route path="/student/loans" element={<Suspense fallback={<Loading />}><LoansPage /></Suspense>} />
             <Route path="/student/consultations" element={<Suspense fallback={<Loading />}><ConsultationsPage /></Suspense>} />
             <Route path="/student/consultations/:id" element={<Suspense fallback={<Loading />}><ConsultantDetailPage /></Suspense>} />

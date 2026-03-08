@@ -22,6 +22,8 @@ const couponTemplates = [
 ];
 
 const DESC_LIMIT = 80;
+const COUPON_W = 280;
+const COUPON_H = 220;
 
 const initialCoupons: Coupon[] = [
   { id: 1, discount: "20%", business: "Bean Counter Café", location: "Melbourne CBD", description: "20% off all hot beverages for students", template: "classic" },
@@ -32,16 +34,18 @@ function CouponPreview({ discount, business, location, description, template }: 
   const t = couponTemplates.find(ct => ct.id === template);
   const descText = description.length > DESC_LIMIT ? description.slice(0, DESC_LIMIT) + "…" : description;
 
+  const wrapStyle = { width: COUPON_W, height: COUPON_H, overflow: "hidden" as const };
+
   if (t?.layout === "header") {
     return (
-      <div className="rounded-xl border border-accent/30 bg-accent/5 overflow-hidden min-h-[200px]">
-        <div className="bg-accent/10 p-5 text-center">
-          <div className="font-display text-4xl font-bold text-accent">{discount || "—%"} OFF</div>
+      <div className="rounded-xl border border-accent/30 bg-accent/5 flex flex-col" style={wrapStyle}>
+        <div className="bg-accent/10 p-4 text-center flex-shrink-0">
+          <div className="font-display text-3xl font-bold text-accent">{discount || "—%"} OFF</div>
         </div>
-        <div className="p-5 text-center space-y-2">
-          <h3 className="font-display text-lg font-bold">{business || "Business Name"}</h3>
-          <p className="text-sm text-muted-foreground">{descText || "Offer description"}</p>
-          <div className="text-xs text-muted-foreground">{location || "Location"}</div>
+        <div className="p-4 text-center flex-1 flex flex-col justify-center">
+          <h3 className="font-display text-sm font-bold">{business || "Business Name"}</h3>
+          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{descText || "Offer description"}</p>
+          <div className="text-[10px] text-muted-foreground mt-1">{location || "Location"}</div>
         </div>
       </div>
     );
@@ -49,28 +53,28 @@ function CouponPreview({ discount, business, location, description, template }: 
 
   if (t?.layout === "bordered") {
     return (
-      <div className="rounded-xl border-2 border-dashed border-primary/30 bg-card p-6 min-h-[200px] flex flex-col items-center justify-center text-center space-y-3">
-        <div className="w-12 h-0.5 bg-primary" />
-        <div className="font-display text-3xl font-bold text-primary">{discount || "—%"} OFF</div>
-        <h3 className="font-display text-lg font-bold">{business || "Business Name"}</h3>
-        <p className="text-sm text-muted-foreground max-w-[200px]">{descText || "Offer description"}</p>
-        <div className="text-xs text-muted-foreground">{location}</div>
-        <div className="w-12 h-0.5 bg-primary" />
+      <div className="rounded-xl border-2 border-dashed border-primary/30 bg-card flex flex-col items-center justify-center text-center p-4" style={wrapStyle}>
+        <div className="w-10 h-0.5 bg-primary" />
+        <div className="font-display text-2xl font-bold text-primary mt-2">{discount || "—%"} OFF</div>
+        <h3 className="font-display text-sm font-bold mt-2">{business || "Business Name"}</h3>
+        <p className="text-xs text-muted-foreground mt-1 line-clamp-2 max-w-[200px]">{descText || "Offer description"}</p>
+        <div className="text-[10px] text-muted-foreground mt-1">{location}</div>
+        <div className="w-10 h-0.5 bg-primary mt-2" />
       </div>
     );
   }
 
   if (t?.layout === "split") {
     return (
-      <div className="rounded-xl border border-warning/30 bg-warning/5 overflow-hidden min-h-[200px] flex">
-        <div className="w-[40%] bg-warning/10 flex flex-col items-center justify-center p-4">
-          <div className="font-display text-3xl font-bold text-warning">{discount || "—%"}</div>
-          <div className="text-sm font-bold text-warning">OFF</div>
+      <div className="rounded-xl border border-warning/30 bg-warning/5 flex" style={wrapStyle}>
+        <div className="w-[40%] bg-warning/10 flex flex-col items-center justify-center p-3">
+          <div className="font-display text-2xl font-bold text-warning">{discount || "—%"}</div>
+          <div className="text-xs font-bold text-warning">OFF</div>
         </div>
-        <div className="flex-1 p-5 flex flex-col justify-center space-y-2">
-          <h3 className="font-display text-lg font-bold">{business || "Business Name"}</h3>
-          <p className="text-sm text-muted-foreground">{descText || "Offer description"}</p>
-          <div className="text-xs text-muted-foreground">{location}</div>
+        <div className="flex-1 p-4 flex flex-col justify-center">
+          <h3 className="font-display text-sm font-bold">{business || "Business Name"}</h3>
+          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{descText || "Offer description"}</p>
+          <div className="text-[10px] text-muted-foreground mt-1">{location}</div>
         </div>
       </div>
     );
@@ -78,21 +82,20 @@ function CouponPreview({ discount, business, location, description, template }: 
 
   // Default / Classic
   return (
-    <div className="rounded-xl border border-primary/20 bg-primary/5 p-8 min-h-[200px] flex flex-col items-center justify-center text-center space-y-3">
-      <Tag className="h-8 w-8 text-primary mb-2" />
-      <div className="font-display text-4xl font-bold text-primary">{discount || "—%"} OFF</div>
-      <h3 className="font-display text-lg font-bold mt-3">{business || "Business Name"}</h3>
-      <p className="text-sm text-muted-foreground">{descText || "Offer description"}</p>
-      <div className="text-xs text-muted-foreground">{location || "Location"}</div>
+    <div className="rounded-xl border border-primary/20 bg-primary/5 flex flex-col items-center justify-center text-center p-4" style={wrapStyle}>
+      <Tag className="h-6 w-6 text-primary mb-1" />
+      <div className="font-display text-3xl font-bold text-primary">{discount || "—%"} OFF</div>
+      <h3 className="font-display text-sm font-bold mt-2">{business || "Business Name"}</h3>
+      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{descText || "Offer description"}</p>
+      <div className="text-[10px] text-muted-foreground mt-1">{location || "Location"}</div>
     </div>
   );
 }
 
-// Small thumbnail preview for template selector
 function CouponThumb({ template }: { template: typeof couponTemplates[0] }) {
   const sampleData = { discount: "20%", business: "Sample Café", location: "City", description: "Student discount" };
   return (
-    <div className="w-full h-[100px] overflow-hidden rounded-lg pointer-events-none" style={{ transform: "scale(0.45)", transformOrigin: "top left", width: "220%", height: "230px" }}>
+    <div className="w-full h-[80px] overflow-hidden rounded-lg pointer-events-none" style={{ transform: "scale(0.4)", transformOrigin: "top left", width: "250%", height: "200px" }}>
       <CouponPreview {...sampleData} template={template.id} />
     </div>
   );
@@ -177,7 +180,7 @@ export default function ManageOffersPage() {
                   {couponTemplates.map(t => (
                     <button key={t.id} onClick={() => setTemplate(t.id)}
                       className={`rounded-lg border overflow-hidden transition-all ${template === t.id ? "border-primary ring-1 ring-primary bg-primary/5" : "border-border bg-card hover:shadow-card"}`}>
-                      <div className="h-[100px] overflow-hidden">
+                      <div className="h-[80px] overflow-hidden">
                         <CouponThumb template={t} />
                       </div>
                       <div className="p-2">
