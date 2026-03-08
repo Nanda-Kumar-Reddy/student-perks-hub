@@ -206,6 +206,7 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
       </div>
 
       {showFloatingButtons && <FloatingButtons />}
+      <ChatPopup />
     </div>
   );
 }
