@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,10 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import {
   User, CheckCircle2, Phone, Mail, Shield, FileCheck,
   Star, ClipboardCheck, BarChart3, MapPin, Calendar,
-  Eye, XCircle, Clock, Award, X
+  Eye, XCircle, Clock, Award, X, Loader2
 } from "lucide-react";
 import FormSection from "@/components/shared/FormSection";
 import PhoneField from "@/components/shared/PhoneField";
+import { useAuth } from "@/contexts/AuthContext";
+import { getProfile, updateProfile } from "@/services/database";
+import { updatePassword } from "@/services/auth";
+import { toast } from "@/hooks/use-toast";
 
 const verificationBadges = [
   { label: "Phone Verified", icon: <Phone className="h-3.5 w-3.5" />, verified: true },
@@ -47,13 +51,16 @@ const statusColor: Record<string, string> = {
 };
 
 export default function ProfilePage() {
-  const [saved, setSaved] = useState(false);
+  const { user } = useAuth();
+  const [saving, setSaving] = useState(false);
+  const [savingPw, setSavingPw] = useState(false);
+  const [profileLoaded, setProfileLoaded] = useState(false);
   const [form, setForm] = useState({
-    name: "John Doe",
-    email: "john@university.edu",
-    phone: "+61 400 123 456",
-    address: "Melbourne, VIC",
-    university: "University of Melbourne",
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    university: "",
   });
   const [password, setPassword] = useState({ current: "", new: "", confirm: "" });
   const update = (k: string, v: string) => setForm((p) => ({ ...p, [k]: v }));
