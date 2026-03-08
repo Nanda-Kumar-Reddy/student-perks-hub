@@ -7,6 +7,7 @@ import {
   applyForTaskSchema,
   sendTaskMessageSchema,
   adminTaskActionSchema,
+  adminEditTaskSchema,
   taskSearchQuery,
 } from "../../validators/community";
 import {
@@ -22,6 +23,7 @@ import {
   approveTask,
   rejectTask,
   flagTask,
+  editTask,
 } from "../../controllers/community/communityTask";
 import catchErrors from "../../utils/catchErrors";
 
@@ -44,5 +46,6 @@ router.get("/admin/pending", authenticate, rbac("admin"), catchErrors(getPending
 router.post("/admin/:id/approve", authenticate, rbac("admin"), validate(adminTaskActionSchema), catchErrors(approveTask));
 router.post("/admin/:id/reject", authenticate, rbac("admin"), validate(adminTaskActionSchema), catchErrors(rejectTask));
 router.post("/admin/:id/flag", authenticate, rbac("admin"), validate(adminTaskActionSchema), catchErrors(flagTask));
+router.patch("/admin/:id/edit", authenticate, rbac("admin"), validate(adminEditTaskSchema), catchErrors(editTask));
 
 export default router;

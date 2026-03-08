@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   ShieldCheck, Clock, MapPin, DollarSign, User, Mail, CheckCircle2,
-  XCircle, Edit, Flag, AlertTriangle, ChevronDown, ChevronUp
+  XCircle, Edit, Flag, AlertTriangle, ChevronDown, ChevronUp, Save
 } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import FormSection from "@/components/shared/FormSection";
 
 interface PendingTask {
   id: string;
@@ -23,8 +26,16 @@ interface PendingTask {
   payment: string;
   description: string;
   date: string;
+  duration: string;
+  time: string;
   checks: { keyword: boolean; payment: boolean; history: boolean; location: boolean };
 }
+
+const categories = [
+  "Home & Garden", "Childcare", "Tutoring", "Cleaning",
+  "Moving", "Pet Care", "Technology Help", "Event Help",
+  "Delivery", "Other",
+];
 
 const pendingTasks: PendingTask[] = [
   {
@@ -32,7 +43,7 @@ const pendingTasks: PendingTask[] = [
     poster: "Sarah Mitchell", email: "sarah@university.edu", userHistory: "15 completed tasks, 4.8 rating",
     category: "Home & Garden", location: "Carlton, VIC", payment: "$90",
     description: "Need someone to mow the lawn and weed the garden beds. Tools provided.",
-    date: "Mar 15, 2026",
+    date: "2026-03-15", duration: "3 hours", time: "09:00",
     checks: { keyword: true, payment: true, history: true, location: true },
   },
   {
@@ -40,7 +51,7 @@ const pendingTasks: PendingTask[] = [
     poster: "James Kim", email: "james@university.edu", userHistory: "3 completed tasks, 4.5 rating",
     category: "Childcare", location: "South Yarra, VIC", payment: "$150",
     description: "Looking for an experienced babysitter for two children aged 4 and 7.",
-    date: "Mar 16, 2026",
+    date: "2026-03-16", duration: "5 hours", time: "18:00",
     checks: { keyword: true, payment: true, history: true, location: true },
   },
   {
@@ -48,7 +59,7 @@ const pendingTasks: PendingTask[] = [
     poster: "New User", email: "new@student.edu", userHistory: "0 completed tasks, no rating",
     category: "Moving", location: "Unknown Area", payment: "$10",
     description: "Need urgent help moving some items. Cash payment.",
-    date: "Mar 18, 2026",
+    date: "2026-03-18", duration: "2 hours", time: "10:00",
     checks: { keyword: true, payment: false, history: false, location: false },
   },
 ];
@@ -64,12 +75,62 @@ export default function AdminCommunityTasksPage() {
   const [rejectId, setRejectId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
 
+  // Edit state
+  const [editOpen, setEditOpen] = useState(false);
+  const [editTask, setEditTask] = useState<PendingTask | null>(null);
+  const [editForm, setEditForm] = useState({
+    title: "", category: "", description: "", location: "",
+    date: "", time: "", duration: "", payment: "",
+  });
+
   const handleAction = (id: string, action: "approve" | "reject" | "flag") => {
     const labels = { approve: "approved", reject: "rejected", flag: "flagged for review" };
     setTasks((prev) => prev.filter((t) => t.id !== id));
     toast.success(`Task ${labels[action]} successfully`);
     if (action === "reject") { setRejectOpen(false); setRejectReason(""); }
   };
+
+  const openEditDialog = (task: PendingTask) => {
+    setEditTask(task);
+    setEditForm({
+      title: task.title,
+      category: task.category,
+      description: task.description,
+      location: task.location,
+      date: task.date,
+      time: task.time,
+      duration: task.duration,
+      payment: task.payment.replace("$", ""),
+    });
+    setEditOpen(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editTask) return;
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === editTask.id
+          ? {
+              ...t,
+              title: editForm.title,
+              category: editForm.category,
+              description: editForm.description,
+              location: editForm.location,
+              date: editForm.date,
+              time: editForm.time,
+              duration: editForm.duration,
+              payment: `$${editForm.payment}`,
+            }
+          : t
+      )
+    );
+    setEditOpen(false);
+    setEditTask(null);
+    toast.success("Task details updated successfully");
+  };
+
+  const updateEdit = (key: string, value: string) =>
+    setEditForm((p) => ({ ...p, [key]: value }));
 
   return (
     <div className="space-y-6">
@@ -152,7 +213,7 @@ export default function AdminCommunityTasksPage() {
                   <Button size="sm" variant="destructive" className="gap-1" onClick={() => { setRejectId(task.id); setRejectOpen(true); }}>
                     <XCircle className="h-3.5 w-3.5" /> Reject
                   </Button>
-                  <Button size="sm" variant="outline" className="gap-1">
+                  <Button size="sm" variant="outline" className="gap-1" onClick={(e) => { e.stopPropagation(); openEditDialog(task); }}>
                     <Edit className="h-3.5 w-3.5" /> Edit
                   </Button>
                   <Button size="sm" variant="outline" className="gap-1 text-warning hover:text-warning" onClick={() => handleAction(task.id, "flag")}>
@@ -190,6 +251,81 @@ export default function AdminCommunityTasksPage() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setRejectOpen(false)}>Cancel</Button>
             <Button variant="destructive" onClick={() => rejectId && handleAction(rejectId, "reject")}>Reject Task</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Task Dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2">
+              <Edit className="h-5 w-5 text-primary" /> Edit Community Task
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            <FormSection title="Task Details">
+              <div>
+                <Label>Title</Label>
+                <Input className="mt-1.5" value={editForm.title} onChange={(e) => updateEdit("title", e.target.value)} />
+              </div>
+              <div>
+                <Label>Category</Label>
+                <Select value={editForm.category} onValueChange={(v) => updateEdit("category", v)}>
+                  <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {categories.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Description</Label>
+                <Textarea className="mt-1.5" rows={4} value={editForm.description} onChange={(e) => updateEdit("description", e.target.value)} />
+              </div>
+              <div>
+                <Label>Location</Label>
+                <Input className="mt-1.5" value={editForm.location} onChange={(e) => updateEdit("location", e.target.value)} />
+              </div>
+            </FormSection>
+
+            <FormSection title="Schedule & Payment">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Date</Label>
+                  <Input className="mt-1.5" type="date" value={editForm.date} onChange={(e) => updateEdit("date", e.target.value)} />
+                </div>
+                <div>
+                  <Label>Time</Label>
+                  <Input className="mt-1.5" type="time" value={editForm.time} onChange={(e) => updateEdit("time", e.target.value)} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Duration</Label>
+                  <Input className="mt-1.5" placeholder="e.g., 3 hours" value={editForm.duration} onChange={(e) => updateEdit("duration", e.target.value)} />
+                </div>
+                <div>
+                  <Label>Payment ($)</Label>
+                  <Input className="mt-1.5" type="number" value={editForm.payment} onChange={(e) => updateEdit("payment", e.target.value)} />
+                </div>
+              </div>
+            </FormSection>
+
+            {editTask && (
+              <div className="rounded-lg bg-secondary/50 p-3 space-y-1">
+                <h4 className="text-xs font-medium text-muted-foreground">Posted By</h4>
+                <p className="text-sm">{editTask.poster} · {editTask.email}</p>
+                <p className="text-xs text-muted-foreground">{editTask.userHistory}</p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
+            <Button className="gap-1.5" onClick={handleSaveEdit}>
+              <Save className="h-4 w-4" /> Save Changes
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
