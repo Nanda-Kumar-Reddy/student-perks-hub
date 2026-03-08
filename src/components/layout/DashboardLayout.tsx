@@ -7,6 +7,7 @@ import { useTheme } from "@/hooks/useTheme";
 import NotificationDropdown, { type Notification } from "@/components/NotificationDropdown";
 import DiscountsModal from "@/components/DiscountsModal";
 import FloatingButtons from "@/components/FloatingButtons";
+import ChatPopup from "@/components/chat/ChatPopup";
 
 interface NavItem {
   label: string;
@@ -205,6 +206,7 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
       </div>
 
       {showFloatingButtons && <FloatingButtons />}
+      <ChatPopup />
     </div>
   );
 }
