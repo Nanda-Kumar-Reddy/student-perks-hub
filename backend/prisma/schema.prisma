@@ -82,7 +82,8 @@ model User {
   passwordHash   String?  @map("password_hash")
   googleId       String?  @unique @map("google_id") @db.VarChar(255)
   emailVerified  Boolean  @default(false) @map("email_verified")
-  vendorStatus   String?  @map("vendor_status") @db.VarChar(20) // pending, approved, rejected
+  vendorStatus       String?  @map("vendor_status") @db.VarChar(20)
+  stripeCustomerId   String?  @unique @map("stripe_customer_id") @db.VarChar(255)
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
