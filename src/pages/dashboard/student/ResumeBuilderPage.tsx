@@ -240,7 +240,7 @@ export default function ResumeBuilderPage() {
         <p className="text-sm text-muted-foreground mt-1">Build your professional resume</p>
       </div>
       <Tabs defaultValue="build" className="w-full min-w-0">
-        <TabsList className="w-full justify-start overflow-x-auto whitespace-nowrap">
+        <TabsList>
           <TabsTrigger value="build" className="shrink-0">Build It Myself</TabsTrigger>
           <TabsTrigger value="expert" className="shrink-0">Hire an Expert</TabsTrigger>
           <TabsTrigger value="requests" className="shrink-0">My Requests</TabsTrigger>
