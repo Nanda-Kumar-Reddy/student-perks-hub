@@ -15,6 +15,7 @@ import certificationRoutes from "./certifications";
 import drivingLicenseRoutes from "./drivingLicense";
 import notificationRoutes from "./notifications";
 import studentRoutes from "./students";
+import adminRoutes from "./admin";
 
 const router = Router();
 
@@ -38,6 +39,9 @@ router.use("/events", eventRoutes);
 router.use("/certifications", certificationRoutes);
 router.use("/driving-license", drivingLicenseRoutes);
 router.use("/students", studentRoutes);
+
+// ── Admin Portal ────────────────────────────────────
+router.use("/admin", adminRoutes);
 
 // ── Legacy ──────────────────────────────────────────
 router.use("/bookings", bookingRoutes);
