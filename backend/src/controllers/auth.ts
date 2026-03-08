@@ -65,3 +65,19 @@ export async function me(req: Request, res: Response) {
   const user = await authService.getMe(userId);
   return res.json(user);
 }
+
+export async function forgotPassword(req: Request, res: Response) {
+  const result = await authService.forgotPassword(req.body.email);
+  return res.json(result);
+}
+
+export async function resetPassword(req: Request, res: Response) {
+  const result = await authService.resetPassword(req.body.token, req.body.password);
+  return res.json(result);
+}
+
+export async function changePassword(req: Request, res: Response) {
+  const userId = (req as any).user.userId;
+  const result = await authService.changePassword(userId, req.body.currentPassword, req.body.newPassword);
+  return res.json(result);
+}

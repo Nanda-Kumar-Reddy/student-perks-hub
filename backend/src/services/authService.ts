@@ -232,6 +232,64 @@ class AuthService {
     return { message: "OTP verified successfully" };
   }
 
+  // ── Password Reset ─────────────────────────────────
+
+  async forgotPassword(email: string) {
+    const user = await db.client.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
+
+    // Always return success to prevent email enumeration
+    if (!user) {
+      return { message: "If that email exists, a reset link has been sent" };
+    }
+
+    const resetToken = auth.generateResetToken(user.id);
+    // TODO: Send email with reset link using notification wrapper
+    console.log(`[AUTH] Password reset token for ${email}: ${resetToken}`);
+
+    return { message: "If that email exists, a reset link has been sent" };
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const userId = auth.verifyResetToken(token);
+    if (!userId) {
+      throw Object.assign(new Error("Invalid or expired reset token"), { status: 400 });
+    }
+
+    const passwordHash = await auth.hashPassword(newPassword);
+    await db.client.user.update({
+      where: { id: userId },
+      data: { passwordHash },
+    });
+
+    // Revoke all refresh tokens for security
+    await db.client.refreshToken.deleteMany({ where: { userId } });
+
+    console.log(`[AUTH] Password reset for user ${userId}`);
+    return { message: "Password updated successfully" };
+  }
+
+  async changePassword(userId: string, currentPassword: string, newPassword: string) {
+    const user = await db.client.user.findUnique({ where: { id: userId } });
+    if (!user?.passwordHash) {
+      throw Object.assign(new Error("Cannot change password for OAuth accounts"), { status: 400 });
+    }
+
+    const valid = await auth.verifyPassword(currentPassword, user.passwordHash);
+    if (!valid) {
+      throw Object.assign(new Error("Current password is incorrect"), { status: 401 });
+    }
+
+    const passwordHash = await auth.hashPassword(newPassword);
+    await db.client.user.update({
+      where: { id: userId },
+      data: { passwordHash },
+    });
+
+    return { message: "Password changed successfully" };
+  }
+
   // ── Private Helpers ───────────────────────────────
 
   private generateTokenPair(userId: string, role: string) {

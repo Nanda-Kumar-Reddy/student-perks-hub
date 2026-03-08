@@ -79,6 +79,24 @@ class AuthWrapper {
     });
   }
 
+  // ── Password Reset Tokens ──────────────────────────
+
+  generateResetToken(userId: string): string {
+    const payload: TokenPayload = { userId, role: "reset" };
+    // Use access token with short expiry (15 min)
+    return generateAccessToken(payload);
+  }
+
+  verifyResetToken(token: string): string | null {
+    try {
+      const payload = verifyAccessToken(token);
+      if (payload.role !== "reset") return null;
+      return payload.userId;
+    } catch {
+      return null;
+    }
+  }
+
   // ── OTP ───────────────────────────────────────────
 
   generateOtp(): string {
