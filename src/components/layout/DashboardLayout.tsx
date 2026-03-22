@@ -72,6 +72,31 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
   const [discountsModalOpen, setDiscountsModalOpen] = useState(false);
   const [selectedDiscountCategory, setSelectedDiscountCategory] = useState("Lifeline Liquor");
   const [profileDropdown, setProfileDropdown] = useState(false);
+  const [dynamicNav, setDynamicNav] = useState<NavItem[]>([]);
+
+  // Load vendor services dynamically for sidebar
+  useEffect(() => {
+    if (!isDynamicVendor) return;
+    apiGetVendorServices().then((res) => {
+      const serviceItems: NavItem[] = (res.data || [])
+        .filter((s: any) => s.isActive && s.adminEnabled)
+        .map((s: any) => ({
+          label: SERVICE_LABELS[s.serviceType] || s.serviceType,
+          href: `/vendor/service/${s.serviceType}`,
+          icon: SERVICE_ICONS[s.serviceType] || <Store className="h-4 w-4" />,
+        }));
+      setDynamicNav(serviceItems);
+    }).catch(() => setDynamicNav([]));
+  }, [isDynamicVendor]);
+
+  // Merge static nav with dynamic service nav
+  const allNavItems = isDynamicVendor
+    ? [
+        navItems[0], // Dashboard
+        ...dynamicNav, // Dynamic services
+        ...navItems.slice(1), // Requests, Verify, Offers, Analytics, Settings
+      ]
+    : navItems;
 
   const roleInfo = { icon: roleIcon, name: displayName };
 
