@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Zap, LogOut, Menu, Sun, Moon, Tag, ChevronDown, User, Store, ShieldCheck } from "lucide-react";
+import { Zap, LogOut, Menu, Sun, Moon, Tag, ChevronDown, User, Store, ShieldCheck, Home, Car, Users, Calculator, CarFront, DollarSign, Plane, Award, CalendarDays, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useTheme } from "@/hooks/useTheme";
@@ -9,6 +9,7 @@ import NotificationDropdown, { type Notification } from "@/components/Notificati
 import DiscountsModal from "@/components/DiscountsModal";
 import FloatingButtons from "@/components/FloatingButtons";
 import ChatPopup from "@/components/chat/ChatPopup";
+import { apiGetVendorServices } from "@/services/api";
 
 interface NavItem {
   label: string;
