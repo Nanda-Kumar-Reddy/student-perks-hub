@@ -9,6 +9,13 @@ import * as vendorServicesCtrl from "../../controllers/vendor/vendorServices";
 
 const router = Router();
 
+// ── Public listings (for students) ───────────────────
+router.get("/listings/public", authenticate, catchErrors(vendorServicesCtrl.getPublicListings));
+
+// ── Student creates a request ────────────────────────
+router.post("/requests/student", authenticate, rbac("student"), catchErrors(vendorServicesCtrl.createStudentRequest));
+router.get("/requests/student/mine", authenticate, rbac("student"), catchErrors(vendorServicesCtrl.getStudentServiceRequests));
+
 // ── Vendor-only routes ───────────────────────────────
 router.use(authenticate, rbac("vendor"));
 
