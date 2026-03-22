@@ -108,7 +108,7 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
 
   const NavLinks = () => (
     <>
-      {navItems.map((item) => (
+      {allNavItems.map((item) => (
         <Link
           key={item.href}
           to={item.href}
