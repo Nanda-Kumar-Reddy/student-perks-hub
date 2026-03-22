@@ -23,6 +23,7 @@ import adminRoutes from "./admin/admin";
 
 // Vendor routes
 import vendorRoutes from "./vendor/vendor";
+import vendorServiceRoutes from "./vendor/vendorServices";
 
 // Community routes
 import communityRoutes from "./community/communityTasks";
