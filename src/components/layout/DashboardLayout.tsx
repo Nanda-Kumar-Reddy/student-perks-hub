@@ -39,7 +39,28 @@ function getRoleIcon(title: string) {
   return <User className="h-4 w-4" />;
 }
 
-export default function DashboardLayout({ title, navItems, notifications = [], showDiscounts = false, showFloatingButtons = false }: DashboardLayoutProps) {
+const SERVICE_ICONS: Record<string, React.ReactNode> = {
+  accommodation: <Home className="h-4 w-4" />,
+  car_rent_sale: <Car className="h-4 w-4" />,
+  consultations: <Users className="h-4 w-4" />,
+  accounting: <Calculator className="h-4 w-4" />,
+  driving_licence: <CarFront className="h-4 w-4" />,
+  loans: <DollarSign className="h-4 w-4" />,
+  airport_pickup: <Plane className="h-4 w-4" />,
+  certifications: <Award className="h-4 w-4" />,
+  events: <CalendarDays className="h-4 w-4" />,
+  jobs: <Briefcase className="h-4 w-4" />,
+};
+
+const SERVICE_LABELS: Record<string, string> = {
+  accommodation: "Accommodation", car_rent_sale: "Car Rent/Sale",
+  consultations: "Consultations", accounting: "Accounting",
+  driving_licence: "Driving Licence", loans: "Loans",
+  airport_pickup: "Airport Pickup", certifications: "Certifications",
+  events: "Events", jobs: "Jobs",
+};
+
+export default function DashboardLayout({ title, navItems, notifications = [], showDiscounts = false, showFloatingButtons = false, isDynamicVendor = false }: DashboardLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
