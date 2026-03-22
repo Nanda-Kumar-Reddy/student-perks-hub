@@ -1,9 +1,10 @@
 /**
  * Database Service — Uses Node.js Backend API.
- * No Supabase dependency.
+ * Falls back to demo mode when VITE_API_BASE_URL is not configured.
  */
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+const DEMO_MODE = !API_BASE;
 
 function getAuthHeaders(): Record<string, string> {
   const token = localStorage.getItem("access_token") || "";
@@ -14,14 +15,14 @@ function getAuthHeaders(): Record<string, string> {
 }
 
 export async function getProfile(userId: string) {
-  if (!API_BASE) return null;
+  if (DEMO_MODE) return null;
   const res = await fetch(`${API_BASE}/api/profiles/me`, { headers: getAuthHeaders() });
   if (!res.ok) throw new Error("Failed to get profile");
   return res.json();
 }
 
 export async function updateProfile(userId: string, updates: Record<string, any>) {
-  if (!API_BASE) return null;
+  if (DEMO_MODE) return null;
   const res = await fetch(`${API_BASE}/api/profiles/me`, {
     method: "PATCH",
     headers: getAuthHeaders(),
@@ -32,7 +33,17 @@ export async function updateProfile(userId: string, updates: Record<string, any>
 }
 
 export async function getUserRole(userId: string): Promise<"student" | "vendor" | "admin" | null> {
-  if (!API_BASE) return "student"; // demo mode default
+  if (DEMO_MODE) {
+    // In demo mode, read role from stored demo user
+    try {
+      const stored = localStorage.getItem("demo_user");
+      if (stored) {
+        const user = JSON.parse(stored);
+        return user.role || "student";
+      }
+    } catch {}
+    return "student";
+  }
   try {
     const res = await fetch(`${API_BASE}/api/auth/me`, { headers: getAuthHeaders() });
     if (!res.ok) return null;
@@ -49,7 +60,7 @@ export async function updateCommunityTaskStatus(
   taskId: string,
   status: "FILLED" | "CANCELLED"
 ): Promise<{ success: boolean }> {
-  if (!API_BASE) return { success: true };
+  if (DEMO_MODE) return { success: true };
 
   const res = await fetch(`${API_BASE}/api/community/tasks/${taskId}/status`, {
     method: "PATCH",

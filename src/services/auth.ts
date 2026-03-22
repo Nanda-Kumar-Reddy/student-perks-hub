@@ -1,8 +1,11 @@
 /**
  * Authentication Service — Uses Node.js Backend API.
- * No Supabase dependency.
+ * Falls back to demo mode when VITE_API_BASE_URL is not configured.
  */
 import { apiLogin, apiSignup, apiLogout, apiGetMe, apiGoogleLogin } from "@/services/api";
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+const DEMO_MODE = !API_BASE;
 
 export type AppUser = {
   id: string;
@@ -22,23 +25,71 @@ function mapApiUser(data: any): AppUser {
   };
 }
 
+// ── Demo mode helpers ───────────────────────────────
+function getDemoUser(): AppUser | null {
+  try {
+    const stored = localStorage.getItem("demo_user");
+    return stored ? JSON.parse(stored) : null;
+  } catch {
+    return null;
+  }
+}
+
+function setDemoUser(user: AppUser) {
+  localStorage.setItem("demo_user", JSON.stringify(user));
+}
+
+function clearDemoUser() {
+  localStorage.removeItem("demo_user");
+}
+
+// ── Auth functions ──────────────────────────────────
+
 export async function signUp(email: string, password: string, fullName: string, role: "student" | "vendor" = "student") {
+  if (DEMO_MODE) {
+    const user: AppUser = { id: crypto.randomUUID(), email, fullName, avatarUrl: "", role };
+    setDemoUser(user);
+    return user;
+  }
   const result = await apiSignup({ email, password, fullName, role });
   if (result.accessToken) localStorage.setItem("access_token", result.accessToken);
   return result.user ? mapApiUser(result.user) : null;
 }
 
 export async function signIn(email: string, password: string) {
+  if (DEMO_MODE) {
+    // In demo mode, determine role from email pattern or default to student
+    let role: AppUser["role"] = "student";
+    if (email.includes("vendor")) role = "vendor";
+    if (email.includes("admin")) role = "admin";
+    const user: AppUser = {
+      id: crypto.randomUUID(),
+      email,
+      fullName: email.split("@")[0].replace(/[._-]/g, " "),
+      avatarUrl: "",
+      role,
+    };
+    setDemoUser(user);
+    return user;
+  }
   const result = await apiLogin({ email, password });
   return mapApiUser(result.user);
 }
 
 export async function signInWithGoogle() {
-  // Google OAuth would redirect — handled via backend
-  window.location.href = `${import.meta.env.VITE_API_BASE_URL || ""}/api/auth/google`;
+  if (DEMO_MODE) {
+    const user: AppUser = { id: crypto.randomUUID(), email: "demo@google.com", fullName: "Google User", avatarUrl: "", role: "student" };
+    setDemoUser(user);
+    return user;
+  }
+  window.location.href = `${API_BASE}/api/auth/google`;
 }
 
 export async function signOut() {
+  if (DEMO_MODE) {
+    clearDemoUser();
+    return;
+  }
   try {
     await apiLogout();
   } catch {
@@ -48,8 +99,7 @@ export async function signOut() {
 }
 
 export async function resetPasswordForEmail(email: string) {
-  const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
-  if (!API_BASE) return;
+  if (DEMO_MODE) return;
   await fetch(`${API_BASE}/api/auth/forgot-password`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -58,8 +108,7 @@ export async function resetPasswordForEmail(email: string) {
 }
 
 export async function updatePassword(newPassword: string) {
-  const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
-  if (!API_BASE) return;
+  if (DEMO_MODE) return;
   const token = localStorage.getItem("access_token") || "";
   await fetch(`${API_BASE}/api/auth/change-password`, {
     method: "POST",
@@ -72,6 +121,10 @@ export async function updatePassword(newPassword: string) {
 }
 
 export async function getSession(): Promise<{ user: AppUser } | null> {
+  if (DEMO_MODE) {
+    const user = getDemoUser();
+    return user ? { user } : null;
+  }
   const token = localStorage.getItem("access_token");
   if (!token) return null;
   try {

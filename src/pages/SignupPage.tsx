@@ -32,8 +32,9 @@ export default function SignupPage() {
     setLoading(true);
     try {
       await signUp(email, password, name, "student");
-      toast({ title: "Account created!", description: "Please check your email to confirm your account." });
-      navigate("/login");
+      window.dispatchEvent(new Event("auth-changed"));
+      toast({ title: "Account created!" });
+      navigate("/student");
     } catch (err: any) {
       toast({ title: "Sign up failed", description: err.message, variant: "destructive" });
     } finally {

@@ -39,6 +39,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  // Listen for storage events so login in LoginPage updates the provider
+  useEffect(() => {
+    function handleStorage() {
+      getSession().then(async (result) => {
+        if (result) {
+          setUser(result.user);
+          setRole(result.user.role || (await getUserRole(result.user.id)));
+        } else {
+          setUser(null);
+          setRole(null);
+        }
+      });
+    }
+    window.addEventListener("auth-changed", handleStorage);
+    return () => window.removeEventListener("auth-changed", handleStorage);
+  }, []);
+
   const handleSignOut = useCallback(async () => {
     await authSignOut();
     setUser(null);
