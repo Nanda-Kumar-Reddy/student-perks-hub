@@ -104,18 +104,22 @@ model User {
   drivingLicenseBookings DrivingLicenseBooking[]
   eventRegistrations     EventRegistration[]
   certificationRequests  CertificationRequest[]
-    notifications          Notification[]
-    communityTasks         CommunityTask[]
-    taskApplications       TaskApplication[]
-    sentTaskMessages       TaskMessage[]       @relation("SentMessages")
-    conversationsAsUser1   Conversation[]      @relation("ConversationsAsUser1")
-    conversationsAsUser2   Conversation[]      @relation("ConversationsAsUser2")
-    sentChatMessages       Message[]           @relation("SentChatMessages")
-    payments               Payment[]
+  notifications          Notification[]
+  communityTasks         CommunityTask[]
+  taskApplications       TaskApplication[]
+  sentTaskMessages       TaskMessage[]       @relation("SentMessages")
+  conversationsAsUser1   Conversation[]      @relation("ConversationsAsUser1")
+  conversationsAsUser2   Conversation[]      @relation("ConversationsAsUser2")
+  sentChatMessages       Message[]           @relation("SentChatMessages")
+  payments               Payment[]
+  vendorRequestsAsVendor VendorRequest[]     @relation("VendorRequests")
+  vendorRequestsAsStudent VendorRequest[]    @relation("StudentRequests")
+  approvalRequests       AdminApproval[]     @relation("ApprovalRequester")
+  approvalAdmin          AdminApproval[]     @relation("ApprovalAdmin")
 
-    @@index([vendorStatus])
-    @@map("users")
-  }
+  @@index([vendorStatus])
+  @@map("users")
+}
 
 model Profile {
   id         String   @id @default(uuid()) @db.Uuid
