@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
-import { type AppUser, getSession, onAuthStateChange, signOut as authSignOut } from "@/services/auth";
+import { type AppUser, getSession, signOut as authSignOut } from "@/services/auth";
 import { getUserRole } from "@/services/database";
 
 type AuthState = {
@@ -21,38 +21,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<AuthState["role"]>(null);
   const [loading, setLoading] = useState(true);
 
-  const loadRole = useCallback(async (userId: string) => {
-    try {
-      const r = await getUserRole(userId);
-      setRole(r);
-    } catch {
-      setRole(null);
-    }
-  }, []);
-
   useEffect(() => {
-    // Set up listener BEFORE getSession (per Supabase best practice)
-    const subscription = onAuthStateChange(async (u) => {
-      setUser(u);
-      if (u) {
-        await loadRole(u.id);
-      } else {
-        setRole(null);
-      }
-      setLoading(false);
-    });
-
-    // Then hydrate
     getSession().then(async (result) => {
       if (result) {
         setUser(result.user);
-        await loadRole(result.user.id);
+        // Role from user object or fetch separately
+        if (result.user.role) {
+          setRole(result.user.role);
+        } else {
+          const r = await getUserRole(result.user.id);
+          setRole(r);
+        }
       }
       setLoading(false);
+    }).catch(() => {
+      setLoading(false);
     });
-
-    return () => subscription.unsubscribe();
-  }, [loadRole]);
+  }, []);
 
   const handleSignOut = useCallback(async () => {
     await authSignOut();

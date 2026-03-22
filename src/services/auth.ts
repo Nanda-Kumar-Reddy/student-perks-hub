@@ -1,80 +1,89 @@
 /**
- * Authentication Service — Abstraction layer over Supabase Auth.
- * Swap this file to migrate to another provider (AWS Cognito, Firebase, etc.)
+ * Authentication Service — Uses Node.js Backend API.
+ * No Supabase dependency.
  */
-import { supabase } from "@/integrations/supabase/client";
-import type { User, Session } from "@supabase/supabase-js";
+import { apiLogin, apiSignup, apiLogout, apiGetMe, apiGoogleLogin } from "@/services/api";
 
 export type AppUser = {
   id: string;
   email: string;
   fullName: string;
   avatarUrl: string;
+  role?: "student" | "vendor" | "admin";
 };
 
-function mapUser(user: User): AppUser {
+function mapApiUser(data: any): AppUser {
   return {
-    id: user.id,
-    email: user.email ?? "",
-    fullName: user.user_metadata?.full_name ?? "",
-    avatarUrl: user.user_metadata?.avatar_url ?? "",
+    id: data.id || data.userId || "",
+    email: data.email || "",
+    fullName: data.fullName || data.full_name || "",
+    avatarUrl: data.avatarUrl || data.avatar_url || "",
+    role: data.role,
   };
 }
 
 export async function signUp(email: string, password: string, fullName: string, role: "student" | "vendor" = "student") {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { full_name: fullName, role },
-      emailRedirectTo: window.location.origin,
-    },
-  });
-  if (error) throw error;
-  return data.user ? mapUser(data.user) : null;
+  const result = await apiSignup({ email, password, fullName, role });
+  if (result.accessToken) localStorage.setItem("access_token", result.accessToken);
+  return result.user ? mapApiUser(result.user) : null;
 }
 
 export async function signIn(email: string, password: string) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
-  return mapUser(data.user);
+  const result = await apiLogin({ email, password });
+  return mapApiUser(result.user);
 }
 
 export async function signInWithGoogle() {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: { redirectTo: window.location.origin },
-  });
-  if (error) throw error;
+  // Google OAuth would redirect — handled via backend
+  window.location.href = `${import.meta.env.VITE_API_BASE_URL || ""}/api/auth/google`;
 }
 
 export async function signOut() {
-  const { error } = await supabase.auth.signOut();
-  if (error) throw error;
+  try {
+    await apiLogout();
+  } catch {
+    // Ignore errors on logout
+  }
+  localStorage.removeItem("access_token");
 }
 
 export async function resetPasswordForEmail(email: string) {
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/reset-password`,
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+  if (!API_BASE) return;
+  await fetch(`${API_BASE}/api/auth/forgot-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
   });
-  if (error) throw error;
 }
 
 export async function updatePassword(newPassword: string) {
-  const { error } = await supabase.auth.updateUser({ password: newPassword });
-  if (error) throw error;
-}
-
-export async function getSession(): Promise<{ user: AppUser; session: Session } | null> {
-  const { data: { session }, error } = await supabase.auth.getSession();
-  if (error) throw error;
-  if (!session) return null;
-  return { user: mapUser(session.user), session };
-}
-
-export function onAuthStateChange(callback: (user: AppUser | null) => void) {
-  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-    callback(session?.user ? mapUser(session.user) : null);
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+  if (!API_BASE) return;
+  const token = localStorage.getItem("access_token") || "";
+  await fetch(`${API_BASE}/api/auth/change-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ newPassword }),
   });
-  return subscription;
+}
+
+export async function getSession(): Promise<{ user: AppUser } | null> {
+  const token = localStorage.getItem("access_token");
+  if (!token) return null;
+  try {
+    const data = await apiGetMe();
+    if (!data || !data.id) return null;
+    return { user: mapApiUser(data) };
+  } catch {
+    return null;
+  }
+}
+
+// No-op auth state listener (backend uses JWT, no realtime auth events)
+export function onAuthStateChange(_callback: (user: AppUser | null) => void) {
+  return { unsubscribe: () => {} };
 }

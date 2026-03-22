@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Zap, LogOut, Menu, Sun, Moon, Tag, ChevronDown, User, Store, ShieldCheck } from "lucide-react";
+import { Zap, LogOut, Menu, Sun, Moon, Tag, ChevronDown, User, Store, ShieldCheck, Home, Car, Users, Calculator, CarFront, DollarSign, Plane, Award, CalendarDays, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useTheme } from "@/hooks/useTheme";
@@ -9,6 +9,7 @@ import NotificationDropdown, { type Notification } from "@/components/Notificati
 import DiscountsModal from "@/components/DiscountsModal";
 import FloatingButtons from "@/components/FloatingButtons";
 import ChatPopup from "@/components/chat/ChatPopup";
+import { apiGetVendorServices } from "@/services/api";
 
 interface NavItem {
   label: string;
@@ -22,6 +23,7 @@ interface DashboardLayoutProps {
   notifications?: Notification[];
   showDiscounts?: boolean;
   showFloatingButtons?: boolean;
+  isDynamicVendor?: boolean;
 }
 
 const discountCategories = [
@@ -37,7 +39,28 @@ function getRoleIcon(title: string) {
   return <User className="h-4 w-4" />;
 }
 
-export default function DashboardLayout({ title, navItems, notifications = [], showDiscounts = false, showFloatingButtons = false }: DashboardLayoutProps) {
+const SERVICE_ICONS: Record<string, React.ReactNode> = {
+  accommodation: <Home className="h-4 w-4" />,
+  car_rent_sale: <Car className="h-4 w-4" />,
+  consultations: <Users className="h-4 w-4" />,
+  accounting: <Calculator className="h-4 w-4" />,
+  driving_licence: <CarFront className="h-4 w-4" />,
+  loans: <DollarSign className="h-4 w-4" />,
+  airport_pickup: <Plane className="h-4 w-4" />,
+  certifications: <Award className="h-4 w-4" />,
+  events: <CalendarDays className="h-4 w-4" />,
+  jobs: <Briefcase className="h-4 w-4" />,
+};
+
+const SERVICE_LABELS: Record<string, string> = {
+  accommodation: "Accommodation", car_rent_sale: "Car Rent/Sale",
+  consultations: "Consultations", accounting: "Accounting",
+  driving_licence: "Driving Licence", loans: "Loans",
+  airport_pickup: "Airport Pickup", certifications: "Certifications",
+  events: "Events", jobs: "Jobs",
+};
+
+export default function DashboardLayout({ title, navItems, notifications = [], showDiscounts = false, showFloatingButtons = false, isDynamicVendor = false }: DashboardLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -49,6 +72,31 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
   const [discountsModalOpen, setDiscountsModalOpen] = useState(false);
   const [selectedDiscountCategory, setSelectedDiscountCategory] = useState("Lifeline Liquor");
   const [profileDropdown, setProfileDropdown] = useState(false);
+  const [dynamicNav, setDynamicNav] = useState<NavItem[]>([]);
+
+  // Load vendor services dynamically for sidebar
+  useEffect(() => {
+    if (!isDynamicVendor) return;
+    apiGetVendorServices().then((res) => {
+      const serviceItems: NavItem[] = (res.data || [])
+        .filter((s: any) => s.isActive && s.adminEnabled)
+        .map((s: any) => ({
+          label: SERVICE_LABELS[s.serviceType] || s.serviceType,
+          href: `/vendor/service/${s.serviceType}`,
+          icon: SERVICE_ICONS[s.serviceType] || <Store className="h-4 w-4" />,
+        }));
+      setDynamicNav(serviceItems);
+    }).catch(() => setDynamicNav([]));
+  }, [isDynamicVendor]);
+
+  // Merge static nav with dynamic service nav
+  const allNavItems = isDynamicVendor
+    ? [
+        navItems[0], // Dashboard
+        ...dynamicNav, // Dynamic services
+        ...navItems.slice(1), // Requests, Verify, Offers, Analytics, Settings
+      ]
+    : navItems;
 
   const roleInfo = { icon: roleIcon, name: displayName };
 
@@ -60,7 +108,7 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
 
   const NavLinks = () => (
     <>
-      {navItems.map((item) => (
+      {allNavItems.map((item) => (
         <Link
           key={item.href}
           to={item.href}
