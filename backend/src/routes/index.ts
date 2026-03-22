@@ -20,6 +20,7 @@ import studentRoutes from "./student/students";
 
 // Admin routes
 import adminRoutes from "./admin/admin";
+import adminApprovalRoutes from "./admin/adminApprovals";
 
 // Vendor routes
 import vendorRoutes from "./vendor/vendor";
