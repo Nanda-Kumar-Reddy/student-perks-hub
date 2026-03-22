@@ -22,6 +22,7 @@ interface DashboardLayoutProps {
   notifications?: Notification[];
   showDiscounts?: boolean;
   showFloatingButtons?: boolean;
+  isDynamicVendor?: boolean;
 }
 
 const discountCategories = [
