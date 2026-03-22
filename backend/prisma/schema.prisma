@@ -282,12 +282,17 @@ model VendorProfile {
   phone        String?  @db.VarChar(30)
   address      String?  @db.Text
   category     String?  @db.VarChar(100)
+  about        String?  @db.Text
+  certifications String[] @default([])
+  qualifications String[] @default([])
+  expertise    String[] @default([])
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  coupons Coupon[]
-  ratings Rating[]
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coupons  Coupon[]
+  ratings  Rating[]
+  services VendorService[]
 
   @@map("vendor_profiles")
 }
