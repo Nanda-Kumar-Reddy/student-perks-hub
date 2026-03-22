@@ -60,9 +60,11 @@ router.use("/students", studentRoutes);
 
 // ── Admin Portal ────────────────────────────────────
 router.use("/admin", adminRoutes);
+router.use("/admin", adminApprovalRoutes);
 
 // ── Vendor Portal ──────────────────────────────────
 router.use("/vendor", vendorRoutes);
+router.use("/vendor", vendorServiceRoutes);
 
 // ── Community Tasks ────────────────────────────────
 router.use("/community/tasks", communityRoutes);
