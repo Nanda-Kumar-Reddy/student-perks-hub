@@ -67,6 +67,8 @@ const AdminTransactionsPage = lazy(() => import("./pages/dashboard/admin/Transac
 const AdminAnalysisPage = lazy(() => import("./pages/dashboard/admin/AnalysisPage"));
 const AdminCommunityTasksPage = lazy(() => import("./pages/dashboard/admin/CommunityTasksPage"));
 const AdminApprovalsPage = lazy(() => import("./pages/dashboard/admin/ApprovalsPage"));
+const AdminServicesPage = lazy(() => import("./pages/dashboard/admin/AdminServicesPage"));
+const AdminServiceDetailPage = lazy(() => import("./pages/dashboard/admin/AdminServiceDetailPage"));
 
 const queryClient = new QueryClient();
 
@@ -101,6 +103,7 @@ const adminNav = [
   { label: "Dashboard", href: "/admin", icon: <LayoutDashboard className="h-4 w-4" /> },
   { label: "Users", href: "/admin/users", icon: <Users className="h-4 w-4" /> },
   { label: "Vendors", href: "/admin/vendors", icon: <Store className="h-4 w-4" /> },
+  { label: "Services", href: "/admin/services", icon: <Package className="h-4 w-4" /> },
   { label: "Approvals", href: "/admin/approvals", icon: <CheckSquare className="h-4 w-4" /> },
   { label: "Transactions", href: "/admin/transactions", icon: <Activity className="h-4 w-4" /> },
   { label: "Community Tasks", href: "/admin/community-tasks", icon: <ShieldCheck className="h-4 w-4" /> },
@@ -253,6 +256,8 @@ const App = () => (
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/users" element={<Suspense fallback={<Loading />}><AdminUsersPage /></Suspense>} />
               <Route path="/admin/vendors" element={<Suspense fallback={<Loading />}><AdminVendorsPage /></Suspense>} />
+              <Route path="/admin/services" element={<Suspense fallback={<Loading />}><AdminServicesPage /></Suspense>} />
+              <Route path="/admin/services/:serviceSlug" element={<Suspense fallback={<Loading />}><AdminServiceRouteWrapper /></Suspense>} />
               <Route path="/admin/approvals" element={<Suspense fallback={<Loading />}><AdminApprovalsPage /></Suspense>} />
               <Route path="/admin/transactions" element={<Suspense fallback={<Loading />}><AdminTransactionsPage /></Suspense>} />
               <Route path="/admin/community-tasks" element={<Suspense fallback={<Loading />}><AdminCommunityTasksPage /></Suspense>} />
@@ -273,6 +278,14 @@ const App = () => (
 function VendorServiceRouteWrapper() {
   const params = useParams();
   return <VendorServiceWrapper serviceSlug={params.serviceSlug || ""} />;
+}
+
+function AdminServiceRouteWrapper() {
+  const params = useParams();
+  const slug = params.serviceSlug || "";
+  const config = serviceConfig[slug];
+  if (!config) return <div>Service not found</div>;
+  return <AdminServiceDetailPage serviceSlug={slug} icon={config.icon} />;
 }
 
 function VendorServicesHub() {
