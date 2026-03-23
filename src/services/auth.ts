@@ -2,7 +2,7 @@
  * Authentication Service — Uses Node.js Backend API.
  * Falls back to demo mode when VITE_API_BASE_URL is not configured.
  */
-import { apiLogin, apiSignup, apiLogout, apiGetMe, apiGoogleLogin } from "@/services/api";
+import { apiLogin, apiSignup, apiLogout, apiGetMe, apiGoogleLogin, refreshToken as refreshAccessToken } from "@/services/api";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 const DEMO_MODE = !API_BASE;
@@ -15,11 +15,16 @@ export type AppUser = {
   role?: "student" | "vendor" | "admin";
 };
 
+export type AuthSession = {
+  user: AppUser;
+  token: string | null;
+};
+
 function mapApiUser(data: any): AppUser {
   return {
     id: data.id || data.userId || "",
     email: data.email || "",
-    fullName: data.fullName || data.full_name || "",
+    fullName: data.fullName || data.full_name || data.email?.split("@")[0] || "User",
     avatarUrl: data.avatarUrl || data.avatar_url || "",
     role: data.role,
   };
@@ -37,10 +42,12 @@ function getDemoUser(): AppUser | null {
 
 function setDemoUser(user: AppUser) {
   localStorage.setItem("demo_user", JSON.stringify(user));
+  localStorage.setItem("access_token", `demo-token:${user.role || "student"}:${user.id}`);
 }
 
 function clearDemoUser() {
   localStorage.removeItem("demo_user");
+  localStorage.removeItem("access_token");
 }
 
 // ── Auth functions ──────────────────────────────────
@@ -120,19 +127,34 @@ export async function updatePassword(newPassword: string) {
   });
 }
 
-export async function getSession(): Promise<{ user: AppUser } | null> {
+export async function getSession(): Promise<AuthSession | null> {
   if (DEMO_MODE) {
     const user = getDemoUser();
-    return user ? { user } : null;
+    return user ? { user, token: localStorage.getItem("access_token") } : null;
   }
+
   const token = localStorage.getItem("access_token");
   if (!token) return null;
+
   try {
     const data = await apiGetMe();
     if (!data || !data.id) return null;
-    return { user: mapApiUser(data) };
+    return { user: mapApiUser(data), token };
   } catch {
-    return null;
+    try {
+      const refreshed = await refreshAccessToken();
+      if (!refreshed) {
+        localStorage.removeItem("access_token");
+        return null;
+      }
+
+      const data = await apiGetMe();
+      if (!data || !data.id) return null;
+      return { user: mapApiUser(data), token: localStorage.getItem("access_token") };
+    } catch {
+      localStorage.removeItem("access_token");
+      return null;
+    }
   }
 }
 
