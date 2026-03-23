@@ -5,6 +5,7 @@ import { getUserRole } from "@/services/database";
 type AuthState = {
   user: AppUser | null;
   role: "student" | "vendor" | "admin" | null;
+  token: string | null;
   loading: boolean;
   signOut: () => Promise<void>;
 };
@@ -12,6 +13,7 @@ type AuthState = {
 const AuthContext = createContext<AuthState>({
   user: null,
   role: null,
+  token: null,
   loading: true,
   signOut: async () => {},
 });
@@ -19,51 +21,53 @@ const AuthContext = createContext<AuthState>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null);
   const [role, setRole] = useState<AuthState["role"]>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    getSession().then(async (result) => {
+  const syncSession = useCallback(async () => {
+    try {
+      const result = await getSession();
       if (result) {
         setUser(result.user);
-        // Role from user object or fetch separately
+        setToken(result.token || null);
         if (result.user.role) {
           setRole(result.user.role);
         } else {
           const r = await getUserRole(result.user.id);
           setRole(r);
         }
+      } else {
+        setUser(null);
+        setRole(null);
+        setToken(null);
       }
+    } finally {
       setLoading(false);
-    }).catch(() => {
-      setLoading(false);
-    });
+    }
   }, []);
+
+  useEffect(() => {
+    syncSession();
+  }, [syncSession]);
 
   // Listen for storage events so login in LoginPage updates the provider
   useEffect(() => {
     function handleStorage() {
-      getSession().then(async (result) => {
-        if (result) {
-          setUser(result.user);
-          setRole(result.user.role || (await getUserRole(result.user.id)));
-        } else {
-          setUser(null);
-          setRole(null);
-        }
-      });
+      syncSession();
     }
     window.addEventListener("auth-changed", handleStorage);
     return () => window.removeEventListener("auth-changed", handleStorage);
-  }, []);
+  }, [syncSession]);
 
   const handleSignOut = useCallback(async () => {
     await authSignOut();
     setUser(null);
     setRole(null);
+    setToken(null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, role, loading, signOut: handleSignOut }}>
+    <AuthContext.Provider value={{ user, role, token, loading, signOut: handleSignOut }}>
       {children}
     </AuthContext.Provider>
   );
