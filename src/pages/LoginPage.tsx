@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +11,7 @@ import { toast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
@@ -30,10 +31,12 @@ export default function LoginPage() {
     try {
       const user = await signIn(email, password);
       const role = user?.role || await getUserRole(user?.id || "");
-      // Notify AuthProvider of the change
       window.dispatchEvent(new Event("auth-changed"));
       toast({ title: "Welcome back!" });
-      navigate(`/${role || "student"}`);
+      const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname;
+      const defaultPortal = `/${role || "student"}`;
+      const target = from && from.startsWith(defaultPortal) ? from : defaultPortal;
+      navigate(target, { replace: true });
     } catch (err: any) {
       toast({ title: "Sign in failed", description: err.message, variant: "destructive" });
     } finally {

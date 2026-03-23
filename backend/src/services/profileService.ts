@@ -18,12 +18,53 @@ class ProfileService {
       include: { user: { include: { roles: true } } },
     });
     if (!profile) {
-      throw Object.assign(new Error("Profile not found"), { status: 404 });
+      const user = await db.client.user.findUnique({
+        where: { id: userId },
+        include: { roles: true },
+      });
+
+      if (!user) {
+        throw Object.assign(new Error("Profile not found"), { status: 404 });
+      }
+
+      return {
+        id: user.id,
+        userId: user.id,
+        fullName: user.email.split("@")[0],
+        phone: null,
+        address: null,
+        university: null,
+        avatarUrl: null,
+        skills: [],
+        phoneVerified: false,
+        emailVerified: Boolean(user.emailVerified),
+        idUploaded: false,
+        policeCheck: false,
+        rating: 0,
+        completedTasks: 0,
+        responseRate: 100,
+        user,
+      };
     }
     return profile;
   }
 
   async updateMyProfile(userId: string, input: UpdateProfileInput) {
+    const existing = await db.client.profile.findUnique({ where: { userId } });
+
+    if (!existing) {
+      return db.client.profile.create({
+        data: {
+          userId,
+          fullName: input.fullName,
+          phone: input.phone,
+          address: input.address,
+          university: input.university,
+          skills: input.skills ?? [],
+        },
+      });
+    }
+
     return db.client.profile.update({
       where: { userId },
       data: input,
