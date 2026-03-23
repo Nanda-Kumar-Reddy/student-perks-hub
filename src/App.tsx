@@ -256,6 +256,8 @@ const App = () => (
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/users" element={<Suspense fallback={<Loading />}><AdminUsersPage /></Suspense>} />
               <Route path="/admin/vendors" element={<Suspense fallback={<Loading />}><AdminVendorsPage /></Suspense>} />
+              <Route path="/admin/services" element={<Suspense fallback={<Loading />}><AdminServicesPage /></Suspense>} />
+              <Route path="/admin/services/:serviceSlug" element={<Suspense fallback={<Loading />}><AdminServiceRouteWrapper /></Suspense>} />
               <Route path="/admin/approvals" element={<Suspense fallback={<Loading />}><AdminApprovalsPage /></Suspense>} />
               <Route path="/admin/transactions" element={<Suspense fallback={<Loading />}><AdminTransactionsPage /></Suspense>} />
               <Route path="/admin/community-tasks" element={<Suspense fallback={<Loading />}><AdminCommunityTasksPage /></Suspense>} />
