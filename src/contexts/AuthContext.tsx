@@ -1,6 +1,5 @@
-import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
-import { type AppUser, getSession, onAuthStateChange, signOut as authSignOut } from "@/services/auth";
-import { getUserRole } from "@/services/database";
+import { createContext, useContext, useMemo, type ReactNode } from "react";
+import { type AppUser } from "@/services/auth";
 
 type AuthState = {
   user: AppUser | null;
@@ -17,55 +16,24 @@ const AuthContext = createContext<AuthState>({
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AppUser | null>(null);
-  const [role, setRole] = useState<AuthState["role"]>(null);
-  const [loading, setLoading] = useState(true);
-
-  const loadRole = useCallback(async (u: AppUser) => {
-    try {
-      // Try to get role from the user object first (from backend auth)
-      if (u.role) {
-        setRole(u.role as AuthState["role"]);
-        return;
-      }
-      const r = await getUserRole(u.id);
-      setRole(r);
-    } catch {
-      setRole(null);
-    }
-  }, []);
-
-  useEffect(() => {
-    const subscription = onAuthStateChange(async (u) => {
-      setUser(u);
-      if (u) {
-        await loadRole(u);
-      } else {
-        setRole(null);
-      }
-      setLoading(false);
-    });
-
-    // Hydrate
-    getSession().then(async (result) => {
-      if (result) {
-        setUser(result.user);
-        await loadRole(result.user);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, [loadRole]);
-
-  const handleSignOut = useCallback(async () => {
-    await authSignOut();
-    setUser(null);
-    setRole(null);
-  }, []);
+  const value = useMemo<AuthState>(
+    () => ({
+      user: {
+        id: "design-mode-user",
+        email: "design@lifelineaustralia.app",
+        fullName: "Design Reviewer",
+        avatarUrl: "",
+        role: "admin",
+      } as AppUser,
+      role: "admin",
+      loading: false,
+      signOut: async () => {},
+    }),
+    []
+  );
 
   return (
-    <AuthContext.Provider value={{ user, role, loading, signOut: handleSignOut }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

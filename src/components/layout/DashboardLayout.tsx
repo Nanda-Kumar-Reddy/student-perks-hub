@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Zap, LogOut, Menu, Sun, Moon, Tag, ChevronDown, User, Store, ShieldCheck } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useTheme } from "@/hooks/useTheme";
 import NotificationDropdown, { type Notification } from "@/components/NotificationDropdown";
@@ -196,7 +195,7 @@ export default function DashboardLayout({ title, navItems, notifications = [], s
                     onClick={async () => {
                       setProfileDropdown(false);
                       await signOut();
-                      navigate("/login");
+                      navigate("/");
                     }}
                     className="flex items-center gap-2 w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
                   >

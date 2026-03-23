@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Zap, CheckCircle2, Loader2 } from "lucide-react";
 import { updatePassword } from "@/services/auth";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 export default function ResetPasswordPage() {
@@ -19,17 +18,8 @@ export default function ResetPasswordPage() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Listen for PASSWORD_RECOVERY event from the URL hash
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
-        setReady(true);
-      }
-    });
-    // Also check if we already have a session (user clicked the link)
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setReady(true);
-    });
-    return () => subscription.unsubscribe();
+    const timer = window.setTimeout(() => setReady(true), 150);
+    return () => window.clearTimeout(timer);
   }, []);
 
   const validate = () => {
@@ -57,7 +47,7 @@ export default function ResetPasswordPage() {
 
   const handleClose = () => {
     setSuccessOpen(false);
-    navigate("/login");
+    navigate("/");
   };
 
   if (!ready) {
@@ -65,7 +55,7 @@ export default function ResetPasswordPage() {
       <div className="flex min-h-screen items-center justify-center bg-secondary/30 px-4">
         <div className="text-center space-y-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
-          <p className="text-sm text-muted-foreground">Verifying your reset link...</p>
+          <p className="text-sm text-muted-foreground">Preparing password reset screen...</p>
         </div>
       </div>
     );

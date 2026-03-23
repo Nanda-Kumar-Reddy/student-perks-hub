@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from "react";
-import { connectSocket, disconnectSocket, getSocket } from "@/services/socket";
+import { connectSocket, disconnectSocket } from "@/services/socket";
 import { useAuth } from "@/contexts/AuthContext";
 import type { Socket } from "socket.io-client";
 
@@ -80,16 +80,8 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<RealtimeNotification[]>([]);
   const socketRef = useRef<Socket | null>(null);
 
-  // Connect socket when user logs in
+  // Connect socket in design mode using the mock auth context
   useEffect(() => {
-    if (!user) {
-      disconnectSocket();
-      setIsConnected(false);
-      return;
-    }
-
-    // For now, we use a placeholder token approach
-    // In production, get the actual JWT token from auth service
     const token = localStorage.getItem("access_token") || "demo-token";
     const sock = connectSocket(token);
     socketRef.current = sock;
