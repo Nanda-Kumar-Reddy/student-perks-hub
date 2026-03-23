@@ -4,9 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Home, Bed, Bath, Search, MapPin, CheckCircle, Wifi, Car as CarIcon, Dumbbell, ArrowRight } from "lucide-react";
+import { Home, Bed, Bath, Search, MapPin, CheckCircle, Wifi, Car as CarIcon, Dumbbell, ArrowRight, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import RequestsListTab from "@/components/shared/RequestsListTab";
+import ListingCard, { ListingCardItem } from "@/components/shared/ListingCard";
+import AddEditListingModal, { ListingFormData } from "@/components/shared/AddEditListingModal";
+import { useToast } from "@/hooks/use-toast";
 
 const properties = [
   { id: 1, title: "Modern Studio Apartment", rent: "$280/week", address: "123 Swanston St, Melbourne", beds: 1, baths: 1, furnishing: "Fully Furnished", available: true, type: "Studio", listed: "2d ago", desc: "Bright and modern studio in the heart of CBD.", images: ["🏠", "🛋️", "🍳"], amenities: ["WiFi", "Parking", "Gym"] },
@@ -18,6 +21,12 @@ const properties = [
 const bookings = [
   { id: 1, title: "Modern Studio Apartment", subtitle: "123 Swanston St, Melbourne", date: "March 5, 2026", status: "Confirmed" },
   { id: 2, title: "Shared 2BR Apartment", subtitle: "45 Elizabeth St, Sydney", date: "Feb 20, 2026", status: "Pending" },
+];
+
+// Student's own listings
+const myListings: ListingCardItem[] = [
+  { id: "ml1", title: "Cozy Room near UNSW", description: "Single room in a 3BR house, close to uni", price: "$200/week", status: "APPROVED", emoji: "🏠", meta: [{ label: "Location", value: "Kensington, NSW" }] },
+  { id: "ml2", title: "Studio Sublet — CBD", description: "Available Apr–Jun, fully furnished", price: "$280/week", status: "PENDING", emoji: "🏢", meta: [{ label: "Location", value: "Melbourne CBD" }] },
 ];
 
 const amenityIcon: Record<string, React.ReactNode> = {
@@ -40,9 +49,12 @@ const furnishingBadge = (f: string) => {
 
 export default function AccommodationsPage() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
   const [furnishingFilter, setFurnishingFilter] = useState("All");
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editData, setEditData] = useState<Partial<ListingFormData> | null>(null);
 
   const filtered = properties.filter((p) => {
     const matchSearch = p.title.toLowerCase().includes(search.toLowerCase()) || p.address.toLowerCase().includes(search.toLowerCase());
@@ -51,16 +63,23 @@ export default function AccommodationsPage() {
     return matchSearch && matchType && matchFurnishing;
   });
 
+  const handleListingSubmit = (data: ListingFormData) => {
+    toast({ title: "Listing submitted", description: "Your accommodation listing has been submitted for admin approval." });
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold flex items-center gap-2"><Home className="h-6 w-6 text-primary" /> Accommodations</h1>
-        <p className="text-sm text-muted-foreground mt-1">Find your perfect student accommodation</p>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-bold flex items-center gap-2"><Home className="h-6 w-6 text-primary" /> Accommodations</h1>
+          <p className="text-sm text-muted-foreground mt-1">Find your perfect student accommodation</p>
+        </div>
       </div>
       <Tabs defaultValue="find" className="w-full">
         <TabsList>
           <TabsTrigger value="find">Find Accommodation</TabsTrigger>
           <TabsTrigger value="bookings">My Bookings</TabsTrigger>
+          <TabsTrigger value="my-listings">My Listings</TabsTrigger>
         </TabsList>
         <TabsContent value="find" className="mt-4 space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row">
@@ -132,7 +151,34 @@ export default function AccommodationsPage() {
         <TabsContent value="bookings" className="mt-4">
           <RequestsListTab requests={bookings} emptyMessage="No accommodation bookings yet." />
         </TabsContent>
+        <TabsContent value="my-listings" className="mt-4 space-y-4">
+          <div className="flex justify-end">
+            <Button onClick={() => { setEditData(null); setCreateOpen(true); }} className="gap-1">
+              <Plus className="h-4 w-4" /> Add Accommodation
+            </Button>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {myListings.map((item, i) => (
+              <ListingCard
+                key={item.id}
+                item={item}
+                index={i}
+                role="student"
+                onEdit={() => { setEditData({ title: item.title, description: item.description, price: String(item.price || "") }); setCreateOpen(true); }}
+                onDelete={() => toast({ title: "Delete request submitted", description: "Admin will review the deletion." })}
+              />
+            ))}
+          </div>
+        </TabsContent>
       </Tabs>
+
+      <AddEditListingModal
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        serviceCategory="accommodation"
+        editData={editData}
+        onSubmit={handleListingSubmit}
+      />
     </div>
   );
 }
