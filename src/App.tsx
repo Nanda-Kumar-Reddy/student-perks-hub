@@ -25,7 +25,7 @@ import {
   LayoutDashboard, Plane, Home, Car, Briefcase, FileText, DollarSign,
   Users, Calculator, CarFront, CalendarDays, CalendarCheck, User,
   Award, QrCode, BarChart3, Gift, Settings, Store, Activity, ShieldCheck,
-  ListTodo, ClipboardList, Inbox
+  ListTodo
 } from "lucide-react";
 
 // Lazy load student feature pages
@@ -59,8 +59,6 @@ const VerifyTransactionPage = lazy(() => import("./pages/dashboard/vendor/Verify
 const ManageOffersPage = lazy(() => import("./pages/dashboard/vendor/ManageOffersPage"));
 const VendorAnalyticsPage = lazy(() => import("./pages/dashboard/vendor/AnalyticsPage"));
 const VendorSettingsPage = lazy(() => import("./pages/dashboard/vendor/SettingsPage"));
-const VendorServicePage = lazy(() => import("./pages/dashboard/vendor/VendorServicePage"));
-const VendorRequestsPage = lazy(() => import("./pages/dashboard/vendor/VendorRequestsPage"));
 
 // Lazy load admin pages
 const AdminUsersPage = lazy(() => import("./pages/dashboard/admin/UsersPage"));
@@ -68,7 +66,6 @@ const AdminVendorsPage = lazy(() => import("./pages/dashboard/admin/VendorsPage"
 const AdminTransactionsPage = lazy(() => import("./pages/dashboard/admin/TransactionsPage"));
 const AdminAnalysisPage = lazy(() => import("./pages/dashboard/admin/AnalysisPage"));
 const AdminCommunityTasksPage = lazy(() => import("./pages/dashboard/admin/CommunityTasksPage"));
-const AdminApprovalsPage = lazy(() => import("./pages/dashboard/admin/ApprovalsPage"));
 
 const queryClient = new QueryClient();
 
@@ -92,7 +89,6 @@ const studentNav = [
 
 const vendorNav = [
   { label: "Dashboard", href: "/vendor", icon: <LayoutDashboard className="h-4 w-4" /> },
-  { label: "Requests", href: "/vendor/requests", icon: <Inbox className="h-4 w-4" /> },
   { label: "Verify Transaction", href: "/vendor/verify", icon: <QrCode className="h-4 w-4" /> },
   { label: "Manage Offers", href: "/vendor/offers", icon: <Gift className="h-4 w-4" /> },
   { label: "Analytics", href: "/vendor/analytics", icon: <BarChart3 className="h-4 w-4" /> },
@@ -101,7 +97,6 @@ const vendorNav = [
 
 const adminNav = [
   { label: "Dashboard", href: "/admin", icon: <LayoutDashboard className="h-4 w-4" /> },
-  { label: "Approvals", href: "/admin/approvals", icon: <ClipboardList className="h-4 w-4" /> },
   { label: "Users", href: "/admin/users", icon: <Users className="h-4 w-4" /> },
   { label: "Vendors", href: "/admin/vendors", icon: <Store className="h-4 w-4" /> },
   { label: "Transactions", href: "/admin/transactions", icon: <Activity className="h-4 w-4" /> },
@@ -211,14 +206,12 @@ const App = () => (
 
             {/* Vendor Dashboard — Protected */}
             <Route element={<ProtectedRoute allowedRoles={["vendor"]} />}>
-              <Route element={<DashboardLayout title="Vendor Portal" navItems={vendorNav} notifications={vendorNotifications} isDynamicVendor />}>
+              <Route element={<DashboardLayout title="Vendor Portal" navItems={vendorNav} notifications={vendorNotifications} />}>
                 <Route path="/vendor" element={<VendorDashboard />} />
-                <Route path="/vendor/requests" element={<Suspense fallback={<Loading />}><VendorRequestsPage /></Suspense>} />
                 <Route path="/vendor/verify" element={<Suspense fallback={<Loading />}><VerifyTransactionPage /></Suspense>} />
                 <Route path="/vendor/offers" element={<Suspense fallback={<Loading />}><ManageOffersPage /></Suspense>} />
                 <Route path="/vendor/analytics" element={<Suspense fallback={<Loading />}><VendorAnalyticsPage /></Suspense>} />
                 <Route path="/vendor/settings" element={<Suspense fallback={<Loading />}><VendorSettingsPage /></Suspense>} />
-                <Route path="/vendor/service/:serviceType" element={<Suspense fallback={<Loading />}><VendorServicePage /></Suspense>} />
               </Route>
             </Route>
 
@@ -226,7 +219,6 @@ const App = () => (
             <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
               <Route element={<DashboardLayout title="Admin Panel" navItems={adminNav} notifications={adminNotifications} />}>
                 <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/admin/approvals" element={<Suspense fallback={<Loading />}><AdminApprovalsPage /></Suspense>} />
                 <Route path="/admin/users" element={<Suspense fallback={<Loading />}><AdminUsersPage /></Suspense>} />
                 <Route path="/admin/vendors" element={<Suspense fallback={<Loading />}><AdminVendorsPage /></Suspense>} />
                 <Route path="/admin/transactions" element={<Suspense fallback={<Loading />}><AdminTransactionsPage /></Suspense>} />

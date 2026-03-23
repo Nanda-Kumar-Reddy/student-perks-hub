@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,11 +13,9 @@ import FormSection from "@/components/shared/FormSection";
 import PhoneField from "@/components/shared/PhoneField";
 import { useAuth } from "@/contexts/AuthContext";
 import { getProfile, updateProfile, updateCommunityTaskStatus } from "@/services/database";
-import { getMyActiveTasks, getMyPendingApprovals, getMyTaskHistory } from "@/services/database";
 import { updatePassword } from "@/services/auth";
 import { toast } from "@/hooks/use-toast";
 import ViewTaskDetailDialog from "@/components/profile/ViewTaskDetailDialog";
-import CreateCommunityTaskDialog from "@/components/community/CreateCommunityTaskDialog";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
@@ -31,6 +29,12 @@ const verificationBadges = [
 ];
 
 const skills = ["Gardening", "Childcare", "First Aid", "Driver License"];
+
+const initialActiveTasks = [
+  { id: "1", title: "Garden Maintenance — Mowing & Weeding", applications: 5, status: "APPROVED" },
+  { id: "2", title: "Babysitting — Saturday Evening", applications: 3, status: "APPROVED" },
+  { id: "3", title: "Help Moving Furniture", applications: 0, status: "PENDING_APPROVAL" },
+];
 
 const taskDetails: Record<string, any> = {
   "1": {
@@ -55,6 +59,17 @@ const taskDetails: Record<string, any> = {
     qualifications: { requiresExperience: false, requiresTransport: true, requiresPoliceCheck: false, requiresChildrenCheck: false, requiresFirstAid: false },
   },
 };
+const pendingApprovals = [
+  { id: "4", title: "Dog Walking — Daily Morning Run", submitted: "2h ago", status: "PENDING_APPROVAL" },
+  { id: "5", title: "Tutoring — Year 10 Mathematics", submitted: "1d ago", status: "PENDING_APPROVAL" },
+];
+
+const taskHistory = [
+  { id: "6", title: "House Cleaning — Deep Clean", duration: "4 hours", payment: "$120", worker: "Sarah M.", rating: 5 },
+  { id: "7", title: "Pet Sitting — Weekend", duration: "2 days", payment: "$200", worker: "James K.", rating: 4 },
+  { id: "8", title: "Tech Help — WiFi Setup", duration: "1 hour", payment: "$50", worker: "Alex P.", rating: 5 },
+];
+
 const statusColor: Record<string, string> = {
   APPROVED: "bg-success/10 text-success",
   PENDING_APPROVAL: "bg-warning/10 text-warning",
@@ -69,11 +84,8 @@ export default function ProfilePage() {
   const [savingPw, setSavingPw] = useState(false);
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [appDialogOpen, setAppDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<{ id: string; title: string } | null>(null);
-  const [activeTasks, setActiveTasks] = useState<any[]>([]);
-  const [pendingApprovals, setPendingApprovals] = useState<any[]>([]);
-  const [taskHistory, setTaskHistory] = useState<any[]>([]);
+  const [activeTasks, setActiveTasks] = useState(initialActiveTasks);
   const [confirmAction, setConfirmAction] = useState<{ taskId: string; taskTitle: string; type: "FILLED" | "CANCELLED" } | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [form, setForm] = useState({
@@ -85,39 +97,6 @@ export default function ProfilePage() {
   });
   const [password, setPassword] = useState({ current: "", new: "", confirm: "" });
   const update = (k: string, v: string) => setForm((p) => ({ ...p, [k]: v }));
-  const selectedTaskData = useMemo(() => {
-    if (!selectedTask) return null;
-    const liveTask = activeTasks.find((task) => task.id === selectedTask.id) || pendingApprovals.find((task) => task.id === selectedTask.id);
-    return liveTask ? {
-      ...liveTask,
-      poster: taskDetails[selectedTask.id]?.poster || { name: user?.fullName || "User", rating: 5, responseRate: "100%", completedTasks: 0 },
-      qualifications: {
-        requiresExperience: Boolean(liveTask.requiresExperience),
-        requiresTransport: Boolean(liveTask.requiresTransport),
-        requiresPoliceCheck: Boolean(liveTask.requiresPoliceCheck),
-        requiresChildrenCheck: Boolean(liveTask.requiresChildrenCheck),
-        requiresFirstAid: Boolean(liveTask.requiresFirstAid),
-      },
-    } : taskDetails[selectedTask.id] || null;
-  }, [activeTasks, pendingApprovals, selectedTask, user?.fullName]);
-
-  const loadTaskData = async () => {
-    if (!user) return;
-    try {
-      const [active, pending, history] = await Promise.all([
-        getMyActiveTasks(),
-        getMyPendingApprovals(),
-        getMyTaskHistory(),
-      ]);
-      setActiveTasks(active.data || []);
-      setPendingApprovals(pending.data || []);
-      setTaskHistory(history.data || []);
-    } catch {
-      setActiveTasks([]);
-      setPendingApprovals([]);
-      setTaskHistory([]);
-    }
-  };
 
   // Load profile from database
   useEffect(() => {
@@ -127,15 +106,14 @@ export default function ProfilePage() {
       .then((profile) => {
         setForm((prev) => ({
           ...prev,
-          name: profile?.full_name || profile?.fullName || prev.name || user.fullName || "User",
-          phone: profile?.phone || "",
-          address: profile?.address || "",
-          university: profile?.university || "",
+          name: profile.full_name || prev.name,
+          phone: profile.phone || "",
+          address: profile.address || "",
+          university: profile.university || "",
         }));
         setProfileLoaded(true);
       })
       .catch(() => setProfileLoaded(true));
-    loadTaskData();
   }, [user]);
 
   const handleSaveProfile = async () => {
@@ -280,7 +258,7 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div>
                   <h3 className="text-sm font-medium">{t.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-1">{t._count?.applications || t.applications || 0} applications</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t.applications} applications</p>
                 </div>
                 <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusColor[t.status]}`}>
                   {t.status.replace("_", " ")}
@@ -288,7 +266,6 @@ export default function ProfilePage() {
               </div>
               <div className="flex gap-2 mt-3">
                 <Button size="sm" variant="outline" className="text-xs gap-1" onClick={() => { setSelectedTask({ id: t.id, title: t.title }); setAppDialogOpen(true); }}><Eye className="h-3 w-3" /> View Application</Button>
-                <Button size="sm" variant="outline" className="text-xs gap-1" onClick={() => { setSelectedTask({ id: t.id, title: t.title }); setEditDialogOpen(true); }}>Edit</Button>
                 <Button size="sm" variant="outline" className="text-xs gap-1" onClick={() => setConfirmAction({ taskId: t.id, taskTitle: t.title, type: "FILLED" })}><CheckCircle2 className="h-3 w-3" /> Mark Filled</Button>
                 <Button size="sm" variant="outline" className="text-xs gap-1 text-destructive hover:text-destructive" onClick={() => setConfirmAction({ taskId: t.id, taskTitle: t.title, type: "CANCELLED" })}><XCircle className="h-3 w-3" /> Cancel</Button>
               </div>
@@ -308,7 +285,7 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div>
                   <h3 className="text-sm font-medium">{t.title}</h3>
-                  <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1"><Clock className="h-3 w-3" /> Submitted {t.createdAt ? new Date(t.createdAt).toLocaleString() : t.submitted}</p>
+                  <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1"><Clock className="h-3 w-3" /> Submitted {t.submitted}</p>
                 </div>
                 <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusColor[t.status]}`}>
                   Pending
@@ -324,10 +301,10 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div>
                   <h3 className="text-sm font-medium">{t.title}</h3>
-                  <p className="text-xs text-muted-foreground mt-1">{t.duration || "—"} · {t.payment ? `$${t.payment}` : "—"} · Worker: {t.workerName || t.worker || "—"}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t.duration} · {t.payment} · Worker: {t.worker}</p>
                 </div>
                 <div className="flex items-center gap-1">
-                  {Array.from({ length: t.rating || 0 }).map((_, i) => (
+                  {Array.from({ length: t.rating }).map((_, i) => (
                     <Star key={i} className="h-3.5 w-3.5 fill-warning text-warning" />
                   ))}
                 </div>
@@ -367,16 +344,7 @@ export default function ProfilePage() {
         <ViewTaskDetailDialog
           open={appDialogOpen}
           onOpenChange={setAppDialogOpen}
-          task={selectedTaskData}
-        />
-      )}
-      {selectedTask && (
-        <CreateCommunityTaskDialog
-          open={editDialogOpen}
-          onOpenChange={setEditDialogOpen}
-          taskId={selectedTask.id}
-          initialValues={selectedTaskData}
-          onSubmitted={loadTaskData}
+          task={taskDetails[selectedTask.id] || null}
         />
       )}
 

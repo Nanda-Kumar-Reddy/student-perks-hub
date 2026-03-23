@@ -20,11 +20,9 @@ import studentRoutes from "./student/students";
 
 // Admin routes
 import adminRoutes from "./admin/admin";
-import adminApprovalRoutes from "./admin/adminApprovals";
 
 // Vendor routes
 import vendorRoutes from "./vendor/vendor";
-import vendorServiceRoutes from "./vendor/vendorServices";
 
 // Community routes
 import communityRoutes from "./community/communityTasks";
@@ -60,11 +58,9 @@ router.use("/students", studentRoutes);
 
 // ── Admin Portal ────────────────────────────────────
 router.use("/admin", adminRoutes);
-router.use("/admin", adminApprovalRoutes);
 
 // ── Vendor Portal ──────────────────────────────────
 router.use("/vendor", vendorRoutes);
-router.use("/vendor", vendorServiceRoutes);
 
 // ── Community Tasks ────────────────────────────────
 router.use("/community/tasks", communityRoutes);

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,7 +11,6 @@ import { toast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
@@ -30,13 +29,9 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const user = await signIn(email, password);
-      const role = user?.role || await getUserRole(user?.id || "");
-      window.dispatchEvent(new Event("auth-changed"));
+      const role = await getUserRole(user.id);
       toast({ title: "Welcome back!" });
-      const from = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname;
-      const defaultPortal = `/${role || "student"}`;
-      const target = from && from.startsWith(defaultPortal) ? from : defaultPortal;
-      navigate(target, { replace: true });
+      navigate(`/${role || "student"}`);
     } catch (err: any) {
       toast({ title: "Sign in failed", description: err.message, variant: "destructive" });
     } finally {
@@ -64,11 +59,6 @@ export default function LoginPage() {
           </Link>
           <h1 className="mt-6 font-display text-2xl font-bold">Welcome back</h1>
           <p className="mt-1 text-sm text-muted-foreground">Sign in to your account</p>
-          {!import.meta.env.VITE_API_BASE_URL && (
-            <p className="mt-2 text-xs text-muted-foreground bg-secondary rounded-lg px-3 py-2">
-              <strong>Demo mode:</strong> Use any email to login. Include "vendor" or "admin" in the email for those roles.
-            </p>
-          )}
         </div>
         <div className="mt-8 rounded-2xl border border-border bg-card p-6 shadow-card">
           <div className="space-y-4">

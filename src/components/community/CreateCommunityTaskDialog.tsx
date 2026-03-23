@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import FormSection from "@/components/shared/FormSection";
 import { toast } from "sonner";
-import { createCommunityTask, updateCommunityTask } from "@/services/database";
 
 const categories = [
   "Home & Garden", "Childcare", "Tutoring", "Cleaning",
@@ -19,12 +18,9 @@ const categories = [
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialValues?: Record<string, any> | null;
-  taskId?: string;
-  onSubmitted?: () => void;
 }
 
-export default function CreateCommunityTaskDialog({ open, onOpenChange, initialValues = null, taskId, onSubmitted }: Props) {
+export default function CreateCommunityTaskDialog({ open, onOpenChange }: Props) {
   const [form, setForm] = useState({
     title: "", category: "", description: "", location: "",
     date: "", time: "", duration: "", payment: "",
@@ -34,71 +30,26 @@ export default function CreateCommunityTaskDialog({ open, onOpenChange, initialV
     showPhonePublicly: false, chatThroughApp: true,
     agreeTerms: false, understandApproval: false,
   });
-  const [submitting, setSubmitting] = useState(false);
-
-  const resetForm = () => setForm({
-    title: "", category: "", description: "", location: "",
-    date: "", time: "", duration: "", payment: "",
-    requiresExperience: false, requiresTransport: false,
-    requiresPoliceCheck: false, requiresChildrenCheck: false,
-    requiresFirstAid: false,
-    showPhonePublicly: false, chatThroughApp: true,
-    agreeTerms: false, understandApproval: false,
-  });
-
-  useEffect(() => {
-    if (!open) return;
-
-    if (initialValues) {
-      setForm((prev) => ({
-        ...prev,
-        ...initialValues,
-        payment: String(initialValues.payment ?? ""),
-        date: initialValues.date ? String(initialValues.date).slice(0, 10) : "",
-        agreeTerms: true,
-        understandApproval: true,
-      }));
-      return;
-    }
-
-    resetForm();
-  }, [initialValues, open]);
 
   const update = (key: string, value: any) => setForm((p) => ({ ...p, [key]: value }));
 
   const canSubmit = form.title && form.category && form.description && form.location &&
     form.date && form.time && form.duration && form.payment && form.agreeTerms && form.understandApproval;
 
-  const handleSubmit = async () => {
-    if (!canSubmit || submitting) return;
-    setSubmitting(true);
-    try {
-      const payload = {
-        ...form,
-        payment: Number(form.payment),
-        date: new Date(`${form.date}T00:00:00`).toISOString(),
-      };
-
-      if (taskId) {
-        await updateCommunityTask(taskId, payload);
-        toast.success("Task update sent for admin approval!", {
-          description: "Your changes will go live after review.",
-        });
-      } else {
-        await createCommunityTask(payload);
-        toast.success("Task submitted for admin approval!", {
-          description: "You'll be notified once it's reviewed.",
-        });
-      }
-
-      onOpenChange(false);
-      resetForm();
-      onSubmitted?.();
-    } catch (error: any) {
-      toast.error(error.message || "Unable to submit task");
-    } finally {
-      setSubmitting(false);
-    }
+  const handleSubmit = () => {
+    toast.success("Task submitted for admin approval!", {
+      description: "You'll be notified once it's reviewed.",
+    });
+    onOpenChange(false);
+    setForm({
+      title: "", category: "", description: "", location: "",
+      date: "", time: "", duration: "", payment: "",
+      requiresExperience: false, requiresTransport: false,
+      requiresPoliceCheck: false, requiresChildrenCheck: false,
+      requiresFirstAid: false,
+      showPhonePublicly: false, chatThroughApp: true,
+      agreeTerms: false, understandApproval: false,
+    });
   };
 
   return (
@@ -202,7 +153,7 @@ export default function CreateCommunityTaskDialog({ open, onOpenChange, initialV
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={!canSubmit || submitting}>{submitting ? "Saving..." : taskId ? "Save for Approval" : "Submit for Approval"}</Button>
+          <Button onClick={handleSubmit} disabled={!canSubmit}>Submit for Approval</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
