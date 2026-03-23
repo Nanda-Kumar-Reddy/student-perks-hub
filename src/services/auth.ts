@@ -1,80 +1,119 @@
 /**
- * Authentication Service — Abstraction layer over Supabase Auth.
- * Swap this file to migrate to another provider (AWS Cognito, Firebase, etc.)
+ * Authentication Service — Uses Node.js backend API for auth.
+ * No Supabase dependency.
  */
-import { supabase } from "@/integrations/supabase/client";
-import type { User, Session } from "@supabase/supabase-js";
 
 export type AppUser = {
   id: string;
   email: string;
   fullName: string;
   avatarUrl: string;
+  role?: string;
 };
 
-function mapUser(user: User): AppUser {
-  return {
-    id: user.id,
-    email: user.email ?? "",
-    fullName: user.user_metadata?.full_name ?? "",
-    avatarUrl: user.user_metadata?.avatar_url ?? "",
-  };
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+
+async function authRequest<T>(method: string, path: string, body?: unknown): Promise<T> {
+  if (!API_BASE) {
+    console.info(`ℹ️ API not configured — ${method} ${path} (demo mode)`);
+    return {} as T;
+  }
+  const token = localStorage.getItem("access_token") || "";
+  const res = await fetch(`${API_BASE}${path}`, {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    credentials: "include",
+    ...(body ? { body: JSON.stringify(body) } : {}),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: "Request failed" }));
+    throw new Error(err.message || err.error || "Request failed");
+  }
+  return res.json();
 }
 
 export async function signUp(email: string, password: string, fullName: string, role: "student" | "vendor" = "student") {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { full_name: fullName, role },
-      emailRedirectTo: window.location.origin,
-    },
+  const result = await authRequest<{ user: any; accessToken: string }>("POST", "/api/auth/signup", {
+    email, password, fullName, role,
   });
-  if (error) throw error;
-  return data.user ? mapUser(data.user) : null;
+  if (result.accessToken) {
+    localStorage.setItem("access_token", result.accessToken);
+  }
+  return result.user ? mapApiUser(result.user) : null;
 }
 
 export async function signIn(email: string, password: string) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
-  return mapUser(data.user);
+  const result = await authRequest<{ user: any; accessToken: string }>("POST", "/api/auth/login", {
+    email, password,
+  });
+  if (result.accessToken) {
+    localStorage.setItem("access_token", result.accessToken);
+  }
+  return mapApiUser(result.user);
 }
 
 export async function signInWithGoogle() {
-  const { error } = await supabase.auth.signInWithOAuth({
-    provider: "google",
-    options: { redirectTo: window.location.origin },
-  });
-  if (error) throw error;
+  // Google OAuth would redirect to backend OAuth endpoint
+  window.location.href = `${API_BASE}/api/auth/google`;
 }
 
 export async function signOut() {
-  const { error } = await supabase.auth.signOut();
-  if (error) throw error;
+  try {
+    await authRequest("POST", "/api/auth/logout");
+  } catch {
+    // ignore
+  }
+  localStorage.removeItem("access_token");
 }
 
 export async function resetPasswordForEmail(email: string) {
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/reset-password`,
-  });
-  if (error) throw error;
+  await authRequest("POST", "/api/auth/forgot-password", { email });
 }
 
 export async function updatePassword(newPassword: string) {
-  const { error } = await supabase.auth.updateUser({ password: newPassword });
-  if (error) throw error;
+  await authRequest("POST", "/api/auth/change-password", { newPassword });
 }
 
-export async function getSession(): Promise<{ user: AppUser; session: Session } | null> {
-  const { data: { session }, error } = await supabase.auth.getSession();
-  if (error) throw error;
-  if (!session) return null;
-  return { user: mapUser(session.user), session };
+export async function getSession(): Promise<{ user: AppUser } | null> {
+  const token = localStorage.getItem("access_token");
+  if (!token) return null;
+  try {
+    const result = await authRequest<{ user: any; role: string }>("GET", "/api/auth/me");
+    if (!result.user) return null;
+    return { user: mapApiUser(result.user, result.role) };
+  } catch {
+    return null;
+  }
 }
 
-export function onAuthStateChange(callback: (user: AppUser | null) => void) {
-  const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-    callback(session?.user ? mapUser(session.user) : null);
+type AuthCallback = (user: AppUser | null) => void;
+const listeners = new Set<AuthCallback>();
+
+export function onAuthStateChange(callback: AuthCallback) {
+  listeners.add(callback);
+  // Initial check
+  getSession().then((result) => {
+    callback(result?.user || null);
   });
-  return subscription;
+  return {
+    unsubscribe: () => { listeners.delete(callback); },
+  };
+}
+
+// Emit auth state changes when login/logout happens
+export function emitAuthChange(user: AppUser | null) {
+  listeners.forEach((cb) => cb(user));
+}
+
+function mapApiUser(user: any, role?: string): AppUser {
+  return {
+    id: user.id || user.userId || "",
+    email: user.email || "",
+    fullName: user.fullName || user.full_name || user.profile?.fullName || "",
+    avatarUrl: user.avatarUrl || user.avatar_url || user.profile?.avatarUrl || "",
+    role: role || user.role,
+  };
 }
