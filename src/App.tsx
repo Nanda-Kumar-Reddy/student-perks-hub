@@ -67,6 +67,8 @@ const AdminTransactionsPage = lazy(() => import("./pages/dashboard/admin/Transac
 const AdminAnalysisPage = lazy(() => import("./pages/dashboard/admin/AnalysisPage"));
 const AdminCommunityTasksPage = lazy(() => import("./pages/dashboard/admin/CommunityTasksPage"));
 const AdminApprovalsPage = lazy(() => import("./pages/dashboard/admin/ApprovalsPage"));
+const AdminServicesPage = lazy(() => import("./pages/dashboard/admin/AdminServicesPage"));
+const AdminServiceDetailPage = lazy(() => import("./pages/dashboard/admin/AdminServiceDetailPage"));
 
 const queryClient = new QueryClient();
 
