@@ -280,6 +280,14 @@ function VendorServiceRouteWrapper() {
   return <VendorServiceWrapper serviceSlug={params.serviceSlug || ""} />;
 }
 
+function AdminServiceRouteWrapper() {
+  const params = useParams();
+  const slug = params.serviceSlug || "";
+  const config = serviceConfig[slug];
+  if (!config) return <div>Service not found</div>;
+  return <AdminServiceDetailPage serviceSlug={slug} icon={config.icon} />;
+}
+
 function VendorServicesHub() {
   const navigate = useNavigate();
 
