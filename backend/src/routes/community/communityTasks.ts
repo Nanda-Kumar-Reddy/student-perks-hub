@@ -31,11 +31,11 @@ const router = Router();
 
 // ── Public (approved tasks) ─────────────────────────
 router.get("/", validate(taskSearchQuery, "query"), catchErrors(listTasks));
-router.get("/:id", catchErrors(getTaskById));
 
 // ── Authenticated user routes ───────────────────────
 router.post("/", authenticate, validate(createCommunityTaskSchema), catchErrors(createTask));
 router.get("/user/my-posts", authenticate, catchErrors(getMyTasks));
+router.put("/:id", authenticate, validate(createCommunityTaskSchema), catchErrors(editTask));
 router.post("/:id/apply", authenticate, validate(applyForTaskSchema), catchErrors(applyForTask));
 router.patch("/:id/status", authenticate, catchErrors(updateTaskStatus));
 router.post("/:id/messages", authenticate, validate(sendTaskMessageSchema), catchErrors(sendMessage));
@@ -47,5 +47,7 @@ router.post("/admin/:id/approve", authenticate, rbac("admin"), validate(adminTas
 router.post("/admin/:id/reject", authenticate, rbac("admin"), validate(adminTaskActionSchema), catchErrors(rejectTask));
 router.post("/admin/:id/flag", authenticate, rbac("admin"), validate(adminTaskActionSchema), catchErrors(flagTask));
 router.patch("/admin/:id/edit", authenticate, rbac("admin"), validate(adminEditTaskSchema), catchErrors(editTask));
+
+router.get("/:id", catchErrors(getTaskById));
 
 export default router;

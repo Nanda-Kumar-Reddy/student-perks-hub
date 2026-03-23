@@ -161,7 +161,17 @@ class CommunityTaskService {
     const task = await db.findById("CommunityTask", taskId);
     if (!task) throw Object.assign(new Error("Task not found"), { status: 404 });
     if (task.userId !== userId) throw Object.assign(new Error("Not authorized"), { status: 403 });
-    return db.update("CommunityTask", taskId, { status });
+
+    const updatedTask = await db.update("CommunityTask", taskId, { status });
+
+    if (status === "CANCELLED") {
+      await db.client.taskApplication.deleteMany({ where: { taskId } });
+      await db.client.taskMessage.deleteMany({ where: { taskId } });
+      await db.client.communityTask.delete({ where: { id: taskId } });
+      return { id: taskId, deleted: true, status };
+    }
+
+    return updatedTask;
   }
 
   // ── Admin: pending tasks ─────────────────────────────
@@ -216,9 +226,11 @@ class CommunityTaskService {
   }
 
   // ── Admin: edit task ───────────────────────────────
-  async editTask(taskId: string, input: Partial<CreateTaskInput> & { adminNotes?: string }) {
+  async editTask(taskId: string, input: Partial<CreateTaskInput> & { adminNotes?: string }, userId?: string) {
     const task = await db.findById("CommunityTask", taskId);
     if (!task) throw Object.assign(new Error("Task not found"), { status: 404 });
+
+    const isAdminEdit = !userId || task.userId !== userId;
 
     const updateData: any = {};
     if (input.title) { this.validateContent(input.title); updateData.title = input.title; }
@@ -230,6 +242,20 @@ class CommunityTaskService {
     if (input.duration) updateData.duration = input.duration;
     if (input.payment !== undefined) updateData.payment = input.payment;
     if (input.adminNotes) updateData.adminNotes = input.adminNotes;
+
+    if (!isAdminEdit) {
+      Object.assign(updateData, {
+        status: "PENDING_APPROVAL",
+        adminNotes: null,
+        rejectionReason: null,
+      });
+
+      await notifications.notifyAdmins(
+        "Community Task Update Pending Approval",
+        `Task \"${task.title}\" was edited and requires admin approval before going live.`,
+        "application"
+      );
+    }
 
     return db.update("CommunityTask", taskId, updateData);
   }

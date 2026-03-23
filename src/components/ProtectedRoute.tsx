@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
 type Props = {
@@ -6,7 +6,13 @@ type Props = {
 };
 
 export default function ProtectedRoute({ allowedRoles }: Props) {
-  const { user, role, loading } = useAuth();
+  const { user, role, token, loading } = useAuth();
+  const location = useLocation();
+
+  const getPortalPath = (userRole?: "student" | "vendor" | "admin" | null) => {
+    if (!userRole) return "/login";
+    return `/${userRole}`;
+  };
 
   if (loading) {
     return (
@@ -16,13 +22,12 @@ export default function ProtectedRoute({ allowedRoles }: Props) {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
+  if (!user || !token) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
-  if (allowedRoles && role && !allowedRoles.includes(role)) {
-    // Redirect to user's own dashboard
-    return <Navigate to={`/${role}`} replace />;
+  if (allowedRoles && (!role || !allowedRoles.includes(role))) {
+    return <Navigate to={getPortalPath(role)} replace />;
   }
 
   return <Outlet />;
