@@ -72,6 +72,31 @@ enum NotificationType {
   system
 }
 
+enum ApprovalAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ServiceType {
+  ACCOMMODATION
+  CAR_RENT_SALE
+  CONSULTATIONS
+  ACCOUNTING
+  DRIVING_LICENCE
+  LOANS
+  AIRPORT_PICKUP
+  CERTIFICATIONS
+  EVENTS
+  JOBS
+}
+
 // =============================================
 // Auth & Users
 // =============================================
@@ -112,6 +137,8 @@ model User {
     conversationsAsUser2   Conversation[]      @relation("ConversationsAsUser2")
     sentChatMessages       Message[]           @relation("SentChatMessages")
     payments               Payment[]
+    // Student accommodation listings
+    studentAccommodations  StudentAccommodation[]
 
     @@index([vendorStatus])
     @@map("users")
@@ -176,7 +203,7 @@ model OtpCode {
   id        String   @id @default(uuid()) @db.Uuid
   userId    String   @map("user_id") @db.Uuid
   code      String   @db.VarChar(6)
-  purpose   String   @db.VarChar(50) // signup, password_reset, verification
+  purpose   String   @db.VarChar(50)
   expiresAt DateTime @map("expires_at")
   used      Boolean  @default(false)
   createdAt DateTime @default(now()) @map("created_at")
@@ -185,6 +212,118 @@ model OtpCode {
 
   @@index([userId])
   @@map("otp_codes")
+}
+
+// =============================================
+// Vendor Services System
+// =============================================
+
+model VendorService {
+  id           String      @id @default(uuid()) @db.Uuid
+  vendorId     String      @map("vendor_id") @db.Uuid
+  serviceType  ServiceType @map("service_type")
+  isActive     Boolean     @default(true) @map("is_active")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+
+  vendor   VendorProfile    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  listings VendorListing[]
+
+  @@unique([vendorId, serviceType])
+  @@index([vendorId])
+  @@map("vendor_services")
+}
+
+model VendorListing {
+  id              String      @id @default(uuid()) @db.Uuid
+  vendorServiceId String      @map("vendor_service_id") @db.Uuid
+  vendorId        String      @map("vendor_id") @db.Uuid
+  serviceType     ServiceType @map("service_type")
+  title           String      @db.VarChar(300)
+  description     String?     @db.Text
+  price           Decimal?    @db.Decimal(10, 2)
+  imageUrls       String[]    @map("image_urls")
+  metadata        Json?       @db.JsonB
+  isActive        Boolean     @default(false) @map("is_active")
+  approvalStatus  ApprovalStatus @default(PENDING) @map("approval_status")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  vendorService VendorService   @relation(fields: [vendorServiceId], references: [id], onDelete: Cascade)
+  requests      VendorRequest[]
+
+  @@index([vendorId])
+  @@index([serviceType])
+  @@index([approvalStatus])
+  @@map("vendor_listings")
+}
+
+model VendorRequest {
+  id           String        @id @default(uuid()) @db.Uuid
+  listingId    String?       @map("listing_id") @db.Uuid
+  vendorId     String        @map("vendor_id") @db.Uuid
+  studentId    String        @map("student_id") @db.Uuid
+  serviceType  ServiceType   @map("service_type")
+  message      String?       @db.Text
+  status       RequestStatus @default(pending)
+  rejectReason String?       @map("reject_reason") @db.Text
+  metadata     Json?         @db.JsonB
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  listing VendorListing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+
+  @@index([vendorId])
+  @@index([studentId])
+  @@index([serviceType])
+  @@index([status])
+  @@map("vendor_requests")
+}
+
+model AdminApproval {
+  id             String         @id @default(uuid()) @db.Uuid
+  entityType     String         @map("entity_type") @db.VarChar(50)
+  entityId       String         @map("entity_id") @db.Uuid
+  action         ApprovalAction
+  requestedBy    String         @map("requested_by") @db.Uuid
+  status         ApprovalStatus @default(PENDING)
+  reason         String?        @db.Text
+  previousData   Json?          @map("previous_data") @db.JsonB
+  newData        Json?          @map("new_data") @db.JsonB
+  reviewedBy     String?        @map("reviewed_by") @db.Uuid
+  reviewedAt     DateTime?      @map("reviewed_at")
+  createdAt      DateTime       @default(now()) @map("created_at")
+
+  @@index([status])
+  @@index([entityType])
+  @@index([requestedBy])
+  @@map("admin_approvals")
+}
+
+// Student accommodation listings
+model StudentAccommodation {
+  id             String         @id @default(uuid()) @db.Uuid
+  userId         String         @map("user_id") @db.Uuid
+  title          String         @db.VarChar(300)
+  description    String?        @db.Text
+  address        String         @db.Text
+  pricePerWeek   Decimal        @map("price_per_week") @db.Decimal(10, 2)
+  imageUrls      String[]       @map("image_urls")
+  propertyType   String?        @map("property_type") @db.VarChar(50)
+  beds           Int            @default(1)
+  baths          Int            @default(1)
+  furnishing     String?        @db.VarChar(50)
+  amenities      String[]       @default([])
+  approvalStatus ApprovalStatus @default(PENDING) @map("approval_status")
+  isActive       Boolean        @default(false) @map("is_active")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([approvalStatus])
+  @@map("student_accommodations")
 }
 
 // =============================================
@@ -282,12 +421,17 @@ model VendorProfile {
   phone        String?  @db.VarChar(30)
   address      String?  @db.Text
   category     String?  @db.VarChar(100)
+  about        String?  @db.Text
+  certifications String[] @default([])
+  qualifications String[] @default([])
+  expertise      String[] @default([])
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  coupons Coupon[]
-  ratings Rating[]
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coupons  Coupon[]
+  ratings  Rating[]
+  services VendorService[]
 
   @@map("vendor_profiles")
 }
@@ -353,6 +497,7 @@ model AirportPickup {
   passengers    Int           @default(1)
   notes         String?       @db.Text
   status        RequestStatus @default(pending)
+  assignedVendorId String?    @map("assigned_vendor_id") @db.Uuid
   createdAt     DateTime      @default(now()) @map("created_at")
   updatedAt     DateTime      @updatedAt @map("updated_at")
 
@@ -366,7 +511,7 @@ model AccommodationEnquiry {
   id              String        @id @default(uuid()) @db.Uuid
   userId          String        @map("user_id") @db.Uuid
   accommodationId String        @map("accommodation_id") @db.Uuid
-  type            String        @db.VarChar(50) // chat, enquiry
+  type            String        @db.VarChar(50)
   message         String        @db.Text
   status          RequestStatus @default(pending)
   createdAt       DateTime      @default(now()) @map("created_at")
@@ -384,7 +529,7 @@ model CarRentRequest {
   userId    String        @map("user_id") @db.Uuid
   carTitle  String        @map("car_title") @db.VarChar(300)
   vendorId  String?       @map("vendor_id") @db.Uuid
-  type      String        @db.VarChar(50) // rent, sale
+  type      String        @db.VarChar(50)
   message   String?       @db.Text
   startDate DateTime?     @map("start_date")
   endDate   DateTime?     @map("end_date")
@@ -422,6 +567,7 @@ model LoanApplication {
   purpose     String        @db.VarChar(300)
   description String?       @db.Text
   status      RequestStatus @default(pending)
+  vendorId    String?       @map("vendor_id") @db.Uuid
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
 
@@ -440,6 +586,7 @@ model Consultation {
   message      String?       @db.Text
   date         DateTime?
   timeSlot     String?       @map("time_slot") @db.VarChar(50)
+  sessionLink  String?       @map("session_link") @db.VarChar(500)
   status       RequestStatus @default(pending)
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
@@ -458,6 +605,7 @@ model AccountingBooking {
   message   String?       @db.Text
   date      DateTime?
   timeSlot  String?       @map("time_slot") @db.VarChar(50)
+  sessionLink String?     @map("session_link") @db.VarChar(500)
   status    RequestStatus @default(pending)
   createdAt DateTime      @default(now()) @map("created_at")
   updatedAt DateTime      @updatedAt @map("updated_at")
@@ -474,6 +622,7 @@ model DrivingLicenseBooking {
   licenseType String        @map("license_type") @db.VarChar(100)
   preferredDate DateTime?   @map("preferred_date")
   notes       String?       @db.Text
+  vendorId    String?       @map("vendor_id") @db.Uuid
   status      RequestStatus @default(pending)
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
@@ -504,6 +653,7 @@ model CertificationRequest {
   userId            String        @map("user_id") @db.Uuid
   certificationName String        @map("certification_name") @db.VarChar(300)
   notes             String?       @db.Text
+  vendorId          String?       @map("vendor_id") @db.Uuid
   status            RequestStatus @default(pending)
   createdAt         DateTime      @default(now()) @map("created_at")
   updatedAt         DateTime      @updatedAt @map("updated_at")
@@ -590,16 +740,13 @@ model CommunityTask {
   duration          String              @db.VarChar(100)
   payment           Decimal             @db.Decimal(10, 2)
   status            CommunityTaskStatus @default(PENDING_APPROVAL)
-  // Worker qualifications
   requiresExperience         Boolean @default(false) @map("requires_experience")
   requiresTransport          Boolean @default(false) @map("requires_transport")
   requiresPoliceCheck        Boolean @default(false) @map("requires_police_check")
   requiresChildrenCheck      Boolean @default(false) @map("requires_children_check")
   requiresFirstAid           Boolean @default(false) @map("requires_first_aid")
-  // Contact
   showPhonePublicly          Boolean @default(false) @map("show_phone_publicly")
   chatThroughApp             Boolean @default(true)  @map("chat_through_app")
-  // Admin
   adminNotes        String?  @map("admin_notes") @db.Text
   rejectionReason   String?  @map("rejection_reason") @db.Text
   createdAt         DateTime @default(now()) @map("created_at")
@@ -672,7 +819,7 @@ model Payment {
   id                     String        @id @default(uuid()) @db.Uuid
   userId                 String        @map("user_id") @db.Uuid
   stripePaymentIntentId  String        @unique @map("stripe_payment_intent_id") @db.VarChar(255)
-  amount                 Int           // in cents
+  amount                 Int
   currency               String        @default("aud") @db.VarChar(3)
   status                 PaymentStatus @default(requires_payment_method)
   description            String?       @db.VarChar(500)
