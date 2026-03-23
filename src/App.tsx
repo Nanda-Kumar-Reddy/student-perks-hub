@@ -25,7 +25,7 @@ import {
   LayoutDashboard, Plane, Home, Car, Briefcase, FileText, DollarSign,
   Users, Calculator, CarFront, CalendarDays, CalendarCheck, User,
   Award, QrCode, BarChart3, Gift, Settings, Store, Activity, ShieldCheck,
-  ListTodo
+  ListTodo, Package, ClipboardList, CheckSquare
 } from "lucide-react";
 
 // Lazy load student feature pages
@@ -59,6 +59,7 @@ const VerifyTransactionPage = lazy(() => import("./pages/dashboard/vendor/Verify
 const ManageOffersPage = lazy(() => import("./pages/dashboard/vendor/ManageOffersPage"));
 const VendorAnalyticsPage = lazy(() => import("./pages/dashboard/vendor/AnalyticsPage"));
 const VendorSettingsPage = lazy(() => import("./pages/dashboard/vendor/SettingsPage"));
+const VendorServicePage = lazy(() => import("./pages/dashboard/vendor/VendorServicePage"));
 
 // Lazy load admin pages
 const AdminUsersPage = lazy(() => import("./pages/dashboard/admin/UsersPage"));
@@ -66,6 +67,7 @@ const AdminVendorsPage = lazy(() => import("./pages/dashboard/admin/VendorsPage"
 const AdminTransactionsPage = lazy(() => import("./pages/dashboard/admin/TransactionsPage"));
 const AdminAnalysisPage = lazy(() => import("./pages/dashboard/admin/AnalysisPage"));
 const AdminCommunityTasksPage = lazy(() => import("./pages/dashboard/admin/CommunityTasksPage"));
+const AdminApprovalsPage = lazy(() => import("./pages/dashboard/admin/ApprovalsPage"));
 
 const queryClient = new QueryClient();
 
@@ -89,8 +91,9 @@ const studentNav = [
 
 const vendorNav = [
   { label: "Dashboard", href: "/vendor", icon: <LayoutDashboard className="h-4 w-4" /> },
-  { label: "Verify Transaction", href: "/vendor/verify", icon: <QrCode className="h-4 w-4" /> },
-  { label: "Manage Offers", href: "/vendor/offers", icon: <Gift className="h-4 w-4" /> },
+  { label: "Services", href: "/vendor/services", icon: <Package className="h-4 w-4" /> },
+  { label: "Requests", href: "/vendor/requests", icon: <ClipboardList className="h-4 w-4" /> },
+  { label: "Coupons", href: "/vendor/offers", icon: <Gift className="h-4 w-4" /> },
   { label: "Analytics", href: "/vendor/analytics", icon: <BarChart3 className="h-4 w-4" /> },
   { label: "Settings", href: "/vendor/settings", icon: <Settings className="h-4 w-4" /> },
 ];
@@ -99,6 +102,7 @@ const adminNav = [
   { label: "Dashboard", href: "/admin", icon: <LayoutDashboard className="h-4 w-4" /> },
   { label: "Users", href: "/admin/users", icon: <Users className="h-4 w-4" /> },
   { label: "Vendors", href: "/admin/vendors", icon: <Store className="h-4 w-4" /> },
+  { label: "Approvals", href: "/admin/approvals", icon: <CheckSquare className="h-4 w-4" /> },
   { label: "Transactions", href: "/admin/transactions", icon: <Activity className="h-4 w-4" /> },
   { label: "Community Tasks", href: "/admin/community-tasks", icon: <ShieldCheck className="h-4 w-4" /> },
   { label: "Analysis", href: "/admin/analysis", icon: <BarChart3 className="h-4 w-4" /> },
@@ -114,12 +118,12 @@ const studentNotifications = [
 const vendorNotifications = [
   { id: "1", title: "New Booking", message: "A student has booked a consultation session.", time: "1h ago", read: false },
   { id: "2", title: "Service Request", message: "New airport pickup request submitted.", time: "3h ago", read: false },
-  { id: "3", title: "Customer Inquiry", message: "Question about your tax return service.", time: "1d ago", read: true },
+  { id: "3", title: "Listing Approved", message: "Your accommodation listing has been approved.", time: "1d ago", read: true },
 ];
 
 const adminNotifications = [
   { id: "1", title: "New Vendor Registration", message: "DriveRight School has applied to join the platform.", time: "30m ago", read: false },
-  { id: "2", title: "System Alert", message: "347 transactions processed today — all clear.", time: "2h ago", read: false },
+  { id: "2", title: "Pending Approval", message: "3 new listing approvals waiting.", time: "2h ago", read: false },
   { id: "3", title: "Activity Spike", message: "Unusual activity detected on vendor TaxEasy.", time: "1d ago", read: true },
 ];
 
@@ -149,6 +153,40 @@ const Loading = () => (
     </div>
   </div>
 );
+
+// Service type config for vendor service pages
+const serviceConfig: Record<string, { label: string; icon: React.ReactNode }> = {
+  accommodation: { label: "Accommodation", icon: <Home className="h-6 w-6 text-primary" /> },
+  "car-rent-sale": { label: "Car Rent/Sale", icon: <Car className="h-6 w-6 text-primary" /> },
+  consultations: { label: "Consultations", icon: <Users className="h-6 w-6 text-primary" /> },
+  accounting: { label: "Accounting", icon: <Calculator className="h-6 w-6 text-primary" /> },
+  "driving-licence": { label: "Driving Licence", icon: <CarFront className="h-6 w-6 text-primary" /> },
+  loans: { label: "Loans", icon: <DollarSign className="h-6 w-6 text-primary" /> },
+  "airport-pickup": { label: "Airport Pickup", icon: <Plane className="h-6 w-6 text-primary" /> },
+  certifications: { label: "Certifications", icon: <Award className="h-6 w-6 text-primary" /> },
+  events: { label: "Events", icon: <CalendarDays className="h-6 w-6 text-primary" /> },
+  jobs: { label: "Jobs", icon: <Briefcase className="h-6 w-6 text-primary" /> },
+};
+
+const serviceRouteToType: Record<string, string> = {
+  accommodation: "ACCOMMODATION",
+  "car-rent-sale": "CAR_RENT_SALE",
+  consultations: "CONSULTATIONS",
+  accounting: "ACCOUNTING",
+  "driving-licence": "DRIVING_LICENCE",
+  loans: "LOANS",
+  "airport-pickup": "AIRPORT_PICKUP",
+  certifications: "CERTIFICATIONS",
+  events: "EVENTS",
+  jobs: "JOBS",
+};
+
+function VendorServiceWrapper({ serviceSlug }: { serviceSlug: string }) {
+  const config = serviceConfig[serviceSlug];
+  const serviceType = serviceRouteToType[serviceSlug];
+  if (!config) return <div>Service not found</div>;
+  return <VendorServicePage serviceType={serviceType} serviceLabel={config.label} icon={config.icon} />;
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -208,6 +246,9 @@ const App = () => (
             <Route element={<ProtectedRoute allowedRoles={["vendor"]} />}>
               <Route element={<DashboardLayout title="Vendor Portal" navItems={vendorNav} notifications={vendorNotifications} />}>
                 <Route path="/vendor" element={<VendorDashboard />} />
+                <Route path="/vendor/services" element={<Suspense fallback={<Loading />}><VendorServicesHub /></Suspense>} />
+                <Route path="/vendor/services/:serviceSlug" element={<Suspense fallback={<Loading />}><VendorServiceRouteWrapper /></Suspense>} />
+                <Route path="/vendor/requests" element={<Suspense fallback={<Loading />}><VendorRequestsPage /></Suspense>} />
                 <Route path="/vendor/verify" element={<Suspense fallback={<Loading />}><VerifyTransactionPage /></Suspense>} />
                 <Route path="/vendor/offers" element={<Suspense fallback={<Loading />}><ManageOffersPage /></Suspense>} />
                 <Route path="/vendor/analytics" element={<Suspense fallback={<Loading />}><VendorAnalyticsPage /></Suspense>} />
@@ -221,6 +262,7 @@ const App = () => (
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/admin/users" element={<Suspense fallback={<Loading />}><AdminUsersPage /></Suspense>} />
                 <Route path="/admin/vendors" element={<Suspense fallback={<Loading />}><AdminVendorsPage /></Suspense>} />
+                <Route path="/admin/approvals" element={<Suspense fallback={<Loading />}><AdminApprovalsPage /></Suspense>} />
                 <Route path="/admin/transactions" element={<Suspense fallback={<Loading />}><AdminTransactionsPage /></Suspense>} />
                 <Route path="/admin/community-tasks" element={<Suspense fallback={<Loading />}><AdminCommunityTasksPage /></Suspense>} />
                 <Route path="/admin/analysis" element={<Suspense fallback={<Loading />}><AdminAnalysisPage /></Suspense>} />
@@ -235,5 +277,71 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
+
+// ── Inline route components ─────────────────────────
+
+function VendorServiceRouteWrapper() {
+  const { useParams } = require("react-router-dom");
+  const { serviceSlug } = useParams();
+  return <VendorServiceWrapper serviceSlug={serviceSlug} />;
+}
+
+function VendorServicesHub() {
+  const { useNavigate } = require("react-router-dom");
+  const navigate = useNavigate();
+
+  const services = [
+    { slug: "accommodation", label: "Accommodation", icon: <Home className="h-8 w-8" />, color: "text-primary" },
+    { slug: "car-rent-sale", label: "Car Rent/Sale", icon: <Car className="h-8 w-8" />, color: "text-accent" },
+    { slug: "consultations", label: "Consultations", icon: <Users className="h-8 w-8" />, color: "text-success" },
+    { slug: "accounting", label: "Accounting", icon: <Calculator className="h-8 w-8" />, color: "text-warning" },
+    { slug: "driving-licence", label: "Driving Licence", icon: <CarFront className="h-8 w-8" />, color: "text-primary" },
+    { slug: "loans", label: "Loans", icon: <DollarSign className="h-8 w-8" />, color: "text-accent" },
+    { slug: "airport-pickup", label: "Airport Pickup", icon: <Plane className="h-8 w-8" />, color: "text-success" },
+    { slug: "certifications", label: "Certifications", icon: <Award className="h-8 w-8" />, color: "text-warning" },
+    { slug: "events", label: "Events", icon: <CalendarDays className="h-8 w-8" />, color: "text-primary" },
+    { slug: "jobs", label: "Jobs", icon: <Briefcase className="h-8 w-8" />, color: "text-accent" },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="font-display text-2xl font-bold flex items-center gap-2">
+          <Package className="h-6 w-6 text-primary" /> My Services
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">Manage your service offerings and listings</p>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {services.map((s) => (
+          <button
+            key={s.slug}
+            onClick={() => navigate(`/vendor/services/${s.slug}`)}
+            className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-6 shadow-card transition-all hover:shadow-card-hover hover:border-primary/30 text-center"
+          >
+            <div className={s.color}>{s.icon}</div>
+            <span className="font-display text-sm font-bold">{s.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function VendorRequestsPage() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="font-display text-2xl font-bold flex items-center gap-2">
+          <ClipboardList className="h-6 w-6 text-primary" /> All Requests
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">View and manage all incoming service requests</p>
+      </div>
+      <div className="text-center py-12 text-muted-foreground">
+        <ClipboardList className="h-12 w-12 mx-auto mb-3 opacity-30" />
+        <p>No pending requests. Requests from students will appear here.</p>
+      </div>
+    </div>
+  );
+}
 
 export default App;
