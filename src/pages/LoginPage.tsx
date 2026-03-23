@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Zap, Loader2 } from "lucide-react";
 import { signIn, signInWithGoogle } from "@/services/auth";
-import { getUserRole } from "@/services/database";
 import { toast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
@@ -29,9 +28,8 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const user = await signIn(email, password);
-      const role = await getUserRole(user.id);
       toast({ title: "Welcome back!" });
-      navigate(`/${role || "student"}`);
+      navigate(`/${user.role || "student"}`);
     } catch (err: any) {
       toast({ title: "Sign in failed", description: err.message, variant: "destructive" });
     } finally {

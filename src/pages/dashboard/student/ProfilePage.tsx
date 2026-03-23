@@ -100,7 +100,6 @@ export default function ProfilePage() {
 
   // Load profile from database
   useEffect(() => {
-    if (!user) return;
     setForm((p) => ({ ...p, name: user.fullName, email: user.email }));
     getProfile(user.id)
       .then((profile) => {
@@ -117,7 +116,6 @@ export default function ProfilePage() {
   }, [user]);
 
   const handleSaveProfile = async () => {
-    if (!user) return;
     setSaving(true);
     try {
       await updateProfile(user.id, {
