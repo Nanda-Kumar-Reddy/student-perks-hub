@@ -437,6 +437,114 @@ export async function apiUpdateVendorSettings(data: any) {
   return request<any>("PUT", "/api/vendor/settings", data);
 }
 
+// Vendor Services (dynamic)
+export async function apiGetVendorServices() {
+  return request<{ data: any[] }>("GET", "/api/vendor/services");
+}
+
+export async function apiAddVendorService(serviceType: string) {
+  return request<any>("POST", "/api/vendor/services", { serviceType });
+}
+
+export async function apiRemoveVendorService(id: string) {
+  return request<any>("DELETE", `/api/vendor/services/${id}`);
+}
+
+// Vendor Listings
+export async function apiGetVendorListings(serviceType?: string, page?: number, limit?: number) {
+  const params = new URLSearchParams();
+  if (serviceType) params.set("serviceType", serviceType);
+  if (page) params.set("page", String(page));
+  if (limit) params.set("limit", String(limit));
+  return request<PaginatedResponse<any>>("GET", `/api/vendor/listings?${params}`);
+}
+
+export async function apiCreateVendorListing(data: any) {
+  return request<any>("POST", "/api/vendor/listings", data);
+}
+
+export async function apiUpdateVendorListing(id: string, data: any) {
+  return request<any>("PUT", `/api/vendor/listings/${id}`, data);
+}
+
+export async function apiDeleteVendorListing(id: string) {
+  return request<any>("DELETE", `/api/vendor/listings/${id}`);
+}
+
+// Vendor Requests
+export async function apiGetVendorRequests(serviceType?: string, status?: string, page?: number, limit?: number) {
+  const params = new URLSearchParams();
+  if (serviceType) params.set("serviceType", serviceType);
+  if (status) params.set("status", status);
+  if (page) params.set("page", String(page));
+  if (limit) params.set("limit", String(limit));
+  return request<PaginatedResponse<any>>("GET", `/api/vendor/requests?${params}`);
+}
+
+export async function apiApproveVendorRequest(id: string, data?: any) {
+  return request<any>("POST", `/api/vendor/requests/${id}/approve`, data);
+}
+
+export async function apiRejectVendorRequest(id: string, reason: string) {
+  return request<any>("POST", `/api/vendor/requests/${id}/reject`, { reason });
+}
+
+export async function apiAcceptAirportPickup(id: string) {
+  return request<any>("POST", `/api/vendor/requests/${id}/accept-pickup`);
+}
+
+// Admin Approvals
+export async function apiGetAdminApprovals(page?: number, limit?: number, entityType?: string) {
+  const params = new URLSearchParams();
+  if (page) params.set("page", String(page));
+  if (limit) params.set("limit", String(limit));
+  if (entityType) params.set("entityType", entityType);
+  return request<PaginatedResponse<any>>("GET", `/api/admin/approvals?${params}`);
+}
+
+export async function apiApproveAdminApproval(id: string) {
+  return request<any>("POST", `/api/admin/approvals/${id}/approve`);
+}
+
+export async function apiRejectAdminApproval(id: string, reason: string) {
+  return request<any>("POST", `/api/admin/approvals/${id}/reject`, { reason });
+}
+
+// Admin Vendor Details & Service Management
+export async function apiGetAdminVendorDetails(vendorId: string) {
+  return request<any>("GET", `/api/admin/vendors/${vendorId}/details`);
+}
+
+export async function apiAdminAddVendorService(vendorId: string, serviceType: string) {
+  return request<any>("POST", `/api/admin/vendors/${vendorId}/services`, { serviceType });
+}
+
+export async function apiAdminRemoveVendorService(vendorId: string, serviceId: string) {
+  return request<any>("DELETE", `/api/admin/vendors/${vendorId}/services/${serviceId}`);
+}
+
+// Student Accommodation Listings
+export async function apiCreateStudentAccommodation(data: any) {
+  return request<any>("POST", "/api/accommodations/listings", data);
+}
+
+export async function apiGetMyAccommodationListings(page?: number, limit?: number) {
+  return request<PaginatedResponse<any>>("GET", `/api/accommodations/my-listings${paginationParams(page, limit)}`);
+}
+
+export async function apiUpdateStudentAccommodation(id: string, data: any) {
+  return request<any>("PUT", `/api/accommodations/listings/${id}`, data);
+}
+
+export async function apiDeleteStudentAccommodation(id: string) {
+  return request<any>("DELETE", `/api/accommodations/listings/${id}`);
+}
+
+// Community Task Edit
+export async function apiEditCommunityTask(taskId: string, data: any) {
+  return request<any>("PUT", `/api/community/tasks/${taskId}`, data);
+}
+
 // ══════════════════════════════════════════════════════
 // ADMIN
 // ══════════════════════════════════════════════════════

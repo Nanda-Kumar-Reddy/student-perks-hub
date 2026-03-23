@@ -21,9 +21,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<AuthState["role"]>(null);
   const [loading, setLoading] = useState(true);
 
-  const loadRole = useCallback(async (userId: string) => {
+  const loadRole = useCallback(async (u: AppUser) => {
     try {
-      const r = await getUserRole(userId);
+      // Try to get role from the user object first (from backend auth)
+      if (u.role) {
+        setRole(u.role as AuthState["role"]);
+        return;
+      }
+      const r = await getUserRole(u.id);
       setRole(r);
     } catch {
       setRole(null);
@@ -31,22 +36,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    // Set up listener BEFORE getSession (per Supabase best practice)
     const subscription = onAuthStateChange(async (u) => {
       setUser(u);
       if (u) {
-        await loadRole(u.id);
+        await loadRole(u);
       } else {
         setRole(null);
       }
       setLoading(false);
     });
 
-    // Then hydrate
+    // Hydrate
     getSession().then(async (result) => {
       if (result) {
         setUser(result.user);
-        await loadRole(result.user.id);
+        await loadRole(result.user);
       }
       setLoading(false);
     });

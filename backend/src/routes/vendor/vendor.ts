@@ -1,13 +1,16 @@
 /**
- * Vendor Routes — protected by JWT + vendor RBAC
+ * Vendor Portal Routes — services, listings, requests
  */
 import { Router } from "express";
 import { authenticate } from "../../middleware/auth";
 import { rbac } from "../../middleware/rbac";
-import { validate } from "../../middleware/validate";
 import catchErrors from "../../utils/catchErrors";
 import * as vendorController from "../../controllers/vendor/vendor";
+import * as vendorServiceController from "../../controllers/vendor/vendorServiceController";
+import * as vendorListingController from "../../controllers/vendor/vendorListingController";
+import * as vendorRequestController from "../../controllers/vendor/vendorRequestController";
 import { createCouponSchema, updateSettingsSchema } from "../../validators/vendor/vendor";
+import { validate } from "../../middleware/validate";
 
 const router = Router();
 
@@ -16,6 +19,23 @@ router.use(authenticate, rbac("vendor"));
 
 // ── Dashboard ──────────────────────────────────────
 router.get("/dashboard", catchErrors(vendorController.getDashboard));
+
+// ── Services (dynamic) ─────────────────────────────
+router.get("/services", catchErrors(vendorServiceController.getMyServices));
+router.post("/services", catchErrors(vendorServiceController.addService));
+router.delete("/services/:id", catchErrors(vendorServiceController.removeService));
+
+// ── Listings ───────────────────────────────────────
+router.get("/listings", catchErrors(vendorListingController.getListings));
+router.post("/listings", catchErrors(vendorListingController.createListing));
+router.put("/listings/:id", catchErrors(vendorListingController.updateListing));
+router.delete("/listings/:id", catchErrors(vendorListingController.deleteListing));
+
+// ── Requests ───────────────────────────────────────
+router.get("/requests", catchErrors(vendorRequestController.getRequests));
+router.post("/requests/:id/approve", catchErrors(vendorRequestController.approveRequest));
+router.post("/requests/:id/reject", catchErrors(vendorRequestController.rejectRequest));
+router.post("/requests/:id/accept-pickup", catchErrors(vendorRequestController.acceptAirportPickup));
 
 // ── Transactions ───────────────────────────────────
 router.get("/transactions", catchErrors(vendorController.getTransactions));
