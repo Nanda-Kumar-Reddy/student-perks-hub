@@ -6,6 +6,7 @@ import { authenticate } from "../../middleware/auth";
 import { rbac } from "../../middleware/rbac";
 import catchErrors from "../../utils/catchErrors";
 import * as adminController from "../../controllers/admin/admin";
+import * as adminApprovalController from "../../controllers/admin/adminApprovalController";
 
 const router = Router();
 
@@ -22,6 +23,16 @@ router.get("/users", catchErrors(adminController.getUsers));
 router.get("/vendors", catchErrors(adminController.getVendors));
 router.patch("/vendors/:id/approve", catchErrors(adminController.approveVendor));
 router.patch("/vendors/:id/reject", catchErrors(adminController.rejectVendor));
+
+// ── Vendor Details & Service Management ────────────
+router.get("/vendors/:id/details", catchErrors(adminApprovalController.getVendorDetails));
+router.post("/vendors/:id/services", catchErrors(adminApprovalController.addVendorService));
+router.delete("/vendors/:id/services/:serviceId", catchErrors(adminApprovalController.removeVendorService));
+
+// ── Approvals (Global) ────────────────────────────
+router.get("/approvals", catchErrors(adminApprovalController.getPendingApprovals));
+router.post("/approvals/:id/approve", catchErrors(adminApprovalController.approveItem));
+router.post("/approvals/:id/reject", catchErrors(adminApprovalController.rejectItem));
 
 // ── Transactions ───────────────────────────────────
 router.get("/transactions", catchErrors(adminController.getTransactions));
