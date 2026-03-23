@@ -56,8 +56,16 @@ export async function getProfile(userId: string) {
 }
 
 export async function updateProfile(userId: string, updates: Record<string, any>) {
-  if (DEMO_MODE) return { ...demoProfileFallback, ...updates };
-  return apiUpdateMyProfile(updates);
+  const payload = {
+    fullName: updates.fullName ?? updates.full_name,
+    phone: updates.phone,
+    address: updates.address,
+    university: updates.university,
+    skills: updates.skills,
+  };
+
+  if (DEMO_MODE) return { ...demoProfileFallback, ...payload };
+  return apiUpdateMyProfile(payload);
 }
 
 export async function getUserRole(userId: string): Promise<"student" | "vendor" | "admin" | null> {

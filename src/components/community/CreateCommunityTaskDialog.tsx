@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,16 +46,23 @@ export default function CreateCommunityTaskDialog({ open, onOpenChange, initialV
     agreeTerms: false, understandApproval: false,
   });
 
-  useState(() => {
+  useEffect(() => {
+    if (!open) return;
+
     if (initialValues) {
       setForm((prev) => ({
         ...prev,
         ...initialValues,
         payment: String(initialValues.payment ?? ""),
         date: initialValues.date ? String(initialValues.date).slice(0, 10) : "",
+        agreeTerms: true,
+        understandApproval: true,
       }));
+      return;
     }
-  });
+
+    resetForm();
+  }, [initialValues, open]);
 
   const update = (key: string, value: any) => setForm((p) => ({ ...p, [key]: value }));
 
@@ -195,7 +202,7 @@ export default function CreateCommunityTaskDialog({ open, onOpenChange, initialV
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={!canSubmit || submitting}>{taskId ? "Save for Approval" : "Submit for Approval"}</Button>
+          <Button onClick={handleSubmit} disabled={!canSubmit || submitting}>{submitting ? "Saving..." : taskId ? "Save for Approval" : "Submit for Approval"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
