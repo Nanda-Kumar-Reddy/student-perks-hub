@@ -281,10 +281,68 @@ const App = () => (
 // ── Inline route components ─────────────────────────
 
 function VendorServiceRouteWrapper() {
-  const { useParams } = require("react-router-dom");
-  const { serviceSlug } = useParams();
-  return <VendorServiceWrapper serviceSlug={serviceSlug} />;
+  const params = useParams();
+  return <VendorServiceWrapper serviceSlug={params.serviceSlug || ""} />;
 }
+
+function VendorServicesHub() {
+  const navigate = useNavigate();
+
+  const services = [
+    { slug: "accommodation", label: "Accommodation", icon: <Home className="h-8 w-8" />, color: "text-primary" },
+    { slug: "car-rent-sale", label: "Car Rent/Sale", icon: <Car className="h-8 w-8" />, color: "text-accent" },
+    { slug: "consultations", label: "Consultations", icon: <Users className="h-8 w-8" />, color: "text-success" },
+    { slug: "accounting", label: "Accounting", icon: <Calculator className="h-8 w-8" />, color: "text-warning" },
+    { slug: "driving-licence", label: "Driving Licence", icon: <CarFront className="h-8 w-8" />, color: "text-primary" },
+    { slug: "loans", label: "Loans", icon: <DollarSign className="h-8 w-8" />, color: "text-accent" },
+    { slug: "airport-pickup", label: "Airport Pickup", icon: <Plane className="h-8 w-8" />, color: "text-success" },
+    { slug: "certifications", label: "Certifications", icon: <Award className="h-8 w-8" />, color: "text-warning" },
+    { slug: "events", label: "Events", icon: <CalendarDays className="h-8 w-8" />, color: "text-primary" },
+    { slug: "jobs", label: "Jobs", icon: <Briefcase className="h-8 w-8" />, color: "text-accent" },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="font-display text-2xl font-bold flex items-center gap-2">
+          <Package className="h-6 w-6 text-primary" /> My Services
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">Manage your service offerings and listings</p>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {services.map((s) => (
+          <button
+            key={s.slug}
+            onClick={() => navigate(`/vendor/services/${s.slug}`)}
+            className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-6 shadow-card transition-all hover:shadow-card-hover hover:border-primary/30 text-center"
+          >
+            <div className={s.color}>{s.icon}</div>
+            <span className="font-display text-sm font-bold">{s.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function VendorRequestsPage() {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="font-display text-2xl font-bold flex items-center gap-2">
+          <ClipboardList className="h-6 w-6 text-primary" /> All Requests
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">View and manage all incoming service requests</p>
+      </div>
+      <div className="text-center py-12 text-muted-foreground">
+        <ClipboardList className="h-12 w-12 mx-auto mb-3 opacity-30" />
+        <p>No pending requests. Requests from students will appear here.</p>
+      </div>
+    </div>
+  );
+}
+
+export default App;
 
 function VendorServicesHub() {
   const { useNavigate } = require("react-router-dom");
