@@ -36,6 +36,15 @@ async function authRequest<T>(method: string, path: string, body?: unknown): Pro
 }
 
 export async function signUp(email: string, password: string, fullName: string, role: "student" | "vendor" = "student") {
+  if (!API_BASE) {
+    return {
+      id: `${role}-design-user`,
+      email,
+      fullName,
+      avatarUrl: "",
+      role,
+    } as AppUser;
+  }
   const result = await authRequest<{ user: any; accessToken: string }>("POST", "/api/auth/signup", {
     email, password, fullName, role,
   });
@@ -46,6 +55,20 @@ export async function signUp(email: string, password: string, fullName: string, 
 }
 
 export async function signIn(email: string, password: string) {
+  if (!API_BASE) {
+    const derivedRole = email.toLowerCase().includes("admin")
+      ? "admin"
+      : email.toLowerCase().includes("vendor")
+        ? "vendor"
+        : "student";
+    return {
+      id: `${derivedRole}-design-user`,
+      email,
+      fullName: derivedRole === "admin" ? "Admin Reviewer" : derivedRole === "vendor" ? "Vendor Reviewer" : "Student Reviewer",
+      avatarUrl: "",
+      role: derivedRole,
+    } as AppUser;
+  }
   const result = await authRequest<{ user: any; accessToken: string }>("POST", "/api/auth/login", {
     email, password,
   });
@@ -56,6 +79,7 @@ export async function signIn(email: string, password: string) {
 }
 
 export async function signInWithGoogle() {
+  if (!API_BASE) return;
   // Google OAuth would redirect to backend OAuth endpoint
   window.location.href = `${API_BASE}/api/auth/google`;
 }
@@ -70,14 +94,27 @@ export async function signOut() {
 }
 
 export async function resetPasswordForEmail(email: string) {
+  if (!API_BASE) return;
   await authRequest("POST", "/api/auth/forgot-password", { email });
 }
 
 export async function updatePassword(newPassword: string) {
+  if (!API_BASE) return;
   await authRequest("POST", "/api/auth/change-password", { newPassword });
 }
 
 export async function getSession(): Promise<{ user: AppUser } | null> {
+  if (!API_BASE) {
+    return {
+      user: {
+        id: "design-mode-user",
+        email: "design@lifelineaustralia.app",
+        fullName: "Design Reviewer",
+        avatarUrl: "",
+        role: "admin",
+      },
+    };
+  }
   const token = localStorage.getItem("access_token");
   if (!token) return null;
   try {
@@ -94,7 +131,19 @@ const listeners = new Set<AuthCallback>();
 
 export function onAuthStateChange(callback: AuthCallback) {
   listeners.add(callback);
-  // Initial check
+  if (!API_BASE) {
+    callback({
+      id: "design-mode-user",
+      email: "design@lifelineaustralia.app",
+      fullName: "Design Reviewer",
+      avatarUrl: "",
+      role: "admin",
+    });
+    return {
+      unsubscribe: () => { listeners.delete(callback); },
+    };
+  }
+
   getSession().then((result) => {
     callback(result?.user || null);
   });

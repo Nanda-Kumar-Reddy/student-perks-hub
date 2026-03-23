@@ -31,9 +31,9 @@ export default function SignupPage() {
     if (!validate()) return;
     setLoading(true);
     try {
-      await signUp(email, password, name, "student");
-      toast({ title: "Account created!", description: "Please check your email to confirm your account." });
-      navigate("/login");
+      const user = await signUp(email, password, name, "student");
+      toast({ title: "Design mode account ready!", description: "Redirecting you to the student portal." });
+      navigate(`/${user?.role || "student"}`);
     } catch (err: any) {
       toast({ title: "Sign up failed", description: err.message, variant: "destructive" });
     } finally {
