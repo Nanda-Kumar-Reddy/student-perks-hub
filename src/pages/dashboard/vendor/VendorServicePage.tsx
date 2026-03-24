@@ -5,6 +5,7 @@
  * Loans/Airport Pickup → Requests + History only
  */
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +16,6 @@ import AddEditListingModal, { ServiceCategory, ListingFormData } from "@/compone
 import RejectReasonDialog from "@/components/shared/RejectReasonDialog";
 import RequestDetailPopup, { RequestDetailField } from "@/components/shared/RequestDetailPopup";
 import VendorProfileTab, { VendorProfile } from "@/components/shared/VendorProfileTab";
-import { SlotConfig } from "@/components/shared/SlotSelector";
 
 interface VendorServicePageProps {
   serviceType: string;
@@ -23,8 +23,13 @@ interface VendorServicePageProps {
   icon: React.ReactNode;
 }
 
-// Map backend service type to ServiceCategory slug
 const typeToCategory: Record<string, ServiceCategory> = {
+  ACCOMMODATION: "accommodation", CAR_RENT_SALE: "car-rent-sale", CONSULTATIONS: "consultations",
+  ACCOUNTING: "accounting", DRIVING_LICENCE: "driving-licence", LOANS: "loans",
+  AIRPORT_PICKUP: "airport-pickup", CERTIFICATIONS: "certifications", EVENTS: "events", JOBS: "jobs",
+};
+
+const typeToSlug: Record<string, string> = {
   ACCOMMODATION: "accommodation", CAR_RENT_SALE: "car-rent-sale", CONSULTATIONS: "consultations",
   ACCOUNTING: "accounting", DRIVING_LICENCE: "driving-licence", LOANS: "loans",
   AIRPORT_PICKUP: "airport-pickup", CERTIFICATIONS: "certifications", EVENTS: "events", JOBS: "jobs",
@@ -78,75 +83,54 @@ const demoHistory = [
 ];
 
 const loanRequestFields: RequestDetailField[] = [
-  { label: "Category", value: "Personal Loan" },
-  { label: "Description", value: "Need funds for tuition fees" },
-  { label: "Min Amount", value: "$5,000" },
-  { label: "Max Amount", value: "$10,000" },
-  { label: "Visa Status", value: "Student Visa" },
-  { label: "Monthly Income", value: "$2,500" },
-  { label: "Employment", value: "Part-time" },
-  { label: "Email", value: "student@email.com" },
+  { label: "Category", value: "Personal Loan" }, { label: "Description", value: "Need funds for tuition fees" },
+  { label: "Min Amount", value: "$5,000" }, { label: "Max Amount", value: "$10,000" },
+  { label: "Visa Status", value: "Student Visa" }, { label: "Monthly Income", value: "$2,500" },
+  { label: "Employment", value: "Part-time" }, { label: "Email", value: "student@email.com" },
   { label: "Phone", value: "+61 400 111 222" },
 ];
 
 const airportRequestFields: RequestDetailField[] = [
-  { label: "Visiting Type", value: "First Time" },
-  { label: "Airline", value: "Qantas" },
-  { label: "Flight Number", value: "QF1" },
-  { label: "Arrival Date", value: "March 25, 2026" },
-  { label: "Arrival Time", value: "14:30" },
-  { label: "Passengers", value: "3" },
-  { label: "Luggage", value: "4" },
-  { label: "Destination", value: "123 Swanston St, Melbourne VIC 3000" },
+  { label: "Visiting Type", value: "First Time" }, { label: "Airline", value: "Qantas" },
+  { label: "Flight Number", value: "QF1" }, { label: "Arrival Date", value: "March 25, 2026" },
+  { label: "Arrival Time", value: "14:30" }, { label: "Passengers", value: "3" },
+  { label: "Luggage", value: "4" }, { label: "Destination", value: "123 Swanston St, Melbourne VIC 3000" },
   { label: "Phone", value: "+61 400 333 444" },
 ];
 
 const defaultProfile: VendorProfile = {
-  name: "Dr. Sarah Williams",
-  headline: "Immigration & Career Consultant",
-  responseTime: "< 2 hours",
-  about: "Experienced consultant specializing in immigration, visa extensions, and career guidance for international students. Over 10 years helping students navigate the Australian education and work system.",
+  name: "Dr. Sarah Williams", headline: "Immigration & Career Consultant", responseTime: "< 2 hours",
+  about: "Experienced consultant specializing in immigration, visa extensions, and career guidance for international students.",
   qualifications: ["PhD Education", "MARA Registered Agent", "Career Counseling Cert IV"],
   expertise: ["Immigration", "Visa Extensions", "Career Coaching", "Resume Review"],
   languages: ["English", "Mandarin", "Hindi"],
 };
 
 const drivingProfile: VendorProfile = {
-  name: "DriveRight School",
-  headline: "Certified Driving School",
-  responseTime: "< 4 hours",
-  about: "Melbourne's trusted driving school with certified instructors. We specialise in helping international students get their Australian licence quickly and safely.",
+  name: "DriveRight School", headline: "Certified Driving School", responseTime: "< 4 hours",
+  about: "Melbourne's trusted driving school with certified instructors.",
   qualifications: ["VicRoads Certified", "Fully Insured", "10+ Years Experience"],
   expertise: ["Manual", "Automatic", "International Conversion", "Hazard Training"],
   languages: ["English", "Hindi", "Mandarin"],
-  schoolName: "DriveRight Driving School",
-  location: "Melbourne, VIC",
-  timing: "8:00 AM – 6:00 PM",
-  whyChooseUs: "95% first-test pass rate. Flexible scheduling. Dual-controlled modern vehicles. Patient, multilingual instructors.",
-};
-
-const defaultSlots: SlotConfig = {
-  activeDays: ["Mon", "Tue", "Wed", "Thu", "Fri"],
-  startTime: "09:00",
-  endTime: "17:00",
-  duration: 60,
-  selectedSlots: ["09:00–10:00", "10:00–11:00", "14:00–15:00", "15:00–16:00"],
+  schoolName: "DriveRight Driving School", location: "Melbourne, VIC", timing: "8:00 AM – 6:00 PM",
+  whyChooseUs: "95% first-test pass rate. Flexible scheduling. Dual-controlled modern vehicles.",
 };
 
 export default function VendorServicePage({ serviceType, serviceLabel, icon }: VendorServicePageProps) {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [createOpen, setCreateOpen] = useState(false);
   const [editData, setEditData] = useState<Partial<ListingFormData> | null>(null);
   const [rejectOpen, setRejectOpen] = useState(false);
   const [requestPopup, setRequestPopup] = useState<{ open: boolean; title: string; fields: RequestDetailField[] }>({ open: false, title: "", fields: [] });
   const [profile, setProfile] = useState<VendorProfile>(serviceType === "DRIVING_LICENCE" ? drivingProfile : defaultProfile);
-  const [slots, setSlots] = useState<SlotConfig>(defaultSlots);
 
   const listings = getDemoListings(serviceType);
   const showListings = !noListingsServices.includes(serviceType);
   const showProfile = profileServices.includes(serviceType);
   const category = typeToCategory[serviceType] || "accommodation";
+  const slug = typeToSlug[serviceType] || "accommodation";
 
   const filtered = listings.filter((l) => l.title.toLowerCase().includes(search.toLowerCase()));
 
@@ -157,6 +141,10 @@ export default function VendorServicePage({ serviceType, serviceLabel, icon }: V
   const handleEdit = (item: ListingCardItem) => {
     setEditData({ title: item.title, description: item.description, price: String(item.price || "") });
     setCreateOpen(true);
+  };
+
+  const navigateToDetail = (itemId: string) => {
+    navigate(`/vendor/services/${slug}/${itemId}`);
   };
 
   const openRequestDetail = (req: typeof demoRequests[0]) => {
@@ -195,9 +183,7 @@ export default function VendorServicePage({ serviceType, serviceLabel, icon }: V
             <VendorProfileTab
               profile={profile}
               onSave={(p) => { setProfile(p); toast({ title: "Profile updated" }); }}
-              showSlots={serviceType !== "DRIVING_LICENCE"}
-              slots={slots}
-              onSlotsChange={setSlots}
+              showSlots={false}
               variant={serviceType === "DRIVING_LICENCE" ? "driving" : "consultation"}
             />
           </TabsContent>
@@ -216,6 +202,8 @@ export default function VendorServicePage({ serviceType, serviceLabel, icon }: V
                   item={item}
                   index={i}
                   role="vendor"
+                  onClick={() => navigateToDetail(item.id)}
+                  onView={() => navigateToDetail(item.id)}
                   onEdit={() => handleEdit(item)}
                   onDelete={() => toast({ title: "Delete request submitted", description: "Admin will review." })}
                 />

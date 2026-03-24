@@ -5,13 +5,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
+import VendorDetailsDialog from "@/components/admin/VendorDetailsDialog";
 
 const vendors = [
-  { id: 1, name: "Bean Counter Café", joined: 45, customers: 320, transactions: 890, revenue: "₹2.4L", avatar: "BC" },
-  { id: 2, name: "The Green Bowl", joined: 30, customers: 210, transactions: 560, revenue: "₹1.8L", avatar: "GB" },
-  { id: 3, name: "FitZone Gym", joined: 60, customers: 450, transactions: 1200, revenue: "₹5.2L", avatar: "FZ" },
-  { id: 4, name: "Quick Print", joined: 90, customers: 180, transactions: 420, revenue: "₹1.1L", avatar: "QP" },
-  { id: 5, name: "Campus Bites", joined: 20, customers: 150, transactions: 340, revenue: "₹0.9L", avatar: "CB" },
+  { id: "1", name: "Bean Counter Café", joined: 45, customers: 320, transactions: 890, revenue: 24000, avatar: "BC", email: "bean@counter.com", startDate: "2026-01-10",
+    services: [
+      { id: "s1", serviceType: "ACCOMMODATION", isActive: true },
+      { id: "s2", serviceType: "CONSULTATIONS", isActive: true },
+    ] },
+  { id: "2", name: "The Green Bowl", joined: 30, customers: 210, transactions: 560, revenue: 18000, avatar: "GB", email: "green@bowl.com", startDate: "2026-02-01",
+    services: [{ id: "s3", serviceType: "EVENTS", isActive: true }] },
+  { id: "3", name: "FitZone Gym", joined: 60, customers: 450, transactions: 1200, revenue: 52000, avatar: "FZ", email: "fit@zone.com", startDate: "2025-12-15",
+    services: [
+      { id: "s4", serviceType: "CERTIFICATIONS", isActive: true },
+      { id: "s5", serviceType: "DRIVING_LICENCE", isActive: true },
+      { id: "s6", serviceType: "CAR_RENT_SALE", isActive: true },
+    ] },
+  { id: "4", name: "Quick Print", joined: 90, customers: 180, transactions: 420, revenue: 11000, avatar: "QP", email: "quick@print.com", startDate: "2025-11-25",
+    services: [{ id: "s7", serviceType: "JOBS", isActive: true }] },
+  { id: "5", name: "Campus Bites", joined: 20, customers: 150, transactions: 340, revenue: 9000, avatar: "CB", email: "campus@bites.com", startDate: "2026-03-01",
+    services: [] },
 ];
 
 const pendingVendors = [
@@ -25,12 +38,19 @@ export default function AdminVendorsPage() {
   const [search, setSearch] = useState("");
   const [approvalStatus, setApprovalStatus] = useState<Record<number, "approved" | "rejected">>({});
   const [activeTab, setActiveTab] = useState("vendors");
+  const [selectedVendor, setSelectedVendor] = useState<typeof vendors[0] | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   useEffect(() => {
     if (searchParams.get("tab") === "approvals") setActiveTab("approvals");
   }, [searchParams]);
 
   const filteredVendors = vendors.filter(v => v.name.toLowerCase().includes(search.toLowerCase()));
+
+  const openVendorDetail = (v: typeof vendors[0]) => {
+    setSelectedVendor(v);
+    setDetailOpen(true);
+  };
 
   return (
     <div className="space-y-6">
@@ -63,7 +83,8 @@ export default function AdminVendorsPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="grid grid-cols-5 gap-4 p-4 border-b border-border last:border-0 hover:bg-secondary/30 transition-colors items-center"
+                onClick={() => openVendorDetail(v)}
+                className="grid grid-cols-5 gap-4 p-4 border-b border-border last:border-0 hover:bg-secondary/30 transition-colors items-center cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">{v.avatar}</div>
@@ -72,7 +93,7 @@ export default function AdminVendorsPage() {
                 <div className="text-xs text-muted-foreground text-center">{v.joined} days</div>
                 <div className="text-sm font-medium text-center">{v.customers}</div>
                 <div className="text-sm font-medium text-center">{v.transactions}</div>
-                <div className="text-sm font-medium text-right">{v.revenue}</div>
+                <div className="text-sm font-medium text-right">${(v.revenue / 1000).toFixed(1)}k</div>
               </motion.div>
             ))}
           </div>
@@ -85,7 +106,8 @@ export default function AdminVendorsPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="rounded-xl border border-border bg-card p-4 shadow-card space-y-3"
+                onClick={() => openVendorDetail(v)}
+                className="rounded-xl border border-border bg-card p-4 shadow-card space-y-3 cursor-pointer"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/10 text-xs font-bold text-accent">{v.avatar}</div>
@@ -97,7 +119,7 @@ export default function AdminVendorsPage() {
                 <div className="grid grid-cols-3 gap-2 text-xs">
                   <div className="rounded-lg bg-secondary/50 p-2"><span className="text-muted-foreground">Customers</span><div className="font-medium">{v.customers}</div></div>
                   <div className="rounded-lg bg-secondary/50 p-2"><span className="text-muted-foreground">Txns</span><div className="font-medium">{v.transactions}</div></div>
-                  <div className="rounded-lg bg-secondary/50 p-2"><span className="text-muted-foreground">Revenue</span><div className="font-medium">{v.revenue}</div></div>
+                  <div className="rounded-lg bg-secondary/50 p-2"><span className="text-muted-foreground">Revenue</span><div className="font-medium">${(v.revenue / 1000).toFixed(1)}k</div></div>
                 </div>
               </motion.div>
             ))}
@@ -132,6 +154,19 @@ export default function AdminVendorsPage() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {selectedVendor && (
+        <VendorDetailsDialog
+          open={detailOpen}
+          onOpenChange={setDetailOpen}
+          vendor={{
+            ...selectedVendor,
+            durationDays: selectedVendor.joined,
+            customersServed: selectedVendor.customers,
+            totalTransactions: selectedVendor.transactions,
+          }}
+        />
+      )}
     </div>
   );
 }
