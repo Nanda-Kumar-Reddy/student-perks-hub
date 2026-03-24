@@ -1,6 +1,6 @@
 /**
- * ServiceListingPage — Unified listing page used across Student (My Listings), Vendor, and Admin portals.
- * Same UI, different actions per role.
+ * ServiceListingPage — Unified listing page used by Student My Listings tab
+ * Simplified version - main service pages now use their own specialized implementations
  */
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -41,7 +41,6 @@ export default function ServiceListingPage({
   const [createOpen, setCreateOpen] = useState(false);
   const [editData, setEditData] = useState<Partial<ListingFormData> | null>(null);
   const [rejectOpen, setRejectOpen] = useState(false);
-  const [rejectTarget, setRejectTarget] = useState<string>("");
 
   const filtered = listings.filter((l) =>
     l.title.toLowerCase().includes(search.toLowerCase())
@@ -66,18 +65,11 @@ export default function ServiceListingPage({
 
   const handleReject = (reason: string) => {
     toast({ title: "Rejected", description: "The requester has been notified." });
-    setRejectTarget("");
   };
 
   const handleRequestApprove = (id: string) => {
     toast({ title: "Request approved", description: "Student has been notified." });
   };
-
-  const tabs: string[] = [];
-  if (showListingsTab) tabs.push("listings");
-  if (showRequestsTab) tabs.push("requests");
-  if (showHistoryTab) tabs.push("history");
-  if (requests.length > 0 && !showRequestsTab) tabs.push("my-requests");
 
   return (
     <div className="space-y-6">
@@ -93,7 +85,7 @@ export default function ServiceListingPage({
         )}
       </div>
 
-      <Tabs defaultValue={defaultTab || tabs[0]} className="w-full">
+      <Tabs defaultValue={defaultTab} className="w-full">
         <TabsList>
           {showListingsTab && <TabsTrigger value="listings"><Package className="h-3.5 w-3.5 mr-1" /> Listings</TabsTrigger>}
           {showRequestsTab && <TabsTrigger value="requests"><ClipboardList className="h-3.5 w-3.5 mr-1" /> Requests</TabsTrigger>}
@@ -118,7 +110,7 @@ export default function ServiceListingPage({
                   onEdit={role !== "admin" ? () => handleEdit(item) : undefined}
                   onDelete={role !== "admin" ? () => handleDelete(item.id) : undefined}
                   onApprove={role === "admin" ? () => handleApprove(item.id) : undefined}
-                  onReject={role === "admin" ? () => { setRejectTarget(item.id); setRejectOpen(true); } : undefined}
+                  onReject={role === "admin" ? () => { setRejectOpen(true); } : undefined}
                 />
               ))}
               {filtered.length === 0 && (
@@ -139,7 +131,7 @@ export default function ServiceListingPage({
                 <p>No pending requests.</p>
               </div>
             ) : (
-              pendingRequests.map((req, i) => (
+              pendingRequests.map((req) => (
                 <div key={req.id} className="rounded-xl border border-border bg-card p-4 shadow-card">
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div>
@@ -150,9 +142,7 @@ export default function ServiceListingPage({
                     <div className="flex gap-2">
                       <Button size="sm" className="gap-1" onClick={() => handleRequestApprove(req.id)}>Approve</Button>
                       <Button size="sm" variant="outline" className="gap-1 text-destructive hover:bg-destructive/10"
-                        onClick={() => { setRejectTarget(req.id); setRejectOpen(true); }}>
-                        Reject
-                      </Button>
+                        onClick={() => setRejectOpen(true)}>Reject</Button>
                     </div>
                   </div>
                 </div>
@@ -193,12 +183,7 @@ export default function ServiceListingPage({
         editData={editData}
         onSubmit={handleCreate}
       />
-
-      <RejectReasonDialog
-        open={rejectOpen}
-        onOpenChange={setRejectOpen}
-        onReject={handleReject}
-      />
+      <RejectReasonDialog open={rejectOpen} onOpenChange={setRejectOpen} onReject={handleReject} />
     </div>
   );
 }
