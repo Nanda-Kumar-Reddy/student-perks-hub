@@ -59,6 +59,7 @@ const ManageOffersPage = lazy(() => import("./pages/dashboard/vendor/ManageOffer
 const VendorAnalyticsPage = lazy(() => import("./pages/dashboard/vendor/AnalyticsPage"));
 const VendorSettingsPage = lazy(() => import("./pages/dashboard/vendor/SettingsPage"));
 const VendorServicePage = lazy(() => import("./pages/dashboard/vendor/VendorServicePage"));
+const VendorListingDetailPage = lazy(() => import("./pages/dashboard/vendor/VendorListingDetailPage"));
 
 // Lazy load admin pages
 const AdminUsersPage = lazy(() => import("./pages/dashboard/admin/UsersPage"));
@@ -69,7 +70,7 @@ const AdminCommunityTasksPage = lazy(() => import("./pages/dashboard/admin/Commu
 const AdminApprovalsPage = lazy(() => import("./pages/dashboard/admin/ApprovalsPage"));
 const AdminServicesPage = lazy(() => import("./pages/dashboard/admin/AdminServicesPage"));
 const AdminServiceDetailPage = lazy(() => import("./pages/dashboard/admin/AdminServiceDetailPage"));
-
+const AdminListingDetailPage = lazy(() => import("./pages/dashboard/admin/AdminListingDetailPage"));
 const queryClient = new QueryClient();
 
 const studentNav = [
