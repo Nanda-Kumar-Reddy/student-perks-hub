@@ -59,6 +59,7 @@ const ManageOffersPage = lazy(() => import("./pages/dashboard/vendor/ManageOffer
 const VendorAnalyticsPage = lazy(() => import("./pages/dashboard/vendor/AnalyticsPage"));
 const VendorSettingsPage = lazy(() => import("./pages/dashboard/vendor/SettingsPage"));
 const VendorServicePage = lazy(() => import("./pages/dashboard/vendor/VendorServicePage"));
+const VendorListingDetailPage = lazy(() => import("./pages/dashboard/vendor/VendorListingDetailPage"));
 
 // Lazy load admin pages
 const AdminUsersPage = lazy(() => import("./pages/dashboard/admin/UsersPage"));
@@ -69,7 +70,7 @@ const AdminCommunityTasksPage = lazy(() => import("./pages/dashboard/admin/Commu
 const AdminApprovalsPage = lazy(() => import("./pages/dashboard/admin/ApprovalsPage"));
 const AdminServicesPage = lazy(() => import("./pages/dashboard/admin/AdminServicesPage"));
 const AdminServiceDetailPage = lazy(() => import("./pages/dashboard/admin/AdminServiceDetailPage"));
-
+const AdminListingDetailPage = lazy(() => import("./pages/dashboard/admin/AdminListingDetailPage"));
 const queryClient = new QueryClient();
 
 const studentNav = [
@@ -245,6 +246,7 @@ const App = () => (
               <Route path="/vendor" element={<VendorDashboard />} />
               <Route path="/vendor/services" element={<Suspense fallback={<Loading />}><VendorServicesHub /></Suspense>} />
               <Route path="/vendor/services/:serviceSlug" element={<Suspense fallback={<Loading />}><VendorServiceRouteWrapper /></Suspense>} />
+              <Route path="/vendor/services/:serviceSlug/:id" element={<Suspense fallback={<Loading />}><VendorListingDetailPage /></Suspense>} />
               <Route path="/vendor/requests" element={<Suspense fallback={<Loading />}><VendorRequestsPage /></Suspense>} />
               <Route path="/vendor/verify" element={<Suspense fallback={<Loading />}><VerifyTransactionPage /></Suspense>} />
               <Route path="/vendor/offers" element={<Suspense fallback={<Loading />}><ManageOffersPage /></Suspense>} />
@@ -258,6 +260,7 @@ const App = () => (
               <Route path="/admin/vendors" element={<Suspense fallback={<Loading />}><AdminVendorsPage /></Suspense>} />
               <Route path="/admin/services" element={<Suspense fallback={<Loading />}><AdminServicesPage /></Suspense>} />
               <Route path="/admin/services/:serviceSlug" element={<Suspense fallback={<Loading />}><AdminServiceRouteWrapper /></Suspense>} />
+              <Route path="/admin/services/:serviceSlug/:id" element={<Suspense fallback={<Loading />}><AdminListingDetailPage /></Suspense>} />
               <Route path="/admin/approvals" element={<Suspense fallback={<Loading />}><AdminApprovalsPage /></Suspense>} />
               <Route path="/admin/transactions" element={<Suspense fallback={<Loading />}><AdminTransactionsPage /></Suspense>} />
               <Route path="/admin/community-tasks" element={<Suspense fallback={<Loading />}><AdminCommunityTasksPage /></Suspense>} />

@@ -1,16 +1,15 @@
 /**
  * Admin Service Detail Page — shows listings for a specific service with Approve/Reject actions
- * Uses same UI as vendor, but with admin actions
+ * Clicking items navigates to detail pages (not popups)
  */
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Package, ClipboardList, History, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ListingCard, { ListingCardItem } from "@/components/shared/ListingCard";
 import RejectReasonDialog from "@/components/shared/RejectReasonDialog";
-import RequestDetailPopup, { RequestDetailField } from "@/components/shared/RequestDetailPopup";
-import { ServiceCategory } from "@/components/shared/AddEditListingModal";
 
 const demoListings: Record<string, ListingCardItem[]> = {
   accommodation: [
@@ -65,20 +64,6 @@ const serviceLabels: Record<string, { label: string }> = {
   jobs: { label: "Jobs" },
 };
 
-const loanFields: RequestDetailField[] = [
-  { label: "Applicant", value: "Rahul S." }, { label: "Category", value: "Personal Loan" },
-  { label: "Amount", value: "$5,000" }, { label: "Visa Status", value: "Student Visa" },
-  { label: "Employment", value: "Part-time" }, { label: "Monthly Income", value: "$2,500" },
-  { label: "Email", value: "rahul@email.com" }, { label: "Phone", value: "+61 400 111 222" },
-];
-
-const airportFields: RequestDetailField[] = [
-  { label: "Student", value: "Priya K." }, { label: "Flight", value: "QF1" },
-  { label: "Airline", value: "Qantas" }, { label: "Date", value: "March 25, 2026" },
-  { label: "Passengers", value: "3" }, { label: "Luggage", value: "4" },
-  { label: "Destination", value: "123 Swanston St, Melbourne" },
-];
-
 const noListings = ["loans", "airport-pickup"];
 
 interface Props {
@@ -88,20 +73,17 @@ interface Props {
 
 export default function AdminServiceDetailPage({ serviceSlug, icon }: Props) {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const config = serviceLabels[serviceSlug] || { label: serviceSlug };
   const listings = demoListings[serviceSlug] || [];
   const [search, setSearch] = useState("");
   const [rejectOpen, setRejectOpen] = useState(false);
-  const [requestPopup, setRequestPopup] = useState<{ open: boolean; title: string; fields: RequestDetailField[] }>({ open: false, title: "", fields: [] });
 
   const isRequestOnly = noListings.includes(serviceSlug);
   const filtered = listings.filter((l) => l.title.toLowerCase().includes(search.toLowerCase()));
 
-  const openDetail = (item: ListingCardItem) => {
-    const fields = serviceSlug === "loans" ? loanFields :
-      serviceSlug === "airport-pickup" ? airportFields :
-      [{ label: "Title", value: item.title }, { label: "Description", value: item.description || "" }, { label: "Price", value: String(item.price || "N/A") }, { label: "Status", value: item.status || "PENDING" }];
-    setRequestPopup({ open: true, title: item.title, fields });
+  const navigateToDetail = (itemId: string) => {
+    navigate(`/admin/services/${serviceSlug}/${itemId}`);
   };
 
   return (
@@ -131,7 +113,7 @@ export default function AdminServiceDetailPage({ serviceSlug, icon }: Props) {
                   item={item}
                   index={i}
                   role="admin"
-                  onClick={() => openDetail(item)}
+                  onClick={() => navigateToDetail(item.id)}
                   onApprove={() => toast({ title: "Approved", description: `${item.title} is now visible.` })}
                   onReject={() => { setRejectOpen(true); }}
                 />
@@ -149,7 +131,7 @@ export default function AdminServiceDetailPage({ serviceSlug, icon }: Props) {
         <TabsContent value="requests" className="mt-4 space-y-3">
           {listings.filter((l) => l.status === "PENDING").map((item) => (
             <div key={item.id} className="rounded-xl border border-border bg-card p-4 shadow-card cursor-pointer hover:shadow-card-hover transition-all"
-              onClick={() => openDetail(item)}>
+              onClick={() => navigateToDetail(item.id)}>
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div>
                   <div className="text-sm font-medium">{item.title}</div>
@@ -175,15 +157,6 @@ export default function AdminServiceDetailPage({ serviceSlug, icon }: Props) {
       </Tabs>
 
       <RejectReasonDialog open={rejectOpen} onOpenChange={setRejectOpen} onReject={(reason) => toast({ title: "Rejected", description: reason })} />
-      <RequestDetailPopup
-        open={requestPopup.open}
-        onOpenChange={(o) => setRequestPopup((p) => ({ ...p, open: o }))}
-        title={requestPopup.title}
-        status="Pending"
-        fields={requestPopup.fields}
-        onApprove={() => toast({ title: "Approved" })}
-        onReject={(reason) => toast({ title: "Rejected", description: reason })}
-      />
     </div>
   );
 }
