@@ -164,6 +164,8 @@ export default function AccommodationsPage() {
                 item={item}
                 index={i}
                 role="student"
+                onClick={() => navigate(`/student/accommodations/${item.id}`)}
+                onView={() => navigate(`/student/accommodations/${item.id}`)}
                 onEdit={() => { setEditData({ title: item.title, description: item.description, price: String(item.price || "") }); setCreateOpen(true); }}
                 onDelete={() => toast({ title: "Delete request submitted", description: "Admin will review the deletion." })}
               />
