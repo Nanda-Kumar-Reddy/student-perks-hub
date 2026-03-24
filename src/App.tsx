@@ -246,6 +246,7 @@ const App = () => (
               <Route path="/vendor" element={<VendorDashboard />} />
               <Route path="/vendor/services" element={<Suspense fallback={<Loading />}><VendorServicesHub /></Suspense>} />
               <Route path="/vendor/services/:serviceSlug" element={<Suspense fallback={<Loading />}><VendorServiceRouteWrapper /></Suspense>} />
+              <Route path="/vendor/services/:serviceSlug/:id" element={<Suspense fallback={<Loading />}><VendorListingDetailPage /></Suspense>} />
               <Route path="/vendor/requests" element={<Suspense fallback={<Loading />}><VendorRequestsPage /></Suspense>} />
               <Route path="/vendor/verify" element={<Suspense fallback={<Loading />}><VerifyTransactionPage /></Suspense>} />
               <Route path="/vendor/offers" element={<Suspense fallback={<Loading />}><ManageOffersPage /></Suspense>} />
@@ -259,6 +260,7 @@ const App = () => (
               <Route path="/admin/vendors" element={<Suspense fallback={<Loading />}><AdminVendorsPage /></Suspense>} />
               <Route path="/admin/services" element={<Suspense fallback={<Loading />}><AdminServicesPage /></Suspense>} />
               <Route path="/admin/services/:serviceSlug" element={<Suspense fallback={<Loading />}><AdminServiceRouteWrapper /></Suspense>} />
+              <Route path="/admin/services/:serviceSlug/:id" element={<Suspense fallback={<Loading />}><AdminListingDetailPage /></Suspense>} />
               <Route path="/admin/approvals" element={<Suspense fallback={<Loading />}><AdminApprovalsPage /></Suspense>} />
               <Route path="/admin/transactions" element={<Suspense fallback={<Loading />}><AdminTransactionsPage /></Suspense>} />
               <Route path="/admin/community-tasks" element={<Suspense fallback={<Loading />}><AdminCommunityTasksPage /></Suspense>} />
