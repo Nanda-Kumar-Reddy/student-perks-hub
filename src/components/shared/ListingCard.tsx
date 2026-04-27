@@ -113,17 +113,38 @@ export default function ListingCard({
               <Trash2 className="h-3 w-3" /> Delete
             </Button>
           )}
-          {role === "admin" && onApprove && (
+          {role === "admin" && adminMode === "pending" && onApprove && (
+            <Button size="sm" className="gap-1" disabled={loading} onClick={(e) => { e.stopPropagation(); onApprove(); }}>
+              {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle className="h-3 w-3" />} Approve
+            </Button>
+          )}
+          {role === "admin" && adminMode === "pending" && onReject && (
+            <Button size="sm" variant="outline" className="gap-1 text-destructive hover:bg-destructive/10" disabled={loading} onClick={(e) => { e.stopPropagation(); onReject(); }}>
+              <XCircle className="h-3 w-3" /> Reject
+            </Button>
+          )}
+          {role === "admin" && adminMode === "listing" && item.isVisible !== false && onStopShowing && (
+            <Button size="sm" variant="outline" className="gap-1 text-destructive hover:bg-destructive/10" disabled={loading} onClick={(e) => { e.stopPropagation(); onStopShowing(); }}>
+              {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <EyeOff className="h-3 w-3" />} Stop Showing
+            </Button>
+          )}
+          {role === "admin" && adminMode === "listing" && item.isVisible === false && onShowAgain && (
+            <Button size="sm" className="gap-1" disabled={loading} onClick={(e) => { e.stopPropagation(); onShowAgain(); }}>
+              {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Eye className="h-3 w-3" />} Show Again
+            </Button>
+          )}
+          {/* Legacy admin behavior (no adminMode specified) */}
+          {role === "admin" && !adminMode && onApprove && (
             <Button size="sm" className="gap-1" onClick={(e) => { e.stopPropagation(); onApprove(); }}>
               <CheckCircle className="h-3 w-3" /> Approve
             </Button>
           )}
-          {role === "admin" && onReject && (
+          {role === "admin" && !adminMode && onReject && (
             <Button size="sm" variant="outline" className="gap-1 text-destructive hover:bg-destructive/10" onClick={(e) => { e.stopPropagation(); onReject(); }}>
               <XCircle className="h-3 w-3" /> Reject
             </Button>
           )}
-          {!onEdit && !onDelete && !onApprove && !onReject && !onView && onClick && (
+          {!onEdit && !onDelete && !onApprove && !onReject && !onView && !onStopShowing && !onShowAgain && onClick && (
             <Button size="sm" variant="outline" className="gap-1 w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
               View Details <ArrowRight className="h-3 w-3" />
             </Button>
