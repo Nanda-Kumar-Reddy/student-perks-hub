@@ -27,12 +27,17 @@ interface ListingCardProps {
   item: ListingCardItem;
   index?: number;
   role: ListingRole;
+  /** Admin-only mode: "listing" shows visibility toggle, "pending" shows approve/reject. Defaults to legacy behavior. */
+  adminMode?: "listing" | "pending";
   onClick?: () => void;
   onEdit?: () => void;
   onDelete?: () => void;
   onApprove?: () => void;
   onReject?: () => void;
   onView?: () => void;
+  onStopShowing?: () => void;
+  onShowAgain?: () => void;
+  loading?: boolean;
 }
 
 function statusLabel(s?: string) {
@@ -42,7 +47,8 @@ function statusLabel(s?: string) {
 }
 
 export default function ListingCard({
-  item, index = 0, role, onClick, onEdit, onDelete, onApprove, onReject, onView,
+  item, index = 0, role, adminMode, onClick, onEdit, onDelete, onApprove, onReject, onView,
+  onStopShowing, onShowAgain, loading = false,
 }: ListingCardProps) {
   return (
     <motion.div
