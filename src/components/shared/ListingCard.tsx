@@ -3,7 +3,7 @@
  * Role determines which action buttons appear.
  */
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, CheckCircle, XCircle, ArrowRight, Eye } from "lucide-react";
+import { Pencil, Trash2, CheckCircle, XCircle, ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import StatusBadge from "@/components/shared/StatusBadge";
 
