@@ -18,6 +18,7 @@ export interface ListingCardItem {
   badges?: string[];
   meta?: { label: string; value: string }[];
   createdAt?: string;
+  isVisible?: boolean;
 }
 
 export type ListingRole = "student" | "vendor" | "admin";
