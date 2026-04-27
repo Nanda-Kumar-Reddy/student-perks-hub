@@ -1,8 +1,13 @@
 /**
- * Admin Service Detail Page — shows listings for a specific service with Approve/Reject actions
- * Clicking items navigates to detail pages (not popups)
+ * Admin Service Detail Page — moderation workflow
+ *
+ * Two tabs share the same ListingCard UI:
+ *   • Listing tab  → APPROVED items only, with "Stop Showing" / "Show Again" toggle
+ *   • Pending tab  → PENDING items only, with Approve / Reject actions
+ *
+ * Clicking the card body navigates to the per-item admin detail page.
  */
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -71,26 +76,81 @@ interface Props {
   icon: React.ReactNode;
 }
 
+type ReasonAction = { type: "reject" | "stop"; itemId: string } | null;
+
 export default function AdminServiceDetailPage({ serviceSlug, icon }: Props) {
   const { toast } = useToast();
   const navigate = useNavigate();
   const config = serviceLabels[serviceSlug] || { label: serviceSlug };
-  const listings = demoListings[serviceSlug] || [];
+  const seed = demoListings[serviceSlug] || [];
+
+  // Local state — initialise visibility flag for approved items.
+  const [items, setItems] = useState<ListingCardItem[]>(() =>
+    seed.map((it) => ({ ...it, isVisible: it.status === "APPROVED" ? true : it.isVisible }))
+  );
   const [search, setSearch] = useState("");
-  const [rejectOpen, setRejectOpen] = useState(false);
+  const [reasonAction, setReasonAction] = useState<ReasonAction>(null);
+  const [pendingId, setPendingId] = useState<string | null>(null);
 
   const isRequestOnly = noListings.includes(serviceSlug);
-  const filtered = listings.filter((l) => l.title.toLowerCase().includes(search.toLowerCase()));
 
-  const navigateToDetail = (itemId: string) => {
-    navigate(`/admin/services/${serviceSlug}/${itemId}`);
+  const approved = useMemo(
+    () => items.filter((l) => l.status === "APPROVED" && l.title.toLowerCase().includes(search.toLowerCase())),
+    [items, search]
+  );
+  const pending = useMemo(() => items.filter((l) => l.status === "PENDING"), [items]);
+  const history = useMemo(() => items.filter((l) => l.status === "APPROVED" || l.status === "REJECTED"), [items]);
+
+  const navigateToDetail = (itemId: string) => navigate(`/admin/services/${serviceSlug}/${itemId}`);
+
+  // ───────── Action handlers (optimistic; swap for real API calls) ─────────
+  const withLoading = async (id: string, fn: () => void | Promise<void>) => {
+    setPendingId(id);
+    try {
+      await fn();
+    } catch (err) {
+      toast({ title: "Action failed", description: (err as Error).message || "Please try again.", variant: "destructive" });
+    } finally {
+      setPendingId(null);
+    }
+  };
+
+  const approveItem = (itemId: string) =>
+    withLoading(itemId, () => {
+      setItems((prev) => prev.map((it) => (it.id === itemId ? { ...it, status: "APPROVED", isVisible: true } : it)));
+      toast({ title: "Approved", description: "Item is now visible to users." });
+    });
+
+  const rejectItem = (itemId: string, reason: string) =>
+    withLoading(itemId, () => {
+      setItems((prev) => prev.map((it) => (it.id === itemId ? { ...it, status: "REJECTED" } : it)));
+      toast({ title: "Rejected", description: reason });
+    });
+
+  const stopShowing = (itemId: string, reason: string) =>
+    withLoading(itemId, () => {
+      setItems((prev) => prev.map((it) => (it.id === itemId ? { ...it, isVisible: false } : it)));
+      toast({ title: "Hidden", description: `Item hidden. Reason: ${reason}` });
+    });
+
+  const showAgain = (itemId: string) =>
+    withLoading(itemId, () => {
+      setItems((prev) => prev.map((it) => (it.id === itemId ? { ...it, isVisible: true } : it)));
+      toast({ title: "Visible", description: "Item is showing again." });
+    });
+
+  const handleReasonSubmit = (reason: string) => {
+    if (!reasonAction) return;
+    if (reasonAction.type === "reject") rejectItem(reasonAction.itemId, reason);
+    else stopShowing(reasonAction.itemId, reason);
+    setReasonAction(null);
   };
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="font-display text-2xl font-bold flex items-center gap-2">{icon} {config.label}</h1>
-        <p className="text-sm text-muted-foreground mt-1">Review and approve/reject {config.label.toLowerCase()} listings</p>
+        <p className="text-sm text-muted-foreground mt-1">Moderate {config.label.toLowerCase()} listings across the platform</p>
       </div>
 
       <Tabs defaultValue={isRequestOnly ? "requests" : "listings"} className="w-full">
@@ -100,6 +160,7 @@ export default function AdminServiceDetailPage({ serviceSlug, icon }: Props) {
           <TabsTrigger value="history"><History className="h-3.5 w-3.5 mr-1" /> History</TabsTrigger>
         </TabsList>
 
+        {/* ─────────────── LISTING TAB (Approved only) ─────────────── */}
         {!isRequestOnly && (
           <TabsContent value="listings" className="mt-4 space-y-4">
             <div className="relative">
@@ -107,56 +168,82 @@ export default function AdminServiceDetailPage({ serviceSlug, icon }: Props) {
               <Input placeholder="Search listings..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              {filtered.map((item, i) => (
+              {approved.map((item, i) => (
                 <ListingCard
                   key={item.id}
                   item={item}
                   index={i}
                   role="admin"
+                  adminMode="listing"
+                  loading={pendingId === item.id}
                   onClick={() => navigateToDetail(item.id)}
-                  onApprove={() => toast({ title: "Approved", description: `${item.title} is now visible.` })}
-                  onReject={() => { setRejectOpen(true); }}
+                  onStopShowing={() => setReasonAction({ type: "stop", itemId: item.id })}
+                  onShowAgain={() => showAgain(item.id)}
                 />
               ))}
-              {filtered.length === 0 && (
+              {approved.length === 0 && (
                 <div className="col-span-2 text-center py-12 text-muted-foreground">
                   <Package className="h-12 w-12 mx-auto mb-3 opacity-30" />
-                  <p>No listings found.</p>
+                  <p>No approved listings.</p>
                 </div>
               )}
             </div>
           </TabsContent>
         )}
 
-        <TabsContent value="requests" className="mt-4 space-y-3">
-          {listings.filter((l) => l.status === "PENDING").map((item) => (
-            <div key={item.id} className="rounded-xl border border-border bg-card p-4 shadow-card cursor-pointer hover:shadow-card-hover transition-all"
-              onClick={() => navigateToDetail(item.id)}>
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <div>
-                  <div className="text-sm font-medium">{item.title}</div>
-                  <div className="text-xs text-muted-foreground">{item.description}</div>
-                </div>
-                <span className="rounded-full bg-warning/10 px-2.5 py-1 text-xs font-medium text-warning">Pending</span>
+        {/* ─────────────── PENDING TAB (same card UI) ─────────────── */}
+        <TabsContent value="requests" className="mt-4 space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {pending.map((item, i) => (
+              <ListingCard
+                key={item.id}
+                item={item}
+                index={i}
+                role="admin"
+                adminMode="pending"
+                loading={pendingId === item.id}
+                onClick={() => navigateToDetail(item.id)}
+                onApprove={() => approveItem(item.id)}
+                onReject={() => setReasonAction({ type: "reject", itemId: item.id })}
+              />
+            ))}
+            {pending.length === 0 && (
+              <div className="col-span-2 text-center py-12 text-muted-foreground">
+                <ClipboardList className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                <p>No pending items.</p>
               </div>
-            </div>
-          ))}
+            )}
+          </div>
         </TabsContent>
 
+        {/* ─────────────── HISTORY TAB ─────────────── */}
         <TabsContent value="history" className="mt-4 space-y-3">
-          {listings.filter((l) => l.status === "APPROVED").map((item) => (
+          {history.map((item) => (
             <div key={item.id} className="rounded-xl border border-border bg-card p-4 shadow-card flex items-center justify-between">
               <div>
                 <div className="text-sm font-medium">{item.title}</div>
                 <div className="text-xs text-muted-foreground">{item.description}</div>
               </div>
-              <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">Approved</span>
+              <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${item.status === "APPROVED" ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"}`}>
+                {item.status === "APPROVED" ? "Approved" : "Rejected"}
+              </span>
             </div>
           ))}
+          {history.length === 0 && (
+            <div className="text-center py-12 text-muted-foreground">
+              <History className="h-12 w-12 mx-auto mb-3 opacity-30" />
+              <p>No history yet.</p>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
 
-      <RejectReasonDialog open={rejectOpen} onOpenChange={setRejectOpen} onReject={(reason) => toast({ title: "Rejected", description: reason })} />
+      <RejectReasonDialog
+        open={reasonAction !== null}
+        onOpenChange={(o) => !o && setReasonAction(null)}
+        onReject={handleReasonSubmit}
+        title={reasonAction?.type === "stop" ? "Reason for hiding" : "Rejection Reason"}
+      />
     </div>
   );
 }
