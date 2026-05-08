@@ -4,6 +4,7 @@ import { ArrowLeft, Clock, MapPin, Globe, CheckCircle2, Award, Users, BookOpen, 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
+import { useListingView } from "@/contexts/ListingViewContext";
 
 const certifications: Record<number, {
   name: string; duration: string; address: string; language: string; emoji: string;
@@ -24,13 +25,16 @@ export default function CertificationDetailPage() {
   const navigate = useNavigate();
   const [showSuccess, setShowSuccess] = useState(false);
   const cert = certifications[Number(id)];
+  const { role, backUrl, backLabel, hideStudentActions } = useListingView();
+  const resolvedBackUrl = backUrl ?? "/student/certifications";
+  const resolvedBackLabel = backLabel ?? "Back to Certifications";
 
   if (!cert) return <div className="text-center py-20 text-muted-foreground">Certification not found</div>;
 
   return (
     <div className="space-y-6">
-      <button onClick={() => navigate("/student/certifications")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-        <ArrowLeft className="h-4 w-4" /> Back to Certifications
+      <button onClick={() => navigate(resolvedBackUrl)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <ArrowLeft className="h-4 w-4" /> {resolvedBackLabel}
       </button>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid gap-6 lg:grid-cols-3">
@@ -85,7 +89,9 @@ export default function CertificationDetailPage() {
               <span className="flex items-center gap-1"><Star className="h-3.5 w-3.5 fill-primary text-primary" /> {cert.rating}</span>
               <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" /> {cert.enrolled.toLocaleString()} enrolled</span>
             </div>
-            <Button className="w-full mt-4" onClick={() => setShowSuccess(true)}>Get Certification</Button>
+            {!hideStudentActions && role === "student" && (
+              <Button className="w-full mt-4" onClick={() => setShowSuccess(true)}>Get Certification</Button>
+            )}
             <div className="mt-4 space-y-2 text-xs text-muted-foreground">
               <div className="flex items-center gap-2"><Clock className="h-3.5 w-3.5" /> Duration: {cert.duration}</div>
               <div className="flex items-center gap-2"><MapPin className="h-3.5 w-3.5" /> Location: {cert.address}</div>

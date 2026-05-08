@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { CalendarDays, MapPin, Clock, Monitor, Building, ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, Users, Star, Ticket, Info } from "lucide-react";
 import PhoneField from "@/components/shared/PhoneField";
 import { motion } from "framer-motion";
+import { useListingView } from "@/contexts/ListingViewContext";
 
 const events = [
   { id: 1, title: "Welcome Week BBQ", desc: "Meet fellow students at our semester kick-off BBQ. Free food and drinks!", date: "March 15, 2026", duration: "3 hours", mode: "Offline", location: "University Park", images: ["🎉", "🍔", "🎵"], time: "12:00 PM — 3:00 PM", capacity: 200, registered: 142, organizer: "Student Union", price: "Free", about: "Kick off the new semester with our legendary Welcome Week BBQ! This is the perfect opportunity to meet fellow international students, make new friends, and enjoy a relaxing afternoon in University Park. We'll have free burgers, drinks, music, and fun activities throughout the event.", highlights: ["Free Food & Drinks", "Live Music", "Networking Activities", "Welcome Kits"], schedule: [{ time: "12:00 PM", activity: "Gates Open & Welcome" }, { time: "12:30 PM", activity: "BBQ & Food Stalls" }, { time: "1:30 PM", activity: "Live Music & Performances" }, { time: "2:30 PM", activity: "Raffle Draw & Prizes" }] },
@@ -19,6 +20,9 @@ export default function EventDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const event = events.find((e) => e.id === Number(id));
+  const { role, backUrl, backLabel, hideStudentActions } = useListingView();
+  const resolvedBackUrl = backUrl ?? "/student/events";
+  const resolvedBackLabel = backLabel ?? "Back to Events";
 
   const [imgIdx, setImgIdx] = useState(0);
   const [registerOpen, setRegisterOpen] = useState(false);
@@ -30,8 +34,8 @@ export default function EventDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <h2 className="text-xl font-bold">Event not found</h2>
-        <Button variant="outline" className="mt-4" onClick={() => navigate("/student/events")}>
-          <ArrowLeft className="h-4 w-4 mr-1" /> Back to Events
+        <Button variant="outline" className="mt-4" onClick={() => navigate(resolvedBackUrl)}>
+          <ArrowLeft className="h-4 w-4 mr-1" /> {resolvedBackLabel}
         </Button>
       </div>
     );
@@ -48,8 +52,8 @@ export default function EventDetailPage() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="space-y-6">
-      <Button variant="ghost" size="sm" onClick={() => navigate("/student/events")} className="gap-1 text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-4 w-4" /> Back to Events
+      <Button variant="ghost" size="sm" onClick={() => navigate(resolvedBackUrl)} className="gap-1 text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="h-4 w-4" /> {resolvedBackLabel}
       </Button>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -158,9 +162,11 @@ export default function EventDetailPage() {
                 <span className={`font-medium ${spotsLeft < 50 ? "text-destructive" : ""}`}>{spotsLeft} / {event.capacity}</span>
               </div>
             </div>
-            <Button className="w-full mt-5" onClick={openRegister}>
-              <Ticket className="h-4 w-4 mr-1" /> Register Now
-            </Button>
+            {!hideStudentActions && role === "student" && (
+              <Button className="w-full mt-5" onClick={openRegister}>
+                <Ticket className="h-4 w-4 mr-1" /> Register Now
+              </Button>
+            )}
           </motion.div>
         </div>
       </div>

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, MapPin, Fuel, Gauge, Calendar, Car, DollarSign, Info, Wrench } from "lucide-react";
 import { useState } from "react";
 import EnquiryPopup from "@/components/shared/EnquiryPopup";
+import { useListingView } from "@/contexts/ListingViewContext";
 
 const vehicles = [
   {
@@ -84,14 +85,17 @@ export default function CarDetailPage() {
   const navigate = useNavigate();
   const [enquiryOpen, setEnquiryOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
+  const { role, backUrl, backLabel, hideStudentActions } = useListingView();
+  const resolvedBackUrl = backUrl ?? "/student/cars";
+  const resolvedBackLabel = backLabel ?? "Back to Vehicles";
 
   const vehicle = vehicles.find((v) => v.id === Number(id));
 
   if (!vehicle) {
     return (
       <div className="space-y-4">
-        <Button variant="ghost" size="sm" onClick={() => navigate("/student/cars")} className="gap-2">
-          <ArrowLeft className="h-4 w-4" /> Back to Vehicles
+        <Button variant="ghost" size="sm" onClick={() => navigate(resolvedBackUrl)} className="gap-2">
+          <ArrowLeft className="h-4 w-4" /> {resolvedBackLabel}
         </Button>
         <div className="text-center py-20 text-muted-foreground">Vehicle not found.</div>
       </div>
@@ -100,8 +104,8 @@ export default function CarDetailPage() {
 
   return (
     <div className="space-y-6">
-      <Button variant="ghost" size="sm" onClick={() => navigate("/student/cars")} className="gap-2">
-        <ArrowLeft className="h-4 w-4" /> Back to Vehicles
+      <Button variant="ghost" size="sm" onClick={() => navigate(resolvedBackUrl)} className="gap-2">
+        <ArrowLeft className="h-4 w-4" /> {resolvedBackLabel}
       </Button>
 
       <div className="grid gap-6 lg:grid-cols-5">
@@ -206,9 +210,11 @@ export default function CarDetailPage() {
               )}
             </div>
 
-            <Button className="w-full" size="lg" onClick={() => setEnquiryOpen(true)}>
-              Enquire Now
-            </Button>
+            {!hideStudentActions && role === "student" && (
+              <Button className="w-full" size="lg" onClick={() => setEnquiryOpen(true)}>
+                Enquire Now
+              </Button>
+            )}
           </div>
         </div>
       </div>

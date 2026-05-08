@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ArrowLeft, MapPin, Clock, Monitor, Building, Briefcase, DollarSign, CheckCircle2, FileText, ListChecks } from "lucide-react";
 import PhoneField from "@/components/shared/PhoneField";
 import FormSection from "@/components/shared/FormSection";
+import { useListingView } from "@/contexts/ListingViewContext";
 
 const jobs = [
   {
@@ -63,14 +64,17 @@ export default function JobDetailPage() {
   const [applyOpen, setApplyOpen] = useState(false);
   const [applySuccess, setApplySuccess] = useState(false);
   const [applyForm, setApplyForm] = useState({ name: "", email: "", phone: "", coverLetter: "" });
+  const { role, backUrl, backLabel, hideStudentActions } = useListingView();
+  const resolvedBackUrl = backUrl ?? "/student/jobs";
+  const resolvedBackLabel = backLabel ?? "Back to Jobs";
 
   const job = jobs.find((j) => j.id === Number(id));
 
   if (!job) {
     return (
       <div className="space-y-4">
-        <Button variant="ghost" size="sm" onClick={() => navigate("/student/jobs")} className="gap-2">
-          <ArrowLeft className="h-4 w-4" /> Back to Jobs
+        <Button variant="ghost" size="sm" onClick={() => navigate(resolvedBackUrl)} className="gap-2">
+          <ArrowLeft className="h-4 w-4" /> {resolvedBackLabel}
         </Button>
         <div className="text-center py-20 text-muted-foreground">Job not found.</div>
       </div>
@@ -79,8 +83,8 @@ export default function JobDetailPage() {
 
   return (
     <div className="space-y-6">
-      <Button variant="ghost" size="sm" onClick={() => navigate("/student/jobs")} className="gap-2">
-        <ArrowLeft className="h-4 w-4" /> Back to Jobs
+      <Button variant="ghost" size="sm" onClick={() => navigate(resolvedBackUrl)} className="gap-2">
+        <ArrowLeft className="h-4 w-4" /> {resolvedBackLabel}
       </Button>
 
       <div className="grid gap-6 lg:grid-cols-5">
@@ -184,9 +188,11 @@ export default function JobDetailPage() {
           </div>
 
           {/* Apply button */}
-          <Button className="w-full" size="lg" onClick={() => { setApplyOpen(true); setApplySuccess(false); setApplyForm({ name: "", email: "", phone: "", coverLetter: "" }); }}>
-            Apply Now
-          </Button>
+          {!hideStudentActions && role === "student" && (
+            <Button className="w-full" size="lg" onClick={() => { setApplyOpen(true); setApplySuccess(false); setApplyForm({ name: "", email: "", phone: "", coverLetter: "" }); }}>
+              Apply Now
+            </Button>
+          )}
         </div>
       </div>
 

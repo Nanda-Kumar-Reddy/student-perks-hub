@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowLeft, Globe, Clock, Users, Star, CheckCircle2, Calendar, MessageSquare, Award, Briefcase } from "lucide-react";
+import { useListingView } from "@/contexts/ListingViewContext";
 
 const consultants = [
   { id: 1, name: "Dr. Sarah Williams", experience: "10+ years", languages: ["English", "Mandarin"], speciality: "Immigration & Visa", category: "Visa", price: "$80/session", responseTime: "< 2 hours", sessions: 340, about: "Dr. Sarah Williams is a highly experienced immigration consultant specializing in Australian immigration law. With over a decade of experience, she has successfully guided hundreds of students through complex visa processes including extensions, permanent residency applications, and work rights consultations. Sarah holds a Doctorate in Law from the University of Melbourne and is a registered migration agent (MARN 1234567).", services: ["Visa Extensions", "PR Applications", "Student Visa", "Work Rights"], dates: ["March 10", "March 12", "March 15"], slots: ["9:00 AM", "11:00 AM", "2:00 PM", "4:00 PM"], rating: 4.9, reviews: 128, qualifications: ["Registered Migration Agent (MARN 1234567)", "Doctorate in Law — University of Melbourne", "Member of Migration Institute of Australia"], specialties: ["Student Visa (Subclass 500)", "Skilled Worker Visa (Subclass 482)", "Permanent Residency Applications", "Bridging Visas & Appeals"] },
@@ -22,14 +23,17 @@ export default function ConsultantDetailPage() {
   const [selectedSlot, setSelectedSlot] = useState("");
   const [description, setDescription] = useState("");
   const [bookSuccess, setBookSuccess] = useState(false);
+  const { role, backUrl, backLabel, hideStudentActions } = useListingView();
+  const resolvedBackUrl = backUrl ?? "/student/consultations";
+  const resolvedBackLabel = backLabel ?? "Back to Consultants";
 
   const consultant = consultants.find((c) => c.id === Number(id));
 
   if (!consultant) {
     return (
       <div className="space-y-4 animate-fade-in">
-        <Button variant="ghost" size="sm" onClick={() => navigate("/student/consultations")} className="gap-2">
-          <ArrowLeft className="h-4 w-4" /> Back to Consultants
+        <Button variant="ghost" size="sm" onClick={() => navigate(resolvedBackUrl)} className="gap-2">
+          <ArrowLeft className="h-4 w-4" /> {resolvedBackLabel}
         </Button>
         <div className="text-center py-20 text-muted-foreground">Consultant not found.</div>
       </div>
@@ -47,8 +51,8 @@ export default function ConsultantDetailPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <Button variant="ghost" size="sm" onClick={() => navigate("/student/consultations")} className="gap-2">
-        <ArrowLeft className="h-4 w-4" /> Back to Consultants
+      <Button variant="ghost" size="sm" onClick={() => navigate(resolvedBackUrl)} className="gap-2">
+        <ArrowLeft className="h-4 w-4" /> {resolvedBackLabel}
       </Button>
 
       <div className="grid gap-6 lg:grid-cols-5">
@@ -161,9 +165,11 @@ export default function ConsultantDetailPage() {
               <span className="text-sm text-muted-foreground">Session Fee</span>
               <span className="font-display text-lg font-bold text-primary">{consultant.price}</span>
             </div>
-            <Button className="w-full" size="lg" onClick={handleOpenBook}>
-              <Calendar className="h-4 w-4 mr-2" /> Book Session
-            </Button>
+            {!hideStudentActions && role === "student" && (
+              <Button className="w-full" size="lg" onClick={handleOpenBook}>
+                <Calendar className="h-4 w-4 mr-2" /> Book Session
+              </Button>
+            )}
           </div>
         </div>
       </div>

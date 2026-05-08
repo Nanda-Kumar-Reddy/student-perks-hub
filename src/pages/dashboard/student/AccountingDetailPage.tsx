@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Calculator, Clock, ArrowLeft, CheckCircle2, Calendar, Video, Building, Star, MapPin, Shield, Award } from "lucide-react";
 import { motion } from "framer-motion";
+import { useListingView } from "@/contexts/ListingViewContext";
 
 const professionals = [
   { id: 1, name: "Smith & Co Accounting", experience: "15+ years", services: ["Tax Returns", "BAS Lodgement", "Bookkeeping", "ABN Registration"], desc: "Full-service accounting firm specializing in student and small business tax.", price: "From $49", officeHours: "Mon-Fri 9AM-5PM", about: "We've been helping students with their taxes for over 15 years. Our team of certified accountants understands the unique financial needs of international students in Australia. From simple tax returns to complex business structures, we provide personalized guidance every step of the way.", disclaimer: "All services subject to ATO regulations.", meetingTypes: ["Online", "Offline"], dates: ["March 10", "March 12", "March 14"], slots: ["9:00 AM", "11:00 AM", "2:00 PM"], rating: 4.8, reviews: 124, location: "Sydney CBD", qualifications: ["CPA Australia", "Registered Tax Agent", "ASIC Registered"], specialties: ["International Student Tax", "Small Business Accounting", "BAS & GST", "Superannuation Advisory"] },
@@ -18,6 +19,9 @@ export default function AccountingDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const provider = professionals.find((p) => p.id === Number(id));
+  const { role, backUrl, backLabel, hideStudentActions } = useListingView();
+  const resolvedBackUrl = backUrl ?? "/student/accounting";
+  const resolvedBackLabel = backLabel ?? "Back to Accounting";
 
   const [bookOpen, setBookOpen] = useState(false);
   const [selectedService, setSelectedService] = useState("");
@@ -31,8 +35,8 @@ export default function AccountingDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <h2 className="text-xl font-bold">Provider not found</h2>
-        <Button variant="outline" className="mt-4" onClick={() => navigate("/student/accounting")}>
-          <ArrowLeft className="h-4 w-4 mr-1" /> Back to Accounting
+        <Button variant="outline" className="mt-4" onClick={() => navigate(resolvedBackUrl)}>
+          <ArrowLeft className="h-4 w-4 mr-1" /> {resolvedBackLabel}
         </Button>
       </div>
     );
@@ -51,8 +55,8 @@ export default function AccountingDetailPage() {
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="space-y-6">
       {/* Back button */}
-      <Button variant="ghost" size="sm" onClick={() => navigate("/student/accounting")} className="gap-1 text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-4 w-4" /> Back to Accounting
+      <Button variant="ghost" size="sm" onClick={() => navigate(resolvedBackUrl)} className="gap-1 text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="h-4 w-4" /> {resolvedBackLabel}
       </Button>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -156,9 +160,11 @@ export default function AccountingDetailPage() {
                 </div>
               </div>
             </div>
-            <Button className="w-full mt-5" onClick={openBooking}>
-              <Calendar className="h-4 w-4 mr-1" /> Book Appointment
-            </Button>
+            {!hideStudentActions && role === "student" && (
+              <Button className="w-full mt-5" onClick={openBooking}>
+                <Calendar className="h-4 w-4 mr-1" /> Book Appointment
+              </Button>
+            )}
           </motion.div>
         </div>
       </div>
