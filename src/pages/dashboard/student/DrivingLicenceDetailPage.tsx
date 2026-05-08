@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { CarFront, MapPin, Clock, ArrowLeft, CheckCircle2, ChevronLeft, ChevronRight, Star, Shield, Award, Users } from "lucide-react";
 import PhoneField from "@/components/shared/PhoneField";
 import { motion } from "framer-motion";
+import { useListingView } from "@/contexts/ListingViewContext";
 
 const partners = [
   { id: 1, name: "DriveRight School", location: "Melbourne", openHours: "8:00 AM", closeHours: "6:00 PM", images: ["🚗", "🏫", "🛣️"], packages: [{ name: "5 Lessons Pack", price: "$350", desc: "5 x 1hr manual lessons" }, { name: "10 Lessons Pack", price: "$650", desc: "10 x 1hr lessons + test prep" }, { name: "Test Package", price: "$200", desc: "Mock test + 1hr lesson" }], rating: 4.8, reviews: 210, about: "DriveRight School has been Melbourne's trusted driving school for over a decade. Our experienced instructors provide patient, structured lessons tailored to each learner's pace. We offer both manual and automatic vehicles with dual controls for maximum safety.", qualifications: ["VicRoads Accredited", "Fully Insured", "Dual Control Vehicles"], highlights: ["95% First-Time Pass Rate", "Flexible Scheduling", "Pick-up & Drop-off", "Multilingual Instructors"] },
@@ -18,6 +19,9 @@ export default function DrivingLicenceDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const partner = partners.find((p) => p.id === Number(id));
+  const { role, backUrl, backLabel, hideStudentActions } = useListingView();
+  const resolvedBackUrl = backUrl ?? "/student/driving-licence";
+  const resolvedBackLabel = backLabel ?? "Back to Driving Licence";
 
   const [imgIdx, setImgIdx] = useState(0);
   const [bookOpen, setBookOpen] = useState(false);
@@ -30,8 +34,8 @@ export default function DrivingLicenceDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <h2 className="text-xl font-bold">Partner not found</h2>
-        <Button variant="outline" className="mt-4" onClick={() => navigate("/student/driving-licence")}>
-          <ArrowLeft className="h-4 w-4 mr-1" /> Back to Driving Licence
+        <Button variant="outline" className="mt-4" onClick={() => navigate(resolvedBackUrl)}>
+          <ArrowLeft className="h-4 w-4 mr-1" /> {resolvedBackLabel}
         </Button>
       </div>
     );
@@ -47,8 +51,8 @@ export default function DrivingLicenceDetailPage() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="space-y-6">
-      <Button variant="ghost" size="sm" onClick={() => navigate("/student/driving-licence")} className="gap-1 text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-4 w-4" /> Back to Driving Licence
+      <Button variant="ghost" size="sm" onClick={() => navigate(resolvedBackUrl)} className="gap-1 text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="h-4 w-4" /> {resolvedBackLabel}
       </Button>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -128,7 +132,9 @@ export default function DrivingLicenceDetailPage() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="font-display text-sm font-bold text-primary">{pkg.price}</span>
-                    <Button size="sm" onClick={() => handleBook(pkg)}>Book Now</Button>
+                    {!hideStudentActions && role === "student" && (
+                      <Button size="sm" onClick={() => handleBook(pkg)}>Book Now</Button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -166,9 +172,11 @@ export default function DrivingLicenceDetailPage() {
                 <span className="font-display font-bold text-primary">{partner.packages.reduce((min, p) => { const v = parseInt(p.price.replace("$", "")); return v < min ? v : min; }, Infinity).toLocaleString("en-AU", { style: "currency", currency: "AUD", minimumFractionDigits: 0 })}</span>
               </div>
             </div>
-            <Button className="w-full mt-5" onClick={() => handleBook(partner.packages[0])}>
-              Book a Package
-            </Button>
+            {!hideStudentActions && role === "student" && (
+              <Button className="w-full mt-5" onClick={() => handleBook(partner.packages[0])}>
+                Book a Package
+              </Button>
+            )}
           </motion.div>
         </div>
       </div>

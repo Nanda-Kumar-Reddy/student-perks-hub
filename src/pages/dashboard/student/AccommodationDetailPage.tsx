@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Home, Bed, Bath, MapPin, CheckCircle, ChevronLeft, ChevronRight, MessageCircle, Phone, Mail, Wifi, Car as CarIcon, Dumbbell, ArrowLeft, Calendar, Shield, Star, Waves } from "lucide-react";
 import { motion } from "framer-motion";
+import { useListingView } from "@/contexts/ListingViewContext";
 
 const amenityIcon: Record<string, React.ReactNode> = {
   WiFi: <Wifi className="h-4 w-4" />,
@@ -25,6 +26,9 @@ export default function AccommodationDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const property = properties.find((p) => p.id === Number(id));
+  const { role, backUrl, backLabel, hideStudentActions } = useListingView();
+  const resolvedBackUrl = backUrl ?? "/student/accommodations";
+  const resolvedBackLabel = backLabel ?? "Back to Accommodations";
 
   const [imgIdx, setImgIdx] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
@@ -34,8 +38,8 @@ export default function AccommodationDetailPage() {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <h2 className="text-xl font-bold">Property not found</h2>
-        <Button variant="outline" className="mt-4" onClick={() => navigate("/student/accommodations")}>
-          <ArrowLeft className="h-4 w-4 mr-1" /> Back to Accommodations
+        <Button variant="outline" className="mt-4" onClick={() => navigate(resolvedBackUrl)}>
+          <ArrowLeft className="h-4 w-4 mr-1" /> {resolvedBackLabel}
         </Button>
       </div>
     );
@@ -43,8 +47,8 @@ export default function AccommodationDetailPage() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="space-y-6">
-      <Button variant="ghost" size="sm" onClick={() => navigate("/student/accommodations")} className="gap-1 text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="h-4 w-4" /> Back to Accommodations
+      <Button variant="ghost" size="sm" onClick={() => navigate(resolvedBackUrl)} className="gap-1 text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="h-4 w-4" /> {resolvedBackLabel}
       </Button>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -191,14 +195,16 @@ export default function AccommodationDetailPage() {
                 </span>
               </div>
             </div>
-            <div className="flex flex-col gap-2 mt-5">
-              <Button className="w-full" onClick={() => setChatOpen(true)}>
-                <MessageCircle className="h-4 w-4 mr-1" /> Chat with Owner
-              </Button>
-              <Button variant="outline" className="w-full" onClick={() => setContactOpen(true)}>
-                <Phone className="h-4 w-4 mr-1" /> Contact Owner
-              </Button>
-            </div>
+            {!hideStudentActions && role === "student" && (
+              <div className="flex flex-col gap-2 mt-5">
+                <Button className="w-full" onClick={() => setChatOpen(true)}>
+                  <MessageCircle className="h-4 w-4 mr-1" /> Chat with Owner
+                </Button>
+                <Button variant="outline" className="w-full" onClick={() => setContactOpen(true)}>
+                  <Phone className="h-4 w-4 mr-1" /> Contact Owner
+                </Button>
+              </div>
+            )}
           </motion.div>
         </div>
       </div>
