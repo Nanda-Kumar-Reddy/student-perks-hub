@@ -18,23 +18,23 @@ import RejectReasonDialog from "@/components/shared/RejectReasonDialog";
 
 const demoListings: Record<string, ListingCardItem[]> = {
   accommodation: [
-    { id: "a1", title: "Modern Studio CBD", description: "Bright studio near campus", price: "$280/week", status: "PENDING", emoji: "🏠" },
-    { id: "a2", title: "Shared 2BR Apartment", description: "Affordable shared living", price: "$180/week", status: "PENDING", emoji: "🏢" },
-    { id: "a3", title: "Luxury 1BR Unit", description: "Premium living", price: "$350/week", status: "APPROVED", emoji: "🏙️" },
+    { id: "1", title: "Modern Studio CBD", description: "Bright studio near campus", price: "$280/week", status: "PENDING", emoji: "🏠" },
+    { id: "2", title: "Shared 2BR Apartment", description: "Affordable shared living", price: "$180/week", status: "PENDING", emoji: "🏢" },
+    { id: "4", title: "Luxury 1BR Unit", description: "Premium living", price: "$350/week", status: "APPROVED", emoji: "🏙️" },
   ],
   "car-rent-sale": [
-    { id: "c1", title: "Toyota Corolla 2024", description: "Reliable sedan", price: "$250/week", status: "PENDING", emoji: "🚗", badges: ["Rent"] },
-    { id: "c2", title: "Honda Civic 2023", description: "Great condition", price: "$14,200", status: "APPROVED", emoji: "🚗", badges: ["Sale"] },
+    { id: "1", title: "Toyota Corolla 2024", description: "Reliable sedan", price: "$250/week", status: "PENDING", emoji: "🚗", badges: ["Rent"] },
+    { id: "6", title: "Honda Civic 2023", description: "Great condition", price: "$14,200", status: "APPROVED", emoji: "🚗", badges: ["Sale"] },
   ],
   consultations: [
-    { id: "co1", title: "Career Counseling", description: "1-hour session", price: "$120/session", status: "PENDING" },
+    { id: "1", title: "Career Counseling", description: "1-hour session", price: "$120/session", status: "PENDING" },
   ],
   accounting: [
-    { id: "ac1", title: "Student Tax Return", description: "Full tax lodgement", price: "$49", status: "PENDING" },
+    { id: "1", title: "Student Tax Return", description: "Full tax lodgement", price: "$49", status: "PENDING" },
   ],
   "driving-licence": [
-    { id: "d1", title: "10 Lessons Pack", description: "10 x 1hr lessons + test prep", price: "$650", status: "APPROVED" },
-    { id: "d2", title: "Premium Package", description: "20 lessons + 2 test bookings", price: "$1,100", status: "PENDING" },
+    { id: "1", title: "Standard Package", description: "10 lessons + test booking", price: "$650", status: "APPROVED" },
+    { id: "2", title: "Premium Package", description: "20 lessons + 2 test bookings", price: "$1,100", status: "PENDING" },
   ],
   loans: [
     { id: "l1", title: "Personal Loan — Rahul S.", description: "Student personal loan $5,000", price: "$5,000", status: "PENDING" },
@@ -43,16 +43,16 @@ const demoListings: Record<string, ListingCardItem[]> = {
     { id: "ap1", title: "QF1 — Melbourne Airport", description: "3 passengers, 4 luggage", status: "PENDING" },
   ],
   certifications: [
-    { id: "ce1", title: "RSA Certificate", description: "Responsible Service of Alcohol", price: "$120", status: "APPROVED", emoji: "🍷" },
-    { id: "ce2", title: "First Aid & CPR", description: "Full day course", price: "$180", status: "PENDING", emoji: "🏥" },
+    { id: "1", title: "RSA Certificate", description: "Responsible Service of Alcohol", price: "$120", status: "APPROVED", emoji: "🍷" },
+    { id: "2", title: "First Aid & CPR", description: "Full day course", price: "$180", status: "PENDING", emoji: "🏥" },
   ],
   events: [
-    { id: "e1", title: "Welcome Week BBQ", description: "Semester kick-off event", status: "APPROVED", emoji: "🎉" },
-    { id: "e2", title: "Career Fair 2026", description: "Connect with employers", status: "PENDING", emoji: "💼" },
+    { id: "1", title: "Welcome Week BBQ", description: "Semester kick-off event", status: "APPROVED", emoji: "🎉" },
+    { id: "2", title: "Career Fair 2026", description: "Connect with employers", status: "PENDING", emoji: "💼" },
   ],
   jobs: [
-    { id: "j1", title: "Software Engineer — TechCorp", description: "Full-time role", price: "$75k-90k", status: "APPROVED", badges: ["Full-time"] },
-    { id: "j2", title: "Barista — Bean Counter", description: "Part-time role", price: "$25-28/hr", status: "PENDING", badges: ["Part-time"] },
+    { id: "1", title: "Software Engineer — TechCorp", description: "Full-time role", price: "$75k-90k", status: "APPROVED", badges: ["Full-time"] },
+    { id: "3", title: "Barista — Bean Counter", description: "Part-time role", price: "$25-28/hr", status: "PENDING", badges: ["Part-time"] },
   ],
 };
 
