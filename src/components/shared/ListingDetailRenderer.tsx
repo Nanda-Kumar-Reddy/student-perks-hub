@@ -9,26 +9,24 @@
  */
 import { lazy, Suspense } from "react";
 import { ListingViewProvider, ListingViewRole } from "@/contexts/ListingViewContext";
+import { AccountingListingDetailPage, ConsultationListingDetailPage, DrivingPackageDetailPage } from "@/components/shared/ServiceListingDetailViews";
 
 const AccommodationDetailPage = lazy(() => import("@/pages/dashboard/student/AccommodationDetailPage"));
 const CarDetailPage = lazy(() => import("@/pages/dashboard/student/CarDetailPage"));
 const JobDetailPage = lazy(() => import("@/pages/dashboard/student/JobDetailPage"));
-const ConsultantDetailPage = lazy(() => import("@/pages/dashboard/student/ConsultantDetailPage"));
-const AccountingDetailPage = lazy(() => import("@/pages/dashboard/student/AccountingDetailPage"));
 const CertificationDetailPage = lazy(() => import("@/pages/dashboard/student/CertificationDetailPage"));
 const EventDetailPage = lazy(() => import("@/pages/dashboard/student/EventDetailPage"));
-const DrivingLicenceDetailPage = lazy(() => import("@/pages/dashboard/student/DrivingLicenceDetailPage"));
 
 /** Per-service registry: slug → component. */
 const detailRegistry: Record<string, React.ComponentType> = {
   accommodation: AccommodationDetailPage,
   "car-rent-sale": CarDetailPage,
   jobs: JobDetailPage,
-  consultations: ConsultantDetailPage,
-  accounting: AccountingDetailPage,
+  consultations: ConsultationListingDetailPage,
+  accounting: AccountingListingDetailPage,
   certifications: CertificationDetailPage,
   events: EventDetailPage,
-  "driving-licence": DrivingLicenceDetailPage,
+  "driving-licence": DrivingPackageDetailPage,
 };
 
 interface Props {
