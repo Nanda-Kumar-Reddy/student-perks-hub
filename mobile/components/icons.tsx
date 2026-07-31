@@ -1,32 +1,34 @@
 import React from "react";
-import { Text } from "react-native";
+import { Text, type TextStyle } from "react-native";
 
 interface IconProps {
   size?: number;
   color?: string;
 }
 
-const base = (size = 24, color = "currentColor") => ({
+const base = (size = 24, color = "currentColor"): TextStyle => ({
   fontSize: size,
   color,
   textAlign: "center" as const,
   lineHeight: size * 1.2,
+  includeFontPadding: false,
+  textAlignVertical: "center" as const,
 });
 
 export function HomeIcon({ size, color }: IconProps) {
-  return <Text style={base(size, color)}>🏠</Text>;
+  return <Text style={base(size, color)}>⌂</Text>;
 }
 export function BriefcaseIcon({ size, color }: IconProps) {
   return <Text style={base(size, color)}>💼</Text>;
 }
 export function CalendarIcon({ size, color }: IconProps) {
-  return <Text style={base(size, color)}>📅</Text>;
+  return <Text style={base(size, color)}>▤</Text>;
 }
 export function UserIcon({ size, color }: IconProps) {
-  return <Text style={base(size, color)}>👤</Text>;
+  return <Text style={base(size, color)}>☻</Text>;
 }
 export function SearchIcon({ size, color }: IconProps) {
-  return <Text style={base(size, color)}>🔍</Text>;
+  return <Text style={base(size, color)}>⌕</Text>;
 }
 export function BellIcon({ size, color }: IconProps) {
   return <Text style={base(size, color)}>🔔</Text>;
@@ -44,6 +46,9 @@ export function PlusIcon({ size, color }: IconProps) {
   return <Text style={base(size, color)}>＋</Text>;
 }
 export function CheckIcon({ size, color }: IconProps) {
+  return <Text style={base(size, color)}>✓</Text>;
+}
+export function CheckCircleIcon({ size, color }: IconProps) {
   return <Text style={base(size, color)}>✓</Text>;
 }
 export function StarIcon({ size, color }: IconProps) {
@@ -74,7 +79,7 @@ export function SettingsIcon({ size, color }: IconProps) {
   return <Text style={base(size, color)}>⚙️</Text>;
 }
 export function DollarIcon({ size, color }: IconProps) {
-  return <Text style={base(size, color)}>💰</Text>;
+  return <Text style={base(size, color)}>A$</Text>;
 }
 export function PlaneIcon({ size, color }: IconProps) {
   return <Text style={base(size, color)}>✈️</Text>;
@@ -104,7 +109,7 @@ export function ShieldIcon({ size, color }: IconProps) {
   return <Text style={base(size, color)}>🛡️</Text>;
 }
 export function ListIcon({ size, color }: IconProps) {
-  return <Text style={base(size, color)}>📋</Text>;
+  return <Text style={base(size, color)}>☰</Text>;
 }
 export function ClipboardIcon({ size, color }: IconProps) {
   return <Text style={base(size, color)}>📋</Text>;
@@ -127,6 +132,9 @@ export function ClockIcon({ size, color }: IconProps) {
 export function PhoneIcon({ size, color }: IconProps) {
   return <Text style={base(size, color)}>📞</Text>;
 }
+export function LockIcon({ size, color }: IconProps) {
+  return <Text style={base(size, color)}>🔒</Text>;
+}
 export function MailIcon({ size, color }: IconProps) {
   return <Text style={base(size, color)}>✉️</Text>;
 }
@@ -144,4 +152,31 @@ export function EditIcon({ size, color }: IconProps) {
 }
 export function EyeIcon({ size, color }: IconProps) {
   return <Text style={base(size, color)}>👁️</Text>;
+}
+export function TrendingUpIcon({ size, color }: IconProps) {
+  return <Text style={base(size, color)}>📈</Text>;
+}
+export function TrendingDownIcon({ size, color }: IconProps) {
+  return <Text style={base(size, color)}>📉</Text>;
+}
+export function ArrowRightIcon({ size, color }: IconProps) {
+  return <Text style={base(size, color)}>→</Text>;
+}
+export function ArrowLeftIcon({ size, color }: IconProps) {
+  return <Text style={base(size, color)}>←</Text>;
+}
+export function MoreIcon({ size, color }: IconProps) {
+  return <Text style={base(size, color)}>⋯</Text>;
+}
+export function InfoIcon({ size, color }: IconProps) {
+  return <Text style={base(size, color)}>ⓘ</Text>;
+}
+export function AlertIcon({ size, color }: IconProps) {
+  return <Text style={base(size, color)}>⚠</Text>;
+}
+export function SparkleIcon({ size, color }: IconProps) {
+  return <Text style={base(size, color)}>✦</Text>;
+}
+export function RefreshIcon({ size, color }: IconProps) {
+  return <Text style={base(size, color)}>↻</Text>;
 }

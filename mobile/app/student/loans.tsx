@@ -1,14 +1,20 @@
-import React from "react";
-import { MyRequestsList } from "@/components/shared/MyRequestsList";
-import { apiGetMyLoanApplications } from "@/api/student";
+import { GenericServiceScreen } from "@/components/shared/GenericServiceScreen";
+import { SERVICE_MAP } from "@/constants/services";
+import { apiGetMyLoanApplications, apiApplyForLoan } from "@/api/student";
 
 export default function LoansScreen() {
+  const meta = SERVICE_MAP["loans"];
   return (
-    <MyRequestsList
-      title="Loans"
-      emoji="💰"
-      queryKey={["my-loan-applications"]}
-      fetcher={() => apiGetMyLoanApplications(1, 50)}
+    <GenericServiceScreen
+      meta={meta}
+      fetcher={apiGetMyLoanApplications}
+      creator={apiApplyForLoan}
+      formFields={[
+        { key: "loanAmount", label: "Loan Amount (AUD)", placeholder: "5000", keyboardType: "numeric" },
+        { key: "purpose", label: "Purpose", placeholder: "Tuition fees" },
+        { key: "duration", label: "Repayment Period", placeholder: "12 months" },
+        { key: "notes", label: "Notes", placeholder: "Additional information", multiline: true },
+      ]}
     />
   );
 }

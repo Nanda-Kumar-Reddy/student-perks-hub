@@ -15,7 +15,7 @@ export default function Index() {
   }
 
   if (status === "unauthenticated") {
-    return <Redirect href="/(auth)/login" />;
+    return <Redirect href="/(auth)/onboarding" />;
   }
 
   return <Redirect href={`/(tabs)/${role || "student"}`} />;

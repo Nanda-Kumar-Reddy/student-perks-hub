@@ -4,10 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { Card } from "@/components/ui/Card";
-import { Spinner } from "@/components/ui/Spinner";
+import { MetricCard } from "@/components/ui/MetricCard";
+import { SkeletonCard } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatPrice } from "@/utils";
 import { apiGetVendorDashboard, apiGetVendorRevenueAnalytics } from "@/api/vendor";
+import { DollarIcon, CalendarIcon, TrendingUpIcon, StarIcon } from "@/components/icons";
 
 export default function VendorAnalyticsScreen() {
   const dashQuery = useQuery({ queryKey: ["vendor-dashboard"], queryFn: apiGetVendorDashboard, retry: false });
@@ -15,42 +17,61 @@ export default function VendorAnalyticsScreen() {
 
   const dash = dashQuery.data as any;
   const rev = revQuery.data as any;
+  const loading = dashQuery.isPending;
 
-  if (dashQuery.isPending) return <Screen><ScreenHeader title="Analytics" /><Spinner /></Screen>;
+  const maxRevenue = Array.isArray(rev?.data) ? Math.max(...rev.data.map((p: any) => p.revenue ?? p.amount ?? 0), 1) : 1;
 
   return (
-    <Screen>
-      <ScreenHeader title="Analytics" />
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
-        <View className="flex-row flex-wrap gap-3 mb-4">
-          <Card className="flex-1 min-w-[45%]">
-            <Text className="text-sm text-muted-foreground">Total Revenue</Text>
-            <Text className="font-display text-2xl font-bold text-primary">{formatPrice(dash?.totalRevenue ?? 0)}</Text>
-          </Card>
-          <Card className="flex-1 min-w-[45%]">
-            <Text className="text-sm text-muted-foreground">Total Bookings</Text>
-            <Text className="font-display text-2xl font-bold text-primary">{dash?.totalBookings ?? 0}</Text>
-          </Card>
-        </View>
+    <Screen scroll contentClassName="pb-6">
+      <ScreenHeader title="Analytics" showBack={false} />
 
-        <Text className="font-display text-lg font-bold text-foreground mb-3">Revenue Trend</Text>
-        {revQuery.isPending ? <Spinner /> : revQuery.isError ? (
-          <EmptyState icon="📊" title="No data yet" />
-        ) : (
-          <Card>
-            {Array.isArray(rev?.data) ? (
-              rev.data.map((point: any, i: number) => (
-                <View key={i} className="flex-row items-center justify-between py-2 border-b border-border last:border-b-0">
-                  <Text className="text-sm text-foreground">{point.label || point.month || `Period ${i + 1}`}</Text>
-                  <Text className="text-sm font-semibold text-primary">{formatPrice(point.revenue ?? point.amount ?? 0)}</Text>
-                </View>
-              ))
+      {loading ? (
+        <View className="flex-row flex-wrap gap-3 px-4 pt-4">
+          <SkeletonCard /><SkeletonCard /><SkeletonCard /><SkeletonCard />
+        </View>
+      ) : (
+        <>
+          {/* Metrics */}
+          <View className="flex-row flex-wrap gap-3 px-4 pt-4">
+            <MetricCard label="Revenue" value={formatPrice(dash?.totalRevenue ?? 0)} icon={<DollarIcon size={20} color="#fff" />} gradient={["#16a34a", "#4ade80"]} />
+            <MetricCard label="Bookings" value={dash?.totalBookings ?? 0} icon={<CalendarIcon size={20} color="#fff" />} gradient={["#0d5b6b", "#0e7490"]} />
+            <MetricCard label="Rating" value={dash?.rating ?? "—"} icon={<StarIcon size={20} color="#fff" />} gradient={["#f97316", "#fb923c"]} />
+            <MetricCard label="Growth" value={`+${dash?.growth ?? 0}%`} icon={<TrendingUpIcon size={20} color="#fff" />} gradient={["#6366f1", "#818cf8"]} />
+          </View>
+
+          {/* Revenue Chart */}
+          <View className="px-4 pt-6">
+            <Text className="font-display text-lg font-bold text-foreground mb-3">Revenue Trend</Text>
+            {revQuery.isPending ? (
+              <SkeletonCard />
+            ) : revQuery.isError ? (
+              <EmptyState icon="📊" title="No data yet" />
             ) : (
-              <Text className="text-sm text-muted-foreground">Revenue data will appear here.</Text>
+              <Card elevation="md">
+                {Array.isArray(rev?.data) && rev.data.length > 0 ? (
+                  rev.data.map((point: any, i: number) => {
+                    const val = point.revenue ?? point.amount ?? 0;
+                    const pct = (val / maxRevenue) * 100;
+                    return (
+                      <View key={i} className="mb-3">
+                        <View className="flex-row items-center justify-between mb-1">
+                          <Text className="text-sm text-muted-foreground">{point.label || point.month || `Period ${i + 1}`}</Text>
+                          <Text className="text-sm font-semibold text-primary">{formatPrice(val)}</Text>
+                        </View>
+                        <View className="h-2 rounded-full bg-muted overflow-hidden">
+                          <View className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+                        </View>
+                      </View>
+                    );
+                  })
+                ) : (
+                  <Text className="text-sm text-muted-foreground text-center py-4">Revenue data will appear here.</Text>
+                )}
+              </Card>
             )}
-          </Card>
-        )}
-      </ScrollView>
+          </View>
+        </>
+      )}
     </Screen>
   );
 }

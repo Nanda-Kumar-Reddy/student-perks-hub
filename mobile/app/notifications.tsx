@@ -1,17 +1,19 @@
 import React from "react";
 import { View, Text, FlatList, Pressable } from "react-native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import * as Haptics from "expo-haptics";
 import { Screen } from "@/components/ui/Screen";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
-import { Card } from "@/components/ui/Card";
-import { Spinner } from "@/components/ui/Spinner";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SkeletonCard } from "@/components/ui/Skeleton";
+import { RefreshFlatList } from "@/components/ui/RefreshFlatList";
+import { Button } from "@/components/ui/Button";
 import { formatRelativeTime } from "@/utils";
-import { apiGetNotifications, apiMarkNotificationRead, apiMarkAllNotificationsRead } from "@/api/notifications";
-import type { AppNotification } from "@/types";
+import { apiGetNotifications, apiMarkAllNotificationsRead, apiMarkNotificationRead } from "@/api/notifications";
+import { BellIcon } from "@/components/icons";
 
 export default function NotificationsScreen() {
-  const qc = useQueryClient();
+  const queryClient = useQueryClient();
 
   const query = useQuery({
     queryKey: ["notifications"],
@@ -19,55 +21,79 @@ export default function NotificationsScreen() {
     retry: false,
   });
 
-  const markReadMutation = useMutation({
-    mutationFn: (id: string) => apiMarkNotificationRead(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
-  });
-
   const markAllMutation = useMutation({
     mutationFn: apiMarkAllNotificationsRead,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
+    onSuccess: () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
   });
 
-  const notifications = (query.data?.data ?? []) as AppNotification[];
-  const hasUnread = notifications.some((n) => !n.isRead);
+  const markOneMutation = useMutation({
+    mutationFn: apiMarkNotificationRead,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["notifications"] }),
+  });
+
+  const notifications = query.data?.data ?? [];
+  const unreadCount = notifications.filter((n: any) => !n.isRead).length;
 
   return (
     <Screen>
       <ScreenHeader
         title="Notifications"
+        showBack={false}
         right={
-          hasUnread ? (
+          unreadCount > 0 ? (
             <Pressable onPress={() => markAllMutation.mutate()}>
-              <Text className="text-sm text-primary">Mark all read</Text>
+              <Text className="text-sm font-semibold text-primary">Mark all read</Text>
             </Pressable>
           ) : null
         }
       />
+
       {query.isPending ? (
-        <Spinner />
+        <View className="gap-3 px-4 pt-2">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </View>
       ) : query.isError ? (
-        <EmptyState icon="🔔" title="Couldn't load notifications" message="Try again later." />
+        <EmptyState icon="🔔" title="Couldn't load notifications" message="Pull down to refresh." />
       ) : notifications.length === 0 ? (
         <EmptyState icon="🔔" title="No notifications" message="You're all caught up!" />
       ) : (
-        <FlatList
+        <RefreshFlatList
           data={notifications}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item: any) => item.id}
+          onRefresh={() => query.refetch()}
+          refreshing={query.isFetching && !query.isPending}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
           ItemSeparatorComponent={() => <View className="h-2" />}
           renderItem={({ item }) => (
-            <Pressable onPress={() => !item.isRead && markReadMutation.mutate(item.id)}>
-              <Card className={item.isRead ? "opacity-60" : ""}>
-                <View className="flex-row items-start gap-3">
-                  <View className="flex-1">
-                    <Text className="font-display font-bold text-foreground">{item.title}</Text>
-                    <Text className="text-sm text-muted-foreground mt-1">{item.message}</Text>
-                    <Text className="text-xs text-muted-foreground mt-1">{formatRelativeTime(item.createdAt)}</Text>
-                  </View>
-                  {!item.isRead ? <View className="w-2.5 h-2.5 rounded-full bg-primary mt-2" /> : null}
+            <Pressable
+              onPress={() => {
+                if (!item.isRead) {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  markOneMutation.mutate(item.id);
+                }
+              }}
+              className={`flex-row gap-3 rounded-2xl border p-4 ${
+                item.isRead ? "border-border/50 bg-card" : "border-primary/20 bg-primary/5"
+              }`}
+              style={{ shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 4, elevation: 2 }}
+            >
+              <View className={`h-10 w-10 items-center justify-center rounded-xl ${item.isRead ? "bg-muted" : "bg-primary/10"}`}>
+                <BellIcon size={20} color={item.isRead ? "#6b7280" : "#0d5b6b"} />
+              </View>
+              <View className="flex-1">
+                <View className="flex-row items-center justify-between">
+                  <Text className="font-display font-bold text-foreground">{item.title}</Text>
+                  <Text className="text-xs text-muted-foreground">{formatRelativeTime(item.createdAt)}</Text>
                 </View>
-              </Card>
+                <Text className="text-sm text-muted-foreground mt-1">{item.message}</Text>
+              </View>
+              {!item.isRead ? <View className="h-2.5 w-2.5 rounded-full bg-primary mt-2" /> : null}
             </Pressable>
           )}
         />

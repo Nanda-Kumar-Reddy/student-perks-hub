@@ -1,14 +1,20 @@
-import React from "react";
-import { MyRequestsList } from "@/components/shared/MyRequestsList";
-import { apiGetMyJobApplications } from "@/api/student";
+import { GenericServiceScreen } from "@/components/shared/GenericServiceScreen";
+import { SERVICE_MAP } from "@/constants/services";
+import { apiGetMyJobApplications, apiApplyForLoan } from "@/api/student";
 
 export default function JobsScreen() {
+  const meta = SERVICE_MAP["jobs"];
   return (
-    <MyRequestsList
-      title="Jobs"
-      emoji="💼"
-      queryKey={["my-job-applications"]}
-      fetcher={() => apiGetMyJobApplications(1, 50)}
+    <GenericServiceScreen
+      meta={meta}
+      fetcher={apiGetMyJobApplications}
+      creator={apiApplyForLoan as any}
+      formFields={[
+        { key: "jobTitle", label: "Job Title", placeholder: "Part-time Retail" },
+        { key: "experience", label: "Experience", placeholder: "2 years" },
+        { key: "availability", label: "Availability", placeholder: "Weekends" },
+        { key: "notes", label: "Notes", placeholder: "Any additional info", multiline: true },
+      ]}
     />
   );
 }

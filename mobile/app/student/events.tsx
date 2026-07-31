@@ -1,14 +1,20 @@
-import React from "react";
-import { MyRequestsList } from "@/components/shared/MyRequestsList";
-import { apiGetMyEventRegistrations } from "@/api/student";
+import { GenericServiceScreen } from "@/components/shared/GenericServiceScreen";
+import { SERVICE_MAP } from "@/constants/services";
+import { apiGetMyEventRegistrations, apiRegisterForEvent } from "@/api/student";
 
 export default function EventsScreen() {
+  const meta = SERVICE_MAP["events"];
   return (
-    <MyRequestsList
-      title="Events"
-      emoji="🎉"
-      queryKey={["my-event-registrations"]}
-      fetcher={() => apiGetMyEventRegistrations(1, 50)}
+    <GenericServiceScreen
+      meta={meta}
+      fetcher={apiGetMyEventRegistrations}
+      creator={apiRegisterForEvent}
+      formFields={[
+        { key: "eventName", label: "Event Name", placeholder: "Community Meetup" },
+        { key: "date", label: "Date", placeholder: "2024-03-15" },
+        { key: "attendees", label: "Number of Attendees", placeholder: "1", keyboardType: "numeric" },
+        { key: "notes", label: "Notes", placeholder: "Any special requirements", multiline: true },
+      ]}
     />
   );
 }

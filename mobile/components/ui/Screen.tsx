@@ -23,6 +23,7 @@ export function Screen({ children, scroll = false, className, contentClassName, 
         className={cn("flex-1", contentClassName)}
         contentContainerStyle={scroll ? { flexGrow: 1 } : undefined}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         {children}
       </Container>
